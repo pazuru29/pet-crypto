@@ -2,7 +2,7 @@ part of 'dashboard_bloc.dart';
 
 class DashboardState extends Equatable {
   final BlocStatus status;
-  final String? message;
+  final BlocMessage? message;
   final List<Cryptocurrency> listOfCrypto;
 
   const DashboardState({
@@ -14,12 +14,12 @@ class DashboardState extends Equatable {
   const DashboardState.initial() : this(status: .initial);
 
   DashboardState copyWith({
-    required BlocStatus status,
-    String? message,
+    BlocStatus? status,
+    BlocMessage? messageToShow,
     List<Cryptocurrency>? listOfCrypto,
   }) => DashboardState(
-    status: status,
-    message: message,
+    status: status ?? this.status,
+    message: messageToShow,
     listOfCrypto: listOfCrypto ?? this.listOfCrypto,
   );
 

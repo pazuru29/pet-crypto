@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:pet_crypto/core/result/result.dart';
+import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,7 +32,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       case Ok(value: final listOfCrypto):
         emit(state.copyWith(status: .loaded, listOfCrypto: listOfCrypto));
       case Err(failure: final failure):
-        emit(state.copyWith(status: .error, message: failure.message));
+        emit(
+          state.copyWith(
+            status: .error,
+            messageToShow: .error(failure.message),
+          ),
+        );
     }
   }
 
