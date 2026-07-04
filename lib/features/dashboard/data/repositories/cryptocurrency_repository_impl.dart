@@ -1,3 +1,4 @@
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource.dart';
@@ -16,16 +17,18 @@ class CryptocurrencyRepositoryImpl implements CryptocurrencyRepository {
       CryptocurrencyResponseModel model = await remote.fetchCryptoCurrency();
 
       if (model.data == null) {
-        throw Exception(model.status?.errorMessage ?? "Something went wrong");
+        throw ServerException(
+          model.status?.errorMessage ?? 'Something went wrong',
+        );
       }
 
       return Ok(model.data!.map((e) => e.toEntity()).toList());
-    } on Exception catch (e) {
-      final message = e.toString();
-      if (message.contains('Server error')) {
-        return Err(ServerFailure('Server unavailable'));
-      }
+    } on ServerException {
+      return Err(ServerFailure('Server unavailable'));
+    } on NetworkException {
       return Err(NetworkFailure('Check your connection'));
+    } on ParsingException {
+      return Err(ParsingFailure('Failed to parse cryptocurrency data'));
     } catch (e) {
       return Err(NetworkFailure(e.toString()));
     }
