@@ -10,6 +10,7 @@ import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_da
 import 'package:pet_crypto/features/dashboard/data/repositories/cryptocurrency_repository_impl.dart';
 import 'package:pet_crypto/features/dashboard/domain/repositories/cryptocurrency_repository.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/get_cryptocurrency.dart';
+import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 
 final GetIt _i = GetIt.instance;
 
@@ -45,6 +46,7 @@ class DI {
     _i.registerLazySingleton<GetCryptocurrency>(
       () => GetCryptocurrency(repo: _i()),
     );
+    _i.registerFactory<DashboardBloc>(() => DashboardBloc(_i()));
   }
 
   void initDashboardData() {
