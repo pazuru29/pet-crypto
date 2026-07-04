@@ -3,7 +3,7 @@ import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dar
 import 'package:pet_crypto/features/dashboard/domain/repositories/cryptocurrency_repository.dart';
 
 class GetCryptocurrency {
-  CryptocurrencyRepository repo;
+  final CryptocurrencyRepository repo;
 
   GetCryptocurrency({required this.repo});
 
