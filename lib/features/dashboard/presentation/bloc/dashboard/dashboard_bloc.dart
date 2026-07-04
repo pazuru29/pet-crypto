@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
-import 'package:pet_crypto/core/network/result/result.dart';
+import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

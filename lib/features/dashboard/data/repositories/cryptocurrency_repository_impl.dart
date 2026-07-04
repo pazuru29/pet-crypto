@@ -1,5 +1,5 @@
-import 'package:pet_crypto/core/network/errors/errors.dart';
-import 'package:pet_crypto/core/network/result/result.dart';
+import 'package:pet_crypto/core/errors/failure.dart';
+import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource.dart';
 import 'package:pet_crypto/features/dashboard/data/models/cryptocurrency_response_model.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';

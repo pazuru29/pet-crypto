@@ -1,4 +1,4 @@
-import 'package:pet_crypto/core/network/errors/errors.dart';
+import 'package:pet_crypto/core/errors/failure.dart';
 
 sealed class Result<T> {
   const Result();
