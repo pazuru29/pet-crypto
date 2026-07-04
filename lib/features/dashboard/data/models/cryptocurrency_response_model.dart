@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 
 part 'cryptocurrency_response_model.g.dart';
@@ -100,10 +101,15 @@ class CryptocurrencyModel {
   Map<String, dynamic> toJson() => _$CryptocurrencyModelToJson(this);
 
   Cryptocurrency toEntity() => Cryptocurrency(
-    id: id,
-    name: name,
-    symbol: symbol,
-    price: quote?.map((key, value) => MapEntry(key, value.price ?? 0)),
+    id: requiredField(id, 'id'),
+    name: requiredField(name, 'name'),
+    symbol: requiredField(symbol, 'symbol'),
+    prices:
+        quote?.entries
+            .map((e) => e.value.toEntity(e.key))
+            .whereType<CryptocurrencyPrice>()
+            .toList() ??
+        const [],
   );
 }
 
@@ -147,4 +153,13 @@ class CurrencyModel {
       _$CurrencyModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CurrencyModelToJson(this);
+
+  CryptocurrencyPrice? toEntity(String currencyCode) {
+    final price = this.price;
+    if (price == null) {
+      return null;
+    }
+
+    return CryptocurrencyPrice(currencyCode: currencyCode, amount: price);
+  }
 }

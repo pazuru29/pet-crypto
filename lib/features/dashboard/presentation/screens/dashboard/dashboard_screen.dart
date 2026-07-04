@@ -49,10 +49,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               '${item.name} (${item.symbol})',
                               style: TextStyle(fontWeight: .bold, fontSize: 18),
                             ),
-                            Text(
-                              'Price: ${item.price?['USD']}\$',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                            for (var price in item.prices)
+                              Text(
+                                'Price: ${_formatPrice(price)}',
+                                style: TextStyle(fontSize: 16),
+                              ),
                           ],
                         ),
                       ),
@@ -64,5 +65,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
       ),
     );
+  }
+
+  String _formatPrice(CryptocurrencyPrice price) {
+    return '${price.amount} ${price.currencyCode}';
   }
 }
