@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 
@@ -15,6 +16,16 @@ class CryptocurrencyResponseModel {
       _$CryptocurrencyResponseModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CryptocurrencyResponseModelToJson(this);
+
+  List<Cryptocurrency> toEntities() {
+    final data = this.data;
+
+    if (data == null) {
+      throw ServerException(status?.errorMessage ?? 'Something went wrong');
+    }
+
+    return data.map((e) => e.toEntity()).toList();
+  }
 }
 
 @JsonSerializable()
