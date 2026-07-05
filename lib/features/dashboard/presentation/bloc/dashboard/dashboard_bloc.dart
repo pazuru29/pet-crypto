@@ -30,13 +30,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
     switch (response) {
       case Ok(value: final listOfCrypto):
-        emit(
-          state.copyWith(
-            status: .loaded,
-            listOfCrypto: listOfCrypto,
-            alertMessageToShow: .info('Success'),
-          ),
-        );
+        emit(state.copyWith(status: .loaded, listOfCrypto: listOfCrypto));
       case Err(failure: final failure):
         emit(state.copyWith(status: .error, errorMessage: failure.message));
     }

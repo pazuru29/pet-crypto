@@ -6,10 +6,11 @@ class DashboardEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppText(text: 'Here is nothing...', textStyle: .headerSemibold),
-      ],
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: AppText(text: 'Here is nothing...', textStyle: .headerSemibold),
+      ),
     );
   }
 }

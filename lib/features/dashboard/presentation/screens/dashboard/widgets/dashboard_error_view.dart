@@ -13,20 +13,26 @@ class DashboardErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: .center,
-      mainAxisAlignment: .center,
-      children: [
-        AppText(
-          text: message ?? 'Something went wrong',
-          textStyle: .headerSemibold,
-          textColor: Theme.of(context).colorScheme.error,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: .min,
+          crossAxisAlignment: .center,
+          spacing: 16,
+          children: [
+            AppText(
+              text: message ?? 'Something went wrong',
+              textStyle: .headerSemibold,
+              textColor: Theme.of(context).colorScheme.error,
+            ),
+            ElevatedButton(
+              onPressed: onTryAgain,
+              child: AppText(text: 'Try Again', textStyle: .bodySemibold),
+            ),
+          ],
         ),
-        ElevatedButton(
-          onPressed: onTryAgain,
-          child: AppText(text: 'Try Again', textStyle: .bodySemibold),
-        ),
-      ],
+      ),
     );
   }
 }
