@@ -1,6 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
-enum BlocMessageType { info, error }
+enum BlocMessageType {
+  info,
+  error;
+
+  Color getColor(BuildContext context) {
+    switch (this) {
+      case .info:
+        return Theme.of(context).colorScheme.primaryContainer;
+      case .error:
+        return Theme.of(context).colorScheme.errorContainer;
+    }
+  }
+}
 
 class BlocMessage extends Equatable {
   final String text;

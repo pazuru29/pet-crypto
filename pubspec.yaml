@@ -17,8 +17,9 @@ dependencies:
   json_annotation: ^4.12.0
   provider: ^6.1.5+1
   flutter_bloc: ^9.1.1
-  equatable: ^2.0.8
+  equatable: ^2.1.0
   get_it: ^9.2.1
+  shimmer_animation: ^2.2.2+1
 
 dev_dependencies:
   flutter_test:
