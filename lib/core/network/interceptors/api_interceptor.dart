@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:pet_crypto/core/network/http_client/http_helper.dart';
+import 'package:pet_crypto/core/network/http_client/user_dio_helper.dart';
 
 class ApiInterceptor extends Interceptor {
   final String apiKey;
@@ -8,7 +8,7 @@ class ApiInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers.putIfAbsent(HttpHelper.apiKeyHeader, () => apiKey);
+    options.headers.putIfAbsent(UserDioHelper.apiKeyHeader, () => apiKey);
     super.onRequest(options, handler);
   }
 }

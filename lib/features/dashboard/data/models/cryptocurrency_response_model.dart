@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/util/required_field.dart';
+import 'package:pet_crypto/core/util/typedef.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 
 part 'cryptocurrency_response_model.g.dart';
@@ -12,10 +13,10 @@ class CryptocurrencyResponseModel {
 
   CryptocurrencyResponseModel({required this.data, required this.status});
 
-  factory CryptocurrencyResponseModel.fromJson(Map<String, dynamic> json) =>
+  factory CryptocurrencyResponseModel.fromJson(JSON json) =>
       _$CryptocurrencyResponseModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CryptocurrencyResponseModelToJson(this);
+  JSON toJson() => _$CryptocurrencyResponseModelToJson(this);
 
   List<Cryptocurrency> toEntities() {
     final data = this.data;
@@ -49,10 +50,10 @@ class CryptocurrencyStatusModel {
     required this.creditCount,
   });
 
-  factory CryptocurrencyStatusModel.fromJson(Map<String, dynamic> json) =>
+  factory CryptocurrencyStatusModel.fromJson(JSON json) =>
       _$CryptocurrencyStatusModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CryptocurrencyStatusModelToJson(this);
+  JSON toJson() => _$CryptocurrencyStatusModelToJson(this);
 }
 
 @JsonSerializable()
@@ -82,7 +83,7 @@ class CryptocurrencyModel {
   @JsonKey(name: "tags")
   final List<String>? tags;
   @JsonKey(name: "platform")
-  final Map<String, dynamic>? platform;
+  final JSON? platform;
   @JsonKey(name: "minted_market_cap")
   final double? mintedMarketCap;
   @JsonKey(name: "quote")
@@ -106,10 +107,10 @@ class CryptocurrencyModel {
     required this.quote,
   });
 
-  factory CryptocurrencyModel.fromJson(Map<String, dynamic> json) =>
+  factory CryptocurrencyModel.fromJson(JSON json) =>
       _$CryptocurrencyModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CryptocurrencyModelToJson(this);
+  JSON toJson() => _$CryptocurrencyModelToJson(this);
 
   Cryptocurrency toEntity() => Cryptocurrency(
     id: requiredField(id, 'id'),
@@ -160,10 +161,9 @@ class CurrencyModel {
     required this.lastUpdated,
   });
 
-  factory CurrencyModel.fromJson(Map<String, dynamic> json) =>
-      _$CurrencyModelFromJson(json);
+  factory CurrencyModel.fromJson(JSON json) => _$CurrencyModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CurrencyModelToJson(this);
+  JSON toJson() => _$CurrencyModelToJson(this);
 
   CryptocurrencyPrice? toEntity(String currencyCode) {
     final price = this.price;

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
-import 'package:pet_crypto/core/network/http_client/http_helper.dart';
+import 'package:pet_crypto/core/network/http_client/user_dio_helper.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
 
 class LoggingInterceptor extends Interceptor {
@@ -18,7 +18,7 @@ class LoggingInterceptor extends Interceptor {
 
     buffer.writeln('Headers:');
     options.headers.forEach((k, v) {
-      if (k == HttpHelper.apiKeyHeader) {
+      if (k == UserDioHelper.apiKeyHeader) {
         v = '***';
       }
       buffer.writeln('$k: $v');

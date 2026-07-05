@@ -1,5 +1,7 @@
 enum AppRoutes {
-  dashboard('/', 'dashboard');
+  splash('/', 'splash'),
+  login('/login', 'login'),
+  dashboard('/dashboard', 'dashboard');
 
   final String path;
   final String routeName;

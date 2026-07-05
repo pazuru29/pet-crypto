@@ -8,6 +8,7 @@ import 'package:pet_crypto/core/router/app_router.dart';
 import 'package:pet_crypto/core/util/bloc/observers/app_bloc_observer.dart';
 import 'package:pet_crypto/core/util/log.dart';
 import 'package:pet_crypto/di/dependency_injector.dart';
+import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 
 void main() {
   runZonedGuarded(
@@ -39,11 +40,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Pet Crypto',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      debugShowCheckedModeBanner: false,
-      routerConfig: AppRouter.router,
+    return BlocProvider<AuthCubit>(
+      create: (context) => DI.get<AuthCubit>(),
+      child: MaterialApp.router(
+        title: 'Pet Crypto',
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+        debugShowCheckedModeBanner: false,
+        routerConfig: AppRouter.router,
+      ),
     );
   }
 }

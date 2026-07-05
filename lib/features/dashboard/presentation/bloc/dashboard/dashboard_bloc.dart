@@ -18,6 +18,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<DashboardRefreshDataEvent>(_dashboardRefreshDataEvent);
   }
 
+  // UseCases
   final GetCryptocurrency getCryptocurrency;
 
   FutureOr<void> _dashboardInitEvent(
