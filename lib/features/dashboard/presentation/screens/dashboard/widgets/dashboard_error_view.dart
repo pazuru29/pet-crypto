@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/widgets/app_button.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 
 class DashboardErrorView extends StatelessWidget {
@@ -24,12 +25,9 @@ class DashboardErrorView extends StatelessWidget {
             AppText(
               text: message ?? 'Something went wrong',
               textStyle: .headerSemibold,
-              textColor: Theme.of(context).colorScheme.error,
+              textColor: Theme.of(context).colorScheme.onSurface,
             ),
-            ElevatedButton(
-              onPressed: onTryAgain,
-              child: AppText(text: 'Try Again', textStyle: .bodySemibold),
-            ),
+            AppButton(onPressed: onTryAgain, text: 'Try Again'),
           ],
         ),
       ),
