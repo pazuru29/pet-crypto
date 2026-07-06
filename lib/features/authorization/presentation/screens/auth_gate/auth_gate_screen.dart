@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class AuthGateScreen extends StatefulWidget {
+  const AuthGateScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<AuthGateScreen> createState() => _AuthGateScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _AuthGateScreenState extends State<AuthGateScreen> {
   late AuthCubit _authCubit;
 
   @override

@@ -1,5 +1,5 @@
 enum AppRoutes {
-  splash('/', 'splash'),
+  authGate('/', 'authGate'),
   login('/login', 'login'),
   dashboard('/dashboard', 'dashboard');
 

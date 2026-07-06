@@ -6,8 +6,8 @@ import 'package:pet_crypto/core/router/go_router_refresh_stream.dart';
 import 'package:pet_crypto/di/dependency_injector.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
+import 'package:pet_crypto/features/authorization/presentation/screens/auth_gate/auth_gate_screen.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/login/login_screen.dart';
-import 'package:pet_crypto/features/authorization/presentation/screens/splash/splash_screen.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_screen.dart';
 
@@ -15,13 +15,13 @@ class AppRouter {
   static GoRouter get router => _router;
 
   static final GoRouter _router = GoRouter(
-    initialLocation: AppRoutes.splash.path,
+    initialLocation: AppRoutes.authGate.path,
     refreshListenable: GoRouterRefreshStream(DI.get<AuthCubit>().stream),
     routes: [
       GoRoute(
-        path: AppRoutes.splash.path,
-        name: AppRoutes.splash.routeName,
-        builder: (context, state) => SplashScreen(),
+        path: AppRoutes.authGate.path,
+        name: AppRoutes.authGate.routeName,
+        builder: (context, state) => AuthGateScreen(),
       ),
       GoRoute(
         path: AppRoutes.login.path,
@@ -57,12 +57,12 @@ class AppRouter {
       final authState = DI.get<AuthCubit>().state;
       final location = state.matchedLocation;
 
-      final isSplash = location == AppRoutes.splash.path;
+      final isAuthGate = location == AppRoutes.authGate.path;
       final isLogin = location == AppRoutes.login.path;
-      final isAuthRoute = isSplash || isLogin;
+      final isAuthRoute = isAuthGate || isLogin;
 
       if (authState.authStatus == AuthStatus.unknown) {
-        return isSplash ? null : AppRoutes.splash.path;
+        return isAuthGate ? null : AppRoutes.authGate.path;
       }
 
       if (authState.authStatus == AuthStatus.unauthorized) {
