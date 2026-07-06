@@ -16,13 +16,13 @@ class CryptocurrencyRepositoryImpl implements CryptocurrencyRepository {
       final response = await remote.fetchCryptoCurrency();
       return Ok(response.toEntities());
     } on ServerException {
-      return Err(ServerFailure('Server unavailable'));
+      return Err(RemoteFailure('Crypto data service unavailable'));
     } on NetworkException {
       return Err(NetworkFailure('Check your connection'));
     } on ParsingException {
-      return Err(ParsingFailure('Failed to parse cryptocurrency data'));
+      return Err(ParsingFailure('Failed to process cryptocurrency data'));
     } catch (e) {
-      return Err(NetworkFailure(e.toString()));
+      return Err(UnexpectedFailure(e.toString()));
     }
   }
 }

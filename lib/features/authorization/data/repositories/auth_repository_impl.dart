@@ -30,15 +30,15 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return Ok(session);
     } on ServerException {
-      return Err(ServerFailure('Server unavailable'));
+      return Err(RemoteFailure('Authorization service unavailable'));
     } on NetworkException {
       return Err(NetworkFailure('Check your connection'));
     } on ParsingException {
-      return Err(ParsingFailure('Failed to parse cryptocurrency data'));
+      return Err(ParsingFailure('Failed to process authorization data'));
     } on StorageException catch (e) {
       return Err(StorageFailure(e.message));
     } catch (e) {
-      return Err(NetworkFailure(e.toString()));
+      return Err(UnexpectedFailure(e.toString()));
     }
   }
 
@@ -70,13 +70,13 @@ class AuthRepositoryImpl implements AuthRepository {
     } on StorageException catch (e) {
       return Err(StorageFailure(e.message));
     } on ServerException {
-      return Err(ServerFailure('Server unavailable'));
+      return Err(RemoteFailure('Authorization service unavailable'));
     } on NetworkException {
       return Err(NetworkFailure('Check your connection'));
     } on ParsingException {
-      return Err(ParsingFailure('Failed to parse cryptocurrency data'));
+      return Err(ParsingFailure('Failed to process authorization data'));
     } catch (e) {
-      return Err(NetworkFailure(e.toString()));
+      return Err(UnexpectedFailure(e.toString()));
     }
   }
 
@@ -91,7 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return Ok(session.toEntity());
     } on ParsingException {
-      return Err(ParsingFailure('Failed to parse cryptocurrency data'));
+      return Err(ParsingFailure('Failed to process session data'));
     } on StorageException catch (e) {
       return Err(StorageFailure(e.message));
     } catch (e) {

@@ -11,8 +11,8 @@ class NetworkFailure extends Failure {
   const NetworkFailure(super.message);
 }
 
-class ServerFailure extends Failure {
-  const ServerFailure(super.message);
+class RemoteFailure extends Failure {
+  const RemoteFailure(super.message);
 }
 
 class ParsingFailure extends Failure {
@@ -21,4 +21,8 @@ class ParsingFailure extends Failure {
 
 class StorageFailure extends Failure {
   const StorageFailure(super.message);
+}
+
+class UnexpectedFailure extends Failure {
+  const UnexpectedFailure(super.message);
 }
