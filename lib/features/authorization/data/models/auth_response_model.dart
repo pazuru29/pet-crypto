@@ -35,6 +35,8 @@ class AuthResponseModel {
   JSON toJson() => _$AuthResponseModelToJson(this);
 
   AuthSession toEntity() => AuthSession(
+    accessToken: requiredField(accessToken, 'accessToken'),
+    refreshToken: requiredField(refreshToken, 'refreshToken'),
     fullName:
         '${requiredField(firstName, 'firstName')} ${requiredField(lastName, 'lastName')}',
     email: requiredField(email, 'email'),

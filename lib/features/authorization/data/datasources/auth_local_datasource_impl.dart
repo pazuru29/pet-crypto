@@ -32,7 +32,13 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
     final fullName = preferencesStorage.getString(_fullNameKey);
     final image = preferencesStorage.getString(_imageKey);
 
-    return AuthSessionModel(fullName: fullName, email: email, image: image);
+    return AuthSessionModel(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      fullName: fullName,
+      email: email,
+      image: image,
+    );
   }
 
   @override
@@ -47,6 +53,9 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
 
   @override
   Future<void> saveSession(AuthSessionModel session) async {
+    await secureStorage.write(_accessTokenKey, session.accessToken ?? '');
+    await secureStorage.write(_refreshTokenKey, session.refreshToken ?? '');
+
     await preferencesStorage.setString(_emailKey, session.email ?? '');
     await preferencesStorage.setString(_fullNameKey, session.fullName ?? '');
     await preferencesStorage.setString(_imageKey, session.image ?? '');

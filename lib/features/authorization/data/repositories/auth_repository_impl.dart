@@ -28,8 +28,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await local.saveSession(AuthSessionModel.fromEntity(session));
 
-      await local.saveTokens(AuthTokensModel.fromAuthResponseModel(response));
-
       return Ok(session);
     } on ServerException {
       return Err(ServerFailure('Server unavailable'));
