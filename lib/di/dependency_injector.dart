@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pet_crypto/core/network/http_client/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
@@ -6,8 +7,14 @@ import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
 import 'package:pet_crypto/core/network/http_client/user_dio_helper.dart';
 import 'package:pet_crypto/core/network/interceptors/api_interceptor.dart';
 import 'package:pet_crypto/core/network/interceptors/logging_interceptor.dart';
+import 'package:pet_crypto/core/storage/preferences_storage.dart';
+import 'package:pet_crypto/core/storage/preferences_storage_impl.dart';
+import 'package:pet_crypto/core/storage/secure_storage.dart';
+import 'package:pet_crypto/core/storage/secure_storage_impl.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
+import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
+import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource_impl.dart';
 import 'package:pet_crypto/features/authorization/data/repositories/auth_repository_impl.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/check_auth_status.dart';
@@ -21,6 +28,7 @@ import 'package:pet_crypto/features/dashboard/data/repositories/cryptocurrency_r
 import 'package:pet_crypto/features/dashboard/domain/repositories/cryptocurrency_repository.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/get_cryptocurrency.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final GetIt _i = GetIt.instance;
 
@@ -30,31 +38,56 @@ class DI {
   static T get<T extends Object>({String? instanceName}) =>
       _i<T>(instanceName: instanceName);
 
-  static Future<void> reset() async {
-    return await _i.reset(dispose: true);
-  }
-
   static Future<void> init() async {
+    String dioClientName = 'AuthDioClientImpl';
+
     // Init Helper
     AuthDioHelper httpHelper = AuthDioHelper();
     await httpHelper.init();
 
-    // Create Dio
+    // Remote Datasource
     Dio dio = Dio(httpHelper.options)
       ..interceptors.addAll([LoggingInterceptor()]);
 
-    _i.registerLazySingleton<BaseHttpClient>(() => DioClientImpl(dio: dio));
+    _i.registerLazySingleton<BaseHttpClient>(
+      () => DioClientImpl(dio: dio),
+      instanceName: dioClientName,
+    );
     _i.registerLazySingleton<AuthDatasource>(
-      () => AuthDatasourceImpl(client: _i()),
+      () => AuthDatasourceImpl(client: _i.get(instanceName: dioClientName)),
     );
+
+    // Local Datasource
+    final secureStorage = const FlutterSecureStorage();
+    final preferencesStorage = await SharedPreferences.getInstance();
+
+    _i.registerLazySingleton<SecureStorage>(
+      () => SecureStorageImpl(storage: secureStorage),
+    );
+    _i.registerLazySingleton<PreferencesStorage>(
+      () => PreferencesStorageImpl(storage: preferencesStorage),
+    );
+    _i.registerLazySingleton<AuthLocalDatasource>(
+      () => AuthLocalDatasourceImpl(
+        secureStorage: _i(),
+        preferencesStorage: _i(),
+      ),
+    );
+
+    // Auth Repository
     _i.registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(remote: _i()),
+      () => AuthRepositoryImpl(remote: _i(), local: _i()),
     );
+
+    // UseCases
     _i.registerLazySingleton<LoginUser>(() => LoginUser(repo: _i()));
     _i.registerLazySingleton<RefreshToken>(() => RefreshToken(repo: _i()));
-    _i.registerLazySingleton<CheckAuthStatus>(() => CheckAuthStatus());
-    _i.registerLazySingleton<LogoutUser>(() => LogoutUser());
+    _i.registerLazySingleton<CheckAuthStatus>(
+      () => CheckAuthStatus(repo: _i()),
+    );
+    _i.registerLazySingleton<LogoutUser>(() => LogoutUser(repo: _i()));
 
+    // Auth Cubit
     _i.registerLazySingleton<AuthCubit>(
       () => AuthCubit(
         authStatus: _i(),
@@ -66,7 +99,10 @@ class DI {
   }
 
   static Future<void> initUserScope() async {
+    String dioClientName = 'UserDioClientImpl';
+
     _i.pushNewScope();
+
     // Init Helper
     UserDioHelper httpHelper = UserDioHelper();
     await httpHelper.init();
@@ -78,9 +114,14 @@ class DI {
         LoggingInterceptor(),
       ]);
 
-    _i.registerLazySingleton<BaseHttpClient>(() => DioClientImpl(dio: dio));
+    _i.registerLazySingleton<BaseHttpClient>(
+      () => DioClientImpl(dio: dio),
+      instanceName: dioClientName,
+    );
     _i.registerLazySingleton<CryptocurrencyDataSource>(
-      () => CryptocurrencyDatasourceImpl(client: _i()),
+      () => CryptocurrencyDatasourceImpl(
+        client: _i.get(instanceName: dioClientName),
+      ),
     );
     _i.registerLazySingleton<CryptocurrencyRepository>(
       () => CryptocurrencyRepositoryImpl(remote: _i()),

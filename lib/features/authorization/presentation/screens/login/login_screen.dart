@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
             text: 'Log In',
             onPressed: () {
               //TODO
-              _authCubit.login('login', 'password');
+              _authCubit.login('emilys', 'emilyspass');
             },
           ),
         ),

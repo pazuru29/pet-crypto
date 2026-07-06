@@ -1,17 +1,40 @@
+import 'package:logging/logging.dart';
+import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
-import 'package:pet_crypto/di/dependency_injector.dart';
+import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
+import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
 
 class CheckAuthStatus {
-  Future<Result<AuthStatus>> call() async {
-    await Future.delayed(Duration(seconds: 1));
-    //TODO
-    AuthStatus status = .unauthorized;
+  final AuthRepository repo;
 
-    if (status == .authorized) {
-      await DI.initUserScope();
+  CheckAuthStatus({required this.repo});
+
+  final Logger _log = Logger('CheckAuthStatus');
+
+  Future<Result<AuthSession>> call() async {
+    final response = await repo.restoreSession();
+
+    switch (response) {
+      case Ok(value: var session):
+        bool hasRequiredFields = _checkRequiredFields(session);
+        if (!hasRequiredFields) {
+          //TODO - add fetch user data
+          // session = repo.fetchUserData();
+        }
+        return Ok(session);
+      case Err(failure: final error):
+        _log.warning(error.message);
+        return Err(StorageFailure(error.message));
     }
+  }
 
-    return Ok(status);
+  bool _checkRequiredFields(AuthSession session) {
+    if (session.image.isEmpty ||
+        session.email.isEmpty ||
+        session.fullName.isEmpty) {
+      return false;
+    }
+    return true;
   }
 }

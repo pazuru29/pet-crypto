@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
-import 'package:pet_crypto/features/authorization/domain/entities/auth_response.dart';
+import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 
 part 'auth_response_model.g.dart';
 
@@ -34,12 +34,10 @@ class AuthResponseModel {
 
   JSON toJson() => _$AuthResponseModelToJson(this);
 
-  AuthResponse toEntity() => AuthResponse(
+  AuthSession toEntity() => AuthSession(
     fullName:
         '${requiredField(firstName, 'firstName')} ${requiredField(lastName, 'lastName')}',
     email: requiredField(email, 'email'),
     image: requiredField(image, 'image'),
-    accessToken: requiredField(accessToken, 'accessToken'),
-    refreshToken: requiredField(refreshToken, 'refreshToken'),
   );
 }

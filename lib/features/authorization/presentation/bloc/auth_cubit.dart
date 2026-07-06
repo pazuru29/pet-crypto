@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
+import 'package:pet_crypto/di/dependency_injector.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
+import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/check_auth_status.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/login_user.dart';
@@ -30,10 +32,23 @@ class AuthCubit extends Cubit<AuthState> {
     emit(state.copyWith(status: .loading));
     final response = await authStatus.call();
     switch (response) {
-      case Ok(value: final status):
-        emit(state.copyWith(status: .loaded, authStatus: status));
+      case Ok(value: final session):
+        await _initUserScope(.authorized);
+        emit(
+          state.copyWith(
+            status: .loaded,
+            authStatus: .authorized,
+            authSession: session,
+          ),
+        );
       case Err(failure: final error):
-        emit(state.copyWith(status: .loaded, errorMessage: error.message));
+        emit(
+          state.copyWith(
+            status: .loaded,
+            errorMessage: error.message,
+            authStatus: .unauthorized,
+          ),
+        );
     }
   }
 
@@ -44,13 +59,21 @@ class AuthCubit extends Cubit<AuthState> {
     );
 
     switch (response) {
-      case Ok(value: final status):
-        emit(state.copyWith(status: .loaded, authStatus: status));
+      case Ok(value: final session):
+        await _initUserScope(.authorized);
+        emit(
+          state.copyWith(
+            status: .loaded,
+            authStatus: .authorized,
+            authSession: session,
+          ),
+        );
       case Err(failure: final error):
         emit(
           state.copyWith(
             status: .loaded,
             alertToShow: BlocMessage.error(error.message),
+            authStatus: .unauthorized,
           ),
         );
     }
@@ -62,7 +85,14 @@ class AuthCubit extends Cubit<AuthState> {
 
     switch (response) {
       case Ok(value: final status):
-        emit(state.copyWith(status: .loaded, authStatus: status));
+        await _disposeUserScope(status);
+        emit(
+          state.copyWith(
+            status: .loaded,
+            authStatus: status,
+            clearAuthSession: true,
+          ),
+        );
       case Err(failure: final error):
         emit(
           state.copyWith(
@@ -79,14 +109,29 @@ class AuthCubit extends Cubit<AuthState> {
 
     switch (response) {
       case Ok(value: final status):
+        await _disposeUserScope(status);
         emit(state.copyWith(status: .loaded, authStatus: status));
       case Err(failure: final error):
+        await _disposeUserScope(.unauthorized);
         emit(
           state.copyWith(
             status: .loaded,
             alertToShow: BlocMessage.error(error.message),
+            authStatus: .unauthorized,
           ),
         );
+    }
+  }
+
+  Future<void> _initUserScope(AuthStatus status) async {
+    if (status == .authorized) {
+      await DI.initUserScope();
+    }
+  }
+
+  Future<void> _disposeUserScope(AuthStatus status) async {
+    if (status == .unauthorized) {
+      await DI.disposeUserScope();
     }
   }
 }

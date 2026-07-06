@@ -18,3 +18,7 @@ class ServerFailure extends Failure {
 class ParsingFailure extends Failure {
   const ParsingFailure(super.message);
 }
+
+class StorageFailure extends Failure {
+  const StorageFailure(super.message);
+}

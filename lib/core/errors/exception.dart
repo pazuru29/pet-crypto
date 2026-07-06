@@ -18,3 +18,7 @@ class ServerException extends AppException {
 class ParsingException extends AppException {
   const ParsingException(super.message);
 }
+
+class StorageException extends AppException {
+  StorageException(super.message);
+}
