@@ -8,6 +8,7 @@ import 'package:pet_crypto/features/authorization/presentation/screens/auth_gate
 import 'package:pet_crypto/features/authorization/presentation/screens/login/login_screen.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_scope.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_screen.dart';
+import 'package:pet_crypto/features/profile/presentation/profile/profile_screen.dart';
 
 class AppRouter {
   final AuthCubit authCubit;
@@ -47,7 +48,16 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.dashboard.path,
         name: AppRoutes.dashboard.routeName,
-        builder: (context, state) => DashboardScope(child: DashboardScreen()),
+        builder: (context, state) => DashboardScope(
+          child: DashboardScreen(
+            profileImage: authCubit.state.authSession?.image,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.profile.path,
+        name: AppRoutes.profile.routeName,
+        builder: (context, state) => ProfileScreen(),
       ),
     ],
     redirect: (context, state) {
