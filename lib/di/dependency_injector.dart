@@ -31,6 +31,7 @@ import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashbo
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GetIt _i = GetIt.instance;
+const String _userScopeName = 'user';
 
 class DI {
   DI._();
@@ -99,9 +100,13 @@ class DI {
   }
 
   static Future<void> initUserScope() async {
+    if (_i.hasScope(_userScopeName)) {
+      return;
+    }
+
     String dioClientName = 'UserDioClientImpl';
 
-    _i.pushNewScope();
+    _i.pushNewScope(scopeName: _userScopeName);
 
     // Init Helper
     UserDioHelper httpHelper = UserDioHelper();
@@ -133,6 +138,15 @@ class DI {
   }
 
   static Future<void> disposeUserScope() async {
-    _i.popScope();
+    if (!_i.hasScope(_userScopeName)) {
+      return;
+    }
+
+    if (_i.currentScopeName == _userScopeName) {
+      await _i.popScope();
+      return;
+    }
+
+    await _i.dropScope(_userScopeName);
   }
 }
