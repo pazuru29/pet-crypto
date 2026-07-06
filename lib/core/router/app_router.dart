@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_crypto/core/router/app_routes.dart';
 import 'package:pet_crypto/core/router/go_router_refresh_stream.dart';
-import 'package:pet_crypto/di/dependency_injector.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/auth_gate/auth_gate_screen.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/login/login_screen.dart';
-import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
+import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_scope.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_screen.dart';
 
 class AppRouter {
-  static GoRouter get router => _router;
+  final AuthCubit authCubit;
 
-  static final GoRouter _router = GoRouter(
+  AppRouter({required this.authCubit});
+
+  late final GoRouter router = GoRouter(
     initialLocation: AppRoutes.authGate.path,
-    refreshListenable: GoRouterRefreshStream(DI.get<AuthCubit>().stream),
+    refreshListenable: GoRouterRefreshStream(authCubit.stream),
     routes: [
       GoRoute(
         path: AppRoutes.authGate.path,
@@ -47,14 +47,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.dashboard.path,
         name: AppRoutes.dashboard.routeName,
-        builder: (context, state) => BlocProvider<DashboardBloc>(
-          create: (context) => DI.get<DashboardBloc>(),
-          child: DashboardScreen(),
-        ),
+        builder: (context, state) => DashboardScope(child: DashboardScreen()),
       ),
     ],
     redirect: (context, state) {
-      final authState = DI.get<AuthCubit>().state;
+      final authState = authCubit.state;
       final location = state.matchedLocation;
 
       final isAuthGate = location == AppRoutes.authGate.path;

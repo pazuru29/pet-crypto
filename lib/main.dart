@@ -35,18 +35,33 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final AuthCubit authCubit;
+  late final AppRouter appRouter;
+
+  @override
+  void initState() {
+    authCubit = DI.get<AuthCubit>();
+    appRouter = AppRouter(authCubit: authCubit);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthCubit>(
-      create: (context) => DI.get<AuthCubit>(),
+    return BlocProvider<AuthCubit>.value(
+      value: authCubit,
       child: MaterialApp.router(
         title: 'Pet Crypto',
         theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
         debugShowCheckedModeBanner: false,
-        routerConfig: AppRouter.router,
+        routerConfig: appRouter.router,
       ),
     );
   }
