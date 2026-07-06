@@ -35,6 +35,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return Err(NetworkFailure('Check your connection'));
     } on ParsingException {
       return Err(ParsingFailure('Failed to parse cryptocurrency data'));
+    } on StorageException catch (e) {
+      return Err(StorageFailure(e.message));
     } catch (e) {
       return Err(NetworkFailure(e.toString()));
     }

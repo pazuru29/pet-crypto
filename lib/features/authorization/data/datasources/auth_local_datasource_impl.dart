@@ -1,3 +1,4 @@
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/storage/secure_storage.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
@@ -56,13 +57,16 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
     final accessToken = session.accessToken;
     final refreshToken = session.refreshToken;
 
-    if (accessToken != null && accessToken.isNotEmpty) {
-      await secureStorage.write(_accessTokenKey, accessToken);
+    if (accessToken == null || accessToken.isEmpty) {
+      throw StorageException('Access token is missing');
     }
 
-    if (refreshToken != null && refreshToken.isNotEmpty) {
-      await secureStorage.write(_refreshTokenKey, refreshToken);
+    if (refreshToken == null || refreshToken.isEmpty) {
+      throw StorageException('Refresh token is missing');
     }
+
+    await secureStorage.write(_accessTokenKey, accessToken);
+    await secureStorage.write(_refreshTokenKey, refreshToken);
 
     await _setOptionalString(_emailKey, session.email);
     await _setOptionalString(_fullNameKey, session.fullName);
