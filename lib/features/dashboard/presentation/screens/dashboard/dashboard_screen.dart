@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/core/localization/provider/s.dart';
 import 'package:pet_crypto/core/ui/bloc_message_colors.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/cryptocurrency_list.dart';
@@ -37,7 +38,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           mainAxisSize: .min,
           crossAxisAlignment: .end,
           children: [
-            AppTitleProfile(title: 'Dashboard', imageUrl: widget.profileImage),
+            AppTitleProfile(
+              title: S.of(context).dashboardTitle,
+              imageUrl: widget.profileImage,
+            ),
             BlocConsumer<DashboardBloc, DashboardState>(
               listener: (context, state) {
                 if (state.alertMessage != null) {

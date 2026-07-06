@@ -9,6 +9,9 @@ import 'package:pet_crypto/core/util/bloc/observers/app_bloc_observer.dart';
 import 'package:pet_crypto/core/util/log.dart';
 import 'package:pet_crypto/di/dependency_injector.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
+import 'package:provider/provider.dart';
+
+import 'core/localization/provider/s.dart';
 
 void main() {
   runZonedGuarded(
@@ -27,7 +30,12 @@ void main() {
       await DI.init();
 
       // Run App
-      runApp(const MyApp());
+      runApp(
+        MultiProvider(
+          providers: [ChangeNotifierProvider(create: (context) => S())],
+          child: const MyApp(),
+        ),
+      );
     },
     (error, trace) {
       Logger('APP').severe('ERROR', error, trace);
@@ -45,9 +53,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late final AuthCubit authCubit;
   late final AppRouter appRouter;
+  late final S localeProvider;
 
   @override
   void initState() {
+    localeProvider = context.read<S>();
+    localeProvider.init();
     authCubit = DI.get<AuthCubit>();
     appRouter = AppRouter(authCubit: authCubit);
     super.initState();
@@ -62,6 +73,9 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
         debugShowCheckedModeBanner: false,
         routerConfig: appRouter.router,
+        locale: localeProvider.locale,
+        supportedLocales: S.supportedLocales.values,
+        localizationsDelegates: S.localizationDelegates,
       ),
     );
   }

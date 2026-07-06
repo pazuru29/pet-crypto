@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/core/localization/provider/s.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 
@@ -30,11 +31,16 @@ class CryptocurrencyList extends StatelessWidget {
                 spacing: 8,
                 children: [
                   AppText(
-                    text: '${item.name} (${item.symbol})',
+                    text: S.of(context).cryptoTitle(item.name, item.symbol),
                     textStyle: .headerBold,
                   ),
                   for (final price in item.prices)
-                    AppText(text: _formatPrice(price), textStyle: .bodyRegular),
+                    AppText(
+                      text: S
+                          .of(context)
+                          .priceCrypto(price.currencyCode, price.amount),
+                      textStyle: .bodyRegular,
+                    ),
                 ],
               ),
             ),
@@ -42,9 +48,5 @@ class CryptocurrencyList extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String _formatPrice(CryptocurrencyPrice price) {
-    return '${price.currencyCode}: ${price.amount}';
   }
 }

@@ -1,0 +1,42 @@
+{
+  "appTitle": "Pet Crypto",
+  "@appTitle": {
+    "description": "App Title"
+  },
+  "dashboardTitle": "Dashboard",
+  "@dashboardTitle": {
+    "description": "Dashboard Title"
+  },
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Profile Title"
+  },
+  "cryptoTitle": "{name} ({symbol})",
+  "@cryptoTitle": {
+    "description": "Title of crypto",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bitcoin"
+      },
+      "symbol": {
+        "type": "String",
+        "example": "BTC"
+      }
+    }
+  },
+  "priceCrypto": "{currencyCode}: {value}",
+  "@priceCrypto": {
+    "description": "Price of crypto",
+    "placeholders": {
+      "currencyCode": {
+        "type": "String",
+        "example": "USD"
+      },
+      "value": {
+        "type": "double",
+        "example": "1.1"
+      }
+    }
+  }
+}

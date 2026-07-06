@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/core/localization/provider/s.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -11,7 +12,9 @@ class ProfileScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           crossAxisAlignment: .start,
-          children: [AppTitle(title: 'Profile')],
+          children: [
+            AppTitle(title: S.of(context).profileTitle),
+          ],
         ),
       ),
     );
