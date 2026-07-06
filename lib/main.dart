@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
-import 'package:pet_crypto/core/router/app_router.dart';
+import 'package:pet_crypto/app/router/app_router.dart';
 import 'package:pet_crypto/core/theme/app_theme_provider.dart';
 import 'package:pet_crypto/core/util/bloc/observers/app_bloc_observer.dart';
 import 'package:pet_crypto/core/util/log.dart';
