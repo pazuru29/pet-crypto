@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_crypto/core/router/app_routes.dart';
 import 'package:pet_crypto/core/router/go_router_refresh_stream.dart';
@@ -6,14 +7,15 @@ import 'package:pet_crypto/features/authorization/domain/entities/auth_status.da
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/auth_gate/auth_gate_screen.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/login/login_screen.dart';
-import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_scope.dart';
+import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_screen.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/profile_screen.dart';
 
 class AppRouter {
   final AuthCubit authCubit;
+  final DashboardBloc Function() createDashboardBloc;
 
-  AppRouter({required this.authCubit});
+  AppRouter({required this.authCubit, required this.createDashboardBloc});
 
   late final GoRouter router = GoRouter(
     initialLocation: AppRoutes.authGate.path,
@@ -48,7 +50,8 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.dashboard.path,
         name: AppRoutes.dashboard.routeName,
-        builder: (context, state) => DashboardScope(
+        builder: (context, state) => BlocProvider(
+          create: (context) => createDashboardBloc(),
           child: DashboardScreen(
             profileImage: authCubit.state.authSession?.image,
           ),
