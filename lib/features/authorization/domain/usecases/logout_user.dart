@@ -1,4 +1,3 @@
-import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
@@ -14,7 +13,7 @@ class LogoutUser {
       case Ok():
         return Ok(.unauthorized);
       case Err(failure: final error):
-        return Err(StorageFailure(error.message));
+        return Err(error);
     }
   }
 }

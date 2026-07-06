@@ -12,8 +12,8 @@ class RefreshToken {
     switch (response) {
       case Ok():
         return Ok(.authorized);
-      case Err():
-        return Ok(.unauthorized);
+      case Err(failure: final error):
+        return Err(error);
     }
   }
 }
