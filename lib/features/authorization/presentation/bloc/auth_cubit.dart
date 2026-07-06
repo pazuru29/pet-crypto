@@ -33,6 +33,11 @@ class AuthCubit extends Cubit<AuthState> {
     final response = await authStatus.call();
     switch (response) {
       case Ok(value: final session):
+        if (session == null) {
+          emit(state.copyWith(status: .loaded, authStatus: .unauthorized));
+          return;
+        }
+
         await _initUserScope(.authorized);
         emit(
           state.copyWith(

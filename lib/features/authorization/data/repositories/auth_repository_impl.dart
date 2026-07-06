@@ -1,7 +1,6 @@
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
-import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_refresh_request_model.dart';
@@ -82,12 +81,12 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<AuthSession>> restoreSession() async {
+  Future<Result<AuthSession?>> restoreSession() async {
     try {
       final session = await local.getSession();
 
       if (session == null) {
-        throw StorageException('Failed to restore session');
+        return const Ok(null);
       }
 
       return Ok(session.toEntity());

@@ -2,7 +2,6 @@ import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
-import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
 
 class CheckAuthStatus {
@@ -12,11 +11,15 @@ class CheckAuthStatus {
 
   final Logger _log = Logger('CheckAuthStatus');
 
-  Future<Result<AuthSession>> call() async {
+  Future<Result<AuthSession?>> call() async {
     final response = await repo.restoreSession();
 
     switch (response) {
       case Ok(value: var session):
+        if (session == null) {
+          return const Ok(null);
+        }
+
         bool hasRequiredFields = _checkRequiredFields(session);
         if (!hasRequiredFields) {
           //TODO - add fetch user data

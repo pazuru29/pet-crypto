@@ -7,7 +7,7 @@ abstract interface class AuthRepository {
 
   Future<Result<void>> refreshToken();
 
-  Future<Result<AuthSession>> restoreSession();
+  Future<Result<AuthSession?>> restoreSession();
 
   Future<Result<void>> clearSession();
 }
