@@ -114,7 +114,6 @@ class AuthCubit extends Cubit<AuthState> {
 
     switch (response) {
       case Ok(value: final status):
-        await _disposeUserScope(status);
         emit(state.copyWith(status: .loaded, authStatus: status));
       case Err(failure: final error):
         await _disposeUserScope(.unauthorized);
@@ -123,6 +122,7 @@ class AuthCubit extends Cubit<AuthState> {
             status: .loaded,
             alertToShow: BlocMessage.error(error.message),
             authStatus: .unauthorized,
+            clearAuthSession: true,
           ),
         );
     }
