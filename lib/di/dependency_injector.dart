@@ -14,6 +14,8 @@ import 'package:pet_crypto/core/storage/secure_storage.dart';
 import 'package:pet_crypto/core/storage/secure_storage_impl.dart';
 import 'package:pet_crypto/core/theme/app_theme_provider.dart';
 import 'package:pet_crypto/features/authorization/application/auth_session_coordinator.dart';
+import 'package:pet_crypto/core/application/session_scope_controller.dart';
+import 'package:pet_crypto/di/user_session_controller.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
@@ -100,14 +102,16 @@ class DI {
     _i.registerLazySingleton<LogoutUser>(() => LogoutUser(repo: _i()));
 
     // Auth Coordinator
+    _i.registerLazySingleton<SessionScopeController>(
+      () => UserSessionController(),
+    );
     _i.registerLazySingleton<AuthSessionCoordinator>(
       () => AuthSessionCoordinator(
         checkAuthStatus: _i(),
         loginUser: _i(),
         logoutUser: _i(),
         refreshToken: _i(),
-        initUserScope: DI.initUserScope,
-        disposeUserScope: DI.disposeUserScope,
+        sessionScopeController: _i(),
       ),
     );
 

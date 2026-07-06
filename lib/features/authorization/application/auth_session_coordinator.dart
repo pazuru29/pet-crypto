@@ -1,4 +1,5 @@
 import 'package:pet_crypto/core/result/result.dart';
+import 'package:pet_crypto/core/application/session_scope_controller.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
@@ -12,16 +13,14 @@ class AuthSessionCoordinator {
   final LoginUser loginUser;
   final LogoutUser logoutUser;
   final RefreshToken refreshToken;
-  final Future<void> Function() initUserScope;
-  final Future<void> Function() disposeUserScope;
+  final SessionScopeController sessionScopeController;
 
   const AuthSessionCoordinator({
     required this.checkAuthStatus,
     required this.loginUser,
     required this.logoutUser,
     required this.refreshToken,
-    required this.initUserScope,
-    required this.disposeUserScope,
+    required this.sessionScopeController,
   });
 
   Future<Result<AuthSession?>> restoreSession() async {
@@ -30,14 +29,14 @@ class AuthSessionCoordinator {
     switch (response) {
       case Ok(value: final session):
         if (session == null) {
-          await disposeUserScope();
+          await sessionScopeController.disposeScope();
           return const Ok(null);
         }
 
-        await initUserScope();
+        await sessionScopeController.initScope();
         return Ok(session);
       case Err():
-        await disposeUserScope();
+        await sessionScopeController.disposeScope();
         return response;
     }
   }
@@ -47,10 +46,10 @@ class AuthSessionCoordinator {
 
     switch (response) {
       case Ok(value: final session):
-        await initUserScope();
+        await sessionScopeController.initScope();
         return Ok(session);
       case Err():
-        await disposeUserScope();
+        await sessionScopeController.disposeScope();
         return response;
     }
   }
@@ -58,7 +57,7 @@ class AuthSessionCoordinator {
   Future<Result<AuthStatus>> logout() async {
     final response = await logoutUser.call();
 
-    await disposeUserScope();
+    await sessionScopeController.disposeScope();
 
     return response;
   }
@@ -70,7 +69,7 @@ class AuthSessionCoordinator {
       case Ok():
         return response;
       case Err():
-        await disposeUserScope();
+        await sessionScopeController.disposeScope();
         return response;
     }
   }
