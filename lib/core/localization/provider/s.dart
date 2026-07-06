@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_crypto/core/localization/l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class S extends ChangeNotifier {
   final String _localeKey = 'locale';
@@ -23,13 +23,16 @@ class S extends ChangeNotifier {
   static AppLocalizations of(BuildContext context) =>
       AppLocalizations.of(context);
 
+  final PreferencesStorage storage;
+
+  S({required this.storage});
+
   late Locale _locale;
 
   Locale get locale => _locale;
 
-  Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    final currentLang = prefs.getString(_localeKey) ?? Platform.localeName;
+  void init() {
+    final currentLang = storage.getString(_localeKey) ?? Platform.localeName;
     if (supportedLocales.containsKey(currentLang)) {
       _locale = Locale(currentLang);
     } else {
@@ -43,8 +46,7 @@ class S extends ChangeNotifier {
     if (supportedLocales.containsKey(lowerLeng) && nextLocale != _locale) {
       _locale = nextLocale;
       notifyListeners();
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_localeKey, lowerLeng);
+      await storage.setString(_localeKey, lowerLeng);
     }
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class AppThemeProvider extends ChangeNotifier {
   static final ThemeData lightTheme = ThemeData(
@@ -10,13 +10,16 @@ class AppThemeProvider extends ChangeNotifier {
     colorScheme: .fromSeed(seedColor: Colors.deepPurple, brightness: .dark),
   );
 
+  final PreferencesStorage storage;
+
+  AppThemeProvider({required this.storage});
+
   late ThemeMode _mode;
 
   ThemeMode get mode => _mode;
 
-  Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    final index = prefs.getInt('themeMode') ?? 0;
+  void init() async {
+    final index = storage.getInt('themeMode') ?? 0;
     _mode = ThemeMode.values[index];
     notifyListeners();
   }
@@ -24,7 +27,6 @@ class AppThemeProvider extends ChangeNotifier {
   Future<void> setMode(ThemeMode mode) async {
     _mode = mode;
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setInt('themeMode', mode.index);
+    await storage.setInt('themeMode', mode.index);
   }
 }

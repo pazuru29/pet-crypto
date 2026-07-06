@@ -12,8 +12,18 @@ class PreferencesStorageImpl implements PreferencesStorage {
   }
 
   @override
+  int? getInt(String key) {
+    return storage.getInt(key);
+  }
+
+  @override
   Future<bool> setString(String key, String value) async {
     return await storage.setString(key, value);
+  }
+
+  @override
+  Future<bool> setInt(String key, int value) async {
+    return await storage.setInt(key, value);
   }
 
   @override

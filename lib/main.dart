@@ -31,12 +31,12 @@ void main() {
       await DI.init();
 
       // Init Localization
-      S localizationProvider = S();
-      await localizationProvider.init();
+      S localizationProvider = DI.get<S>();
+      localizationProvider.init();
 
       // Init Theme
-      AppThemeProvider themeProvider = AppThemeProvider();
-      await themeProvider.init();
+      AppThemeProvider themeProvider = DI.get<AppThemeProvider>();
+      themeProvider.init();
 
       // Run App
       runApp(

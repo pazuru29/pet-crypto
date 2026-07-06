@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pet_crypto/core/localization/provider/s.dart';
 import 'package:pet_crypto/core/network/http_client/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
 import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
@@ -11,6 +12,7 @@ import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/storage/preferences_storage_impl.dart';
 import 'package:pet_crypto/core/storage/secure_storage.dart';
 import 'package:pet_crypto/core/storage/secure_storage_impl.dart';
+import 'package:pet_crypto/core/theme/app_theme_provider.dart';
 import 'package:pet_crypto/features/authorization/application/auth_session_coordinator.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
@@ -74,6 +76,14 @@ class DI {
         secureStorage: _i(),
         preferencesStorage: _i(),
       ),
+    );
+
+    // Init Localization
+    _i.registerLazySingleton<S>(() => S(storage: _i()));
+
+    // Init Theme
+    _i.registerLazySingleton<AppThemeProvider>(
+      () => AppThemeProvider(storage: _i()),
     );
 
     // Auth Repository
