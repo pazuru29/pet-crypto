@@ -34,26 +34,13 @@ class AuthCubit extends Cubit<AuthState> {
     switch (response) {
       case Ok(value: final session):
         if (session == null) {
-          emit(state.copyWith(status: .loaded, authStatus: .unauthorized));
+          await _unauthorize();
           return;
         }
 
-        await _initUserScope(.authorized);
-        emit(
-          state.copyWith(
-            status: .loaded,
-            authStatus: .authorized,
-            authSession: session,
-          ),
-        );
+        await _authorize(session);
       case Err(failure: final error):
-        emit(
-          state.copyWith(
-            status: .loaded,
-            errorMessage: error.message,
-            authStatus: .unauthorized,
-          ),
-        );
+        await _unauthorize(errorMessage: error.message);
     }
   }
 
@@ -65,22 +52,9 @@ class AuthCubit extends Cubit<AuthState> {
 
     switch (response) {
       case Ok(value: final session):
-        await _initUserScope(.authorized);
-        emit(
-          state.copyWith(
-            status: .loaded,
-            authStatus: .authorized,
-            authSession: session,
-          ),
-        );
+        await _authorize(session);
       case Err(failure: final error):
-        emit(
-          state.copyWith(
-            status: .loaded,
-            alertToShow: BlocMessage.error(error.message),
-            authStatus: .unauthorized,
-          ),
-        );
+        await _unauthorize(alertMessage: BlocMessage.error(error.message));
     }
   }
 
@@ -90,21 +64,9 @@ class AuthCubit extends Cubit<AuthState> {
 
     switch (response) {
       case Ok(value: final status):
-        await _disposeUserScope(status);
-        emit(
-          state.copyWith(
-            status: .loaded,
-            authStatus: status,
-            clearAuthSession: true,
-          ),
-        );
+        await _unauthorize(authStatus: status);
       case Err(failure: final error):
-        emit(
-          state.copyWith(
-            status: .loaded,
-            alertToShow: BlocMessage.error(error.message),
-          ),
-        );
+        await _unauthorize(alertMessage: BlocMessage.error(error.message));
     }
   }
 
@@ -116,27 +78,35 @@ class AuthCubit extends Cubit<AuthState> {
       case Ok(value: final status):
         emit(state.copyWith(status: .loaded, authStatus: status));
       case Err(failure: final error):
-        await _disposeUserScope(.unauthorized);
-        emit(
-          state.copyWith(
-            status: .loaded,
-            alertToShow: BlocMessage.error(error.message),
-            authStatus: .unauthorized,
-            clearAuthSession: true,
-          ),
-        );
+        await _unauthorize(alertMessage: BlocMessage.error(error.message));
     }
   }
 
-  Future<void> _initUserScope(AuthStatus status) async {
-    if (status == .authorized) {
-      await DI.initUserScope();
-    }
+  Future<void> _authorize(AuthSession session) async {
+    await DI.initUserScope();
+    emit(
+      state.copyWith(
+        status: .loaded,
+        authStatus: .authorized,
+        authSession: session,
+      ),
+    );
   }
 
-  Future<void> _disposeUserScope(AuthStatus status) async {
-    if (status == .unauthorized) {
-      await DI.disposeUserScope();
-    }
+  Future<void> _unauthorize({
+    AuthStatus authStatus = AuthStatus.unauthorized,
+    BlocMessage? alertMessage,
+    String? errorMessage,
+  }) async {
+    await DI.disposeUserScope();
+    emit(
+      state.copyWith(
+        status: .loaded,
+        authStatus: authStatus,
+        alertToShow: alertMessage,
+        errorMessage: errorMessage,
+        clearAuthSession: true,
+      ),
+    );
   }
 }
