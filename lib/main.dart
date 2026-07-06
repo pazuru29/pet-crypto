@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/router/app_router.dart';
+import 'package:pet_crypto/core/theme/app_theme_provider.dart';
 import 'package:pet_crypto/core/util/bloc/observers/app_bloc_observer.dart';
 import 'package:pet_crypto/core/util/log.dart';
 import 'package:pet_crypto/di/dependency_injector.dart';
@@ -29,10 +30,21 @@ void main() {
       // Init DI
       await DI.init();
 
+      // Init Localization
+      S localizationProvider = S();
+      await localizationProvider.init();
+
+      // Init Theme
+      AppThemeProvider themeProvider = AppThemeProvider();
+      await themeProvider.init();
+
       // Run App
       runApp(
         MultiProvider(
-          providers: [ChangeNotifierProvider(create: (context) => S())],
+          providers: [
+            ChangeNotifierProvider(create: (context) => localizationProvider),
+            ChangeNotifierProvider(create: (context) => themeProvider),
+          ],
           child: const MyApp(),
         ),
       );
@@ -54,11 +66,12 @@ class _MyAppState extends State<MyApp> {
   late final AuthCubit authCubit;
   late final AppRouter appRouter;
   late final S localeProvider;
+  late final AppThemeProvider themeProvider;
 
   @override
   void initState() {
     localeProvider = context.read<S>();
-    localeProvider.init();
+    themeProvider = context.read<AppThemeProvider>();
     authCubit = DI.get<AuthCubit>();
     appRouter = AppRouter(authCubit: authCubit);
     super.initState();
@@ -70,7 +83,9 @@ class _MyAppState extends State<MyApp> {
       value: authCubit,
       child: MaterialApp.router(
         title: 'Pet Crypto',
-        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+        theme: AppThemeProvider.lightTheme,
+        darkTheme: AppThemeProvider.darkTheme,
+        themeMode: themeProvider.mode,
         debugShowCheckedModeBanner: false,
         routerConfig: appRouter.router,
         locale: localeProvider.locale,
