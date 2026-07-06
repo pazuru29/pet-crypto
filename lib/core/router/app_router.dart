@@ -59,7 +59,7 @@ class AppRouter {
 
       final isSplash = location == AppRoutes.splash.path;
       final isLogin = location == AppRoutes.login.path;
-      final isDashboard = location == AppRoutes.dashboard.path;
+      final isAuthRoute = isSplash || isLogin;
 
       if (authState.authStatus == AuthStatus.unknown) {
         return isSplash ? null : AppRoutes.splash.path;
@@ -69,8 +69,8 @@ class AppRouter {
         return isLogin ? null : AppRoutes.login.path;
       }
 
-      if (authState.authStatus == AuthStatus.authorized && isLogin) {
-        return isDashboard ? null : AppRoutes.dashboard.path;
+      if (authState.authStatus == AuthStatus.authorized) {
+        return isAuthRoute ? AppRoutes.dashboard.path : null;
       }
 
       return null;
