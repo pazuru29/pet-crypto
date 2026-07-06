@@ -3,34 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
-import 'package:pet_crypto/di/dependency_injector.dart';
+import 'package:pet_crypto/features/authorization/application/auth_session_coordinator.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/check_auth_status.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/login_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/logout_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/refresh_token.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({
-    required this.authStatus,
-    required this.loginUser,
-    required this.logoutUser,
-    required this.refreshToken,
-  }) : super(AuthState.initial());
+  AuthCubit({required this.coordinator}) : super(AuthState.initial());
 
-  // UseCases
-  final CheckAuthStatus authStatus;
-  final LoginUser loginUser;
-  final LogoutUser logoutUser;
-  final RefreshToken refreshToken;
+  final AuthSessionCoordinator coordinator;
 
   void checkAuthStatus() async {
     emit(state.copyWith(status: .loading));
-    final response = await authStatus.call();
+    final response = await coordinator.restoreSession();
     switch (response) {
       case Ok(value: final session):
         if (session == null) {
@@ -46,7 +33,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void login(String login, String password) async {
     emit(state.copyWith(status: .loading));
-    final response = await loginUser.call(
+    final response = await coordinator.login(
       AuthRequest(login: login, password: password),
     );
 
@@ -60,7 +47,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void logout() async {
     emit(state.copyWith(status: .loading));
-    final response = await logoutUser.call();
+    final response = await coordinator.logout();
 
     switch (response) {
       case Ok(value: final status):
@@ -72,7 +59,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void refresh() async {
     emit(state.copyWith(status: .loading));
-    final response = await refreshToken.call();
+    final response = await coordinator.refresh();
 
     switch (response) {
       case Ok(value: final status):
@@ -83,7 +70,6 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> _authorize(AuthSession session) async {
-    await DI.initUserScope();
     emit(
       state.copyWith(
         status: .loaded,
@@ -98,7 +84,6 @@ class AuthCubit extends Cubit<AuthState> {
     BlocMessage? alertMessage,
     String? errorMessage,
   }) async {
-    await DI.disposeUserScope();
     emit(
       state.copyWith(
         status: .loaded,

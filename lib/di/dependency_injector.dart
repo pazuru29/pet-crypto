@@ -11,6 +11,7 @@ import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/storage/preferences_storage_impl.dart';
 import 'package:pet_crypto/core/storage/secure_storage.dart';
 import 'package:pet_crypto/core/storage/secure_storage_impl.dart';
+import 'package:pet_crypto/features/authorization/application/auth_session_coordinator.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
@@ -88,15 +89,20 @@ class DI {
     );
     _i.registerLazySingleton<LogoutUser>(() => LogoutUser(repo: _i()));
 
-    // Auth Cubit
-    _i.registerLazySingleton<AuthCubit>(
-      () => AuthCubit(
-        authStatus: _i(),
+    // Auth Coordinator
+    _i.registerLazySingleton<AuthSessionCoordinator>(
+      () => AuthSessionCoordinator(
+        checkAuthStatus: _i(),
         loginUser: _i(),
         logoutUser: _i(),
         refreshToken: _i(),
+        initUserScope: DI.initUserScope,
+        disposeUserScope: DI.disposeUserScope,
       ),
     );
+
+    // Auth Cubit
+    _i.registerLazySingleton<AuthCubit>(() => AuthCubit(coordinator: _i()));
   }
 
   static Future<void> initUserScope() async {
