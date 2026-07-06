@@ -53,12 +53,20 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
 
   @override
   Future<void> saveSession(AuthSessionModel session) async {
-    await secureStorage.write(_accessTokenKey, session.accessToken ?? '');
-    await secureStorage.write(_refreshTokenKey, session.refreshToken ?? '');
+    final accessToken = session.accessToken;
+    final refreshToken = session.refreshToken;
 
-    await preferencesStorage.setString(_emailKey, session.email ?? '');
-    await preferencesStorage.setString(_fullNameKey, session.fullName ?? '');
-    await preferencesStorage.setString(_imageKey, session.image ?? '');
+    if (accessToken != null && accessToken.isNotEmpty) {
+      await secureStorage.write(_accessTokenKey, accessToken);
+    }
+
+    if (refreshToken != null && refreshToken.isNotEmpty) {
+      await secureStorage.write(_refreshTokenKey, refreshToken);
+    }
+
+    await _setOptionalString(_emailKey, session.email);
+    await _setOptionalString(_fullNameKey, session.fullName);
+    await _setOptionalString(_imageKey, session.image);
   }
 
   @override
@@ -75,5 +83,14 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
   Future<void> saveTokens(AuthTokensModel tokens) async {
     await secureStorage.write(_accessTokenKey, tokens.accessToken);
     await secureStorage.write(_refreshTokenKey, tokens.refreshToken);
+  }
+
+  Future<void> _setOptionalString(String key, String? value) async {
+    if (value == null || value.isEmpty) {
+      await preferencesStorage.remove(key);
+      return;
+    }
+
+    await preferencesStorage.setString(key, value);
   }
 }
