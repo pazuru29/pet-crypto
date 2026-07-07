@@ -1,17 +1,18 @@
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
-import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource.dart';
-import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
-import 'package:pet_crypto/features/dashboard/domain/repositories/cryptocurrency_repository.dart';
+import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_cryptocurrency_datasource.dart';
+import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_cryptocurrency.dart';
+import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_cryptocurrency_repository.dart';
 
-class CryptocurrencyRepositoryImpl implements CryptocurrencyRepository {
-  final CryptocurrencyDataSource remote;
+class DashboardCryptocurrencyRepositoryImpl
+    implements DashboardCryptocurrencyRepository {
+  final DashboardCryptocurrencyDataSource remote;
 
-  CryptocurrencyRepositoryImpl({required this.remote});
+  const DashboardCryptocurrencyRepositoryImpl({required this.remote});
 
   @override
-  Future<Result<List<Cryptocurrency>>> getCryptocurrency() async {
+  Future<Result<List<DashboardCryptocurrency>>> getCryptocurrency() async {
     try {
       final response = await remote.fetchCryptoCurrency();
       return Ok(response.toEntities());

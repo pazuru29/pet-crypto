@@ -4,8 +4,8 @@ import 'package:equatable/equatable.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
-import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_cryptocurrency.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_cryptocurrency.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_user_image.dart';
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
+import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_cryptocurrency.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 
-class CryptocurrencyList extends StatelessWidget {
-  final List<Cryptocurrency> listOfCrypto;
+class DashboardCryptocurrencyList extends StatelessWidget {
+  final List<DashboardCryptocurrency> listOfCrypto;
   final Future<void> Function() onRefresh;
 
-  const CryptocurrencyList({
+  const DashboardCryptocurrencyList({
     super.key,
     required this.listOfCrypto,
     required this.onRefresh,

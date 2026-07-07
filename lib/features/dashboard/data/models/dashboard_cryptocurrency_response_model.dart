@@ -2,23 +2,26 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
-import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
+import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_cryptocurrency.dart';
 
-part 'cryptocurrency_response_model.g.dart';
+part 'dashboard_cryptocurrency_response_model.g.dart';
 
 @JsonSerializable()
-class CryptocurrencyResponseModel {
-  final List<CryptocurrencyModel>? data;
-  final CryptocurrencyStatusModel? status;
+class DashboardCryptocurrencyResponseModel {
+  final List<DashboardCryptocurrencyModel>? data;
+  final DashboardCryptocurrencyStatusModel? status;
 
-  CryptocurrencyResponseModel({required this.data, required this.status});
+  const DashboardCryptocurrencyResponseModel({
+    required this.data,
+    required this.status,
+  });
 
-  factory CryptocurrencyResponseModel.fromJson(JSON json) =>
-      _$CryptocurrencyResponseModelFromJson(json);
+  factory DashboardCryptocurrencyResponseModel.fromJson(JSON json) =>
+      _$DashboardCryptocurrencyResponseModelFromJson(json);
 
-  JSON toJson() => _$CryptocurrencyResponseModelToJson(this);
+  JSON toJson() => _$DashboardCryptocurrencyResponseModelToJson(this);
 
-  List<Cryptocurrency> toEntities() {
+  List<DashboardCryptocurrency> toEntities() {
     final data = this.data;
 
     if (data == null) {
@@ -30,7 +33,7 @@ class CryptocurrencyResponseModel {
 }
 
 @JsonSerializable()
-class CryptocurrencyStatusModel {
+class DashboardCryptocurrencyStatusModel {
   @JsonKey(name: "timestamp")
   final String? timestamp;
   @JsonKey(name: "error_code")
@@ -42,7 +45,7 @@ class CryptocurrencyStatusModel {
   @JsonKey(name: "credit_count")
   final int? creditCount;
 
-  CryptocurrencyStatusModel({
+  const DashboardCryptocurrencyStatusModel({
     required this.timestamp,
     required this.errorCode,
     required this.errorMessage,
@@ -50,14 +53,14 @@ class CryptocurrencyStatusModel {
     required this.creditCount,
   });
 
-  factory CryptocurrencyStatusModel.fromJson(JSON json) =>
-      _$CryptocurrencyStatusModelFromJson(json);
+  factory DashboardCryptocurrencyStatusModel.fromJson(JSON json) =>
+      _$DashboardCryptocurrencyStatusModelFromJson(json);
 
-  JSON toJson() => _$CryptocurrencyStatusModelToJson(this);
+  JSON toJson() => _$DashboardCryptocurrencyStatusModelToJson(this);
 }
 
 @JsonSerializable()
-class CryptocurrencyModel {
+class DashboardCryptocurrencyModel {
   @JsonKey(name: "id")
   final int? id;
   @JsonKey(name: "name")
@@ -87,9 +90,9 @@ class CryptocurrencyModel {
   @JsonKey(name: "minted_market_cap")
   final double? mintedMarketCap;
   @JsonKey(name: "quote")
-  final Map<String, CurrencyModel>? quote;
+  final Map<String, DashboardCurrencyModel>? quote;
 
-  CryptocurrencyModel({
+  const DashboardCryptocurrencyModel({
     required this.id,
     required this.name,
     required this.symbol,
@@ -107,26 +110,26 @@ class CryptocurrencyModel {
     required this.quote,
   });
 
-  factory CryptocurrencyModel.fromJson(JSON json) =>
-      _$CryptocurrencyModelFromJson(json);
+  factory DashboardCryptocurrencyModel.fromJson(JSON json) =>
+      _$DashboardCryptocurrencyModelFromJson(json);
 
-  JSON toJson() => _$CryptocurrencyModelToJson(this);
+  JSON toJson() => _$DashboardCryptocurrencyModelToJson(this);
 
-  Cryptocurrency toEntity() => Cryptocurrency(
+  DashboardCryptocurrency toEntity() => DashboardCryptocurrency(
     id: requiredField(id, 'id'),
     name: requiredField(name, 'name'),
     symbol: requiredField(symbol, 'symbol'),
     prices:
         quote?.entries
             .map((e) => e.value.toEntity(e.key))
-            .whereType<CryptocurrencyPrice>()
+            .whereType<DashboardCryptocurrencyPrice>()
             .toList() ??
         const [],
   );
 }
 
 @JsonSerializable()
-class CurrencyModel {
+class DashboardCurrencyModel {
   @JsonKey(name: "price")
   final double? price;
   @JsonKey(name: "volume_24h")
@@ -148,7 +151,7 @@ class CurrencyModel {
   @JsonKey(name: "last_updated")
   final String? lastUpdated;
 
-  CurrencyModel({
+  const DashboardCurrencyModel({
     required this.price,
     required this.volume24h,
     required this.volumeChange24h,
@@ -161,16 +164,20 @@ class CurrencyModel {
     required this.lastUpdated,
   });
 
-  factory CurrencyModel.fromJson(JSON json) => _$CurrencyModelFromJson(json);
+  factory DashboardCurrencyModel.fromJson(JSON json) =>
+      _$DashboardCurrencyModelFromJson(json);
 
-  JSON toJson() => _$CurrencyModelToJson(this);
+  JSON toJson() => _$DashboardCurrencyModelToJson(this);
 
-  CryptocurrencyPrice? toEntity(String currencyCode) {
+  DashboardCryptocurrencyPrice? toEntity(String currencyCode) {
     final price = this.price;
     if (price == null) {
       return null;
     }
 
-    return CryptocurrencyPrice(currencyCode: currencyCode, amount: price);
+    return DashboardCryptocurrencyPrice(
+      currencyCode: currencyCode,
+      amount: price,
+    );
   }
 }

@@ -29,13 +29,13 @@ import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_use
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
-import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource.dart';
-import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource_impl.dart';
+import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_cryptocurrency_datasource.dart';
+import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_cryptocurrency_datasource_impl.dart';
 import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_local_datasource.dart';
 import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_local_datasource_impl.dart';
-import 'package:pet_crypto/features/dashboard/data/repositories/cryptocurrency_repository_impl.dart';
+import 'package:pet_crypto/features/dashboard/data/repositories/dashboard_cryptocurrency_repository_impl.dart';
 import 'package:pet_crypto/features/dashboard/data/repositories/dashboard_local_repository_impl.dart';
-import 'package:pet_crypto/features/dashboard/domain/repositories/cryptocurrency_repository.dart';
+import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_cryptocurrency_repository.dart';
 import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_local_repository.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_cryptocurrency.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_user_image.dart';
@@ -169,8 +169,8 @@ class DI {
     );
 
     // Remote DataSources
-    _i.registerLazySingleton<CryptocurrencyDataSource>(
-      () => CryptocurrencyDatasourceImpl(
+    _i.registerLazySingleton<DashboardCryptocurrencyDataSource>(
+      () => DashboardCryptocurrencyDatasourceImpl(
         client: _i.get(instanceName: dioClientName),
       ),
     );
@@ -181,8 +181,8 @@ class DI {
     );
 
     // Repositories
-    _i.registerLazySingleton<CryptocurrencyRepository>(
-      () => CryptocurrencyRepositoryImpl(remote: _i()),
+    _i.registerLazySingleton<DashboardCryptocurrencyRepository>(
+      () => DashboardCryptocurrencyRepositoryImpl(remote: _i()),
     );
     _i.registerLazySingleton<DashboardLocalRepository>(
       () => DashboardLocalRepositoryImpl(local: _i()),
