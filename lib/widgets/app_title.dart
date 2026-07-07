@@ -22,8 +22,8 @@ class AppTitle extends StatelessWidget {
             spacing: 8,
             children: [
               if (context.canPop())
-                AppIconButton(
-                  icon: Icon(Icons.arrow_back_ios_new),
+                AppIconButton.icon(
+                  icon: Icons.arrow_back_ios_new,
                   onPressed: () => context.pop(),
                 ),
               AppText(

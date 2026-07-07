@@ -24,8 +24,13 @@ class AppThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setMode(ThemeMode mode) async {
-    _mode = mode;
+  Future<void> setMode(int modeIndex) async {
+    if (!(modeIndex >= 0 && modeIndex <= (ThemeMode.values.length - 1)) ||
+        _mode.index == modeIndex) {
+      return;
+    }
+
+    _mode = ThemeMode.values[modeIndex];
     notifyListeners();
     await storage.setInt('themeMode', mode.index);
   }

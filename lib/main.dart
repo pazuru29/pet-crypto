@@ -64,13 +64,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late final AuthCubit authCubit;
   late final AppRouter appRouter;
-  late final S localeProvider;
-  late final AppThemeProvider themeProvider;
 
   @override
   void initState() {
-    localeProvider = context.read<S>();
-    themeProvider = context.read<AppThemeProvider>();
     authCubit = DI.get<AuthCubit>();
     appRouter = DI.get<AppRouter>();
     super.initState();
@@ -78,6 +74,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = context.watch<S>();
+    final themeProvider = context.watch<AppThemeProvider>();
+
     return BlocProvider<AuthCubit>.value(
       value: authCubit,
       child: MaterialApp.router(

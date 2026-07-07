@@ -58,7 +58,9 @@ class AppRouter {
         name: AppRoutes.profile.routeName,
         builder: (context, state) => BlocProvider(
           create: (context) => dependencies.createProfileBloc(),
-          child: ProfileScreen(),
+          child: ProfileScreen(
+            initUserImage: state.uri.queryParameters['initUserImage'],
+          ),
         ),
       ),
     ],

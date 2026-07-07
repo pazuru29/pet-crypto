@@ -32,21 +32,27 @@ class S extends ChangeNotifier {
   Locale get locale => _locale;
 
   void init() {
-    final currentLang = storage.getString(_localeKey) ?? Platform.localeName;
+    final currentLang =
+        storage.getString(_localeKey) ??
+        Platform.localeName.split(RegExp('[-_]')).first;
     if (supportedLocales.containsKey(currentLang)) {
       _locale = Locale(currentLang);
     } else {
       _locale = Locale('en');
     }
+    notifyListeners();
   }
 
   Future<void> setLocale(String lang) async {
     String lowerLeng = lang.toLowerCase();
     Locale nextLocale = Locale(lowerLeng);
-    if (supportedLocales.containsKey(lowerLeng) && nextLocale != _locale) {
-      _locale = nextLocale;
-      notifyListeners();
-      await storage.setString(_localeKey, lowerLeng);
+
+    if (!supportedLocales.containsKey(lowerLeng) || nextLocale == _locale) {
+      return;
     }
+
+    _locale = nextLocale;
+    notifyListeners();
+    await storage.setString(_localeKey, lowerLeng);
   }
 }

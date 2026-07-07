@@ -37,6 +37,11 @@ import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_loca
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_cryptocurrency.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_user_image.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
+import 'package:pet_crypto/features/profile/data/datasources/profile_datasource.dart';
+import 'package:pet_crypto/features/profile/data/datasources/profile_datasource_impl.dart';
+import 'package:pet_crypto/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:pet_crypto/features/profile/domain/repositories/profile_repository.dart';
+import 'package:pet_crypto/features/profile/domain/usecases/profile_get_data.dart';
 import 'package:pet_crypto/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -128,7 +133,7 @@ class DI {
     );
     _i.registerLazySingleton<AuthLogoutUser>(() => AuthLogoutUser(repo: _i()));
 
-    // Auth Cubit
+    // Cubit
     _i.registerLazySingleton<AuthCubit>(
       () => AuthCubit(
         authStatus: _i(),
@@ -178,7 +183,7 @@ class DI {
       () => DashboardLocalRepositoryImpl(local: _i()),
     );
 
-    // Init UseCases
+    // UseCases
     _i.registerLazySingleton<DashboardGetCryptocurrency>(
       () => DashboardGetCryptocurrency(repo: _i()),
     );
@@ -186,13 +191,27 @@ class DI {
       () => DashboardGetUserImage(repo: _i()),
     );
 
-    // Init Bloc
+    // Bloc
     _i.registerFactory<DashboardBloc>(
       () => DashboardBloc(getCryptocurrency: _i(), getUserImage: _i()),
     );
   }
 
   static Future<void> _registerProfileDependencies() async {
-    _i.registerFactory<ProfileBloc>(() => ProfileBloc());
+    // DataSources
+    _i.registerLazySingleton<ProfileDatasource>(
+      () => ProfileDatasourceImpl(preferencesStorage: _i()),
+    );
+
+    // Repositories
+    _i.registerLazySingleton<ProfileRepository>(
+      () => ProfileRepositoryImpl(local: _i()),
+    );
+
+    // UseCases
+    _i.registerLazySingleton<ProfileGetData>(() => ProfileGetData(repo: _i()));
+
+    // Bloc
+    _i.registerFactory<ProfileBloc>(() => ProfileBloc(profileGetData: _i()));
   }
 }

@@ -34,6 +34,7 @@ dependencies:
   # UI
   shimmer_animation: ^2.2.2+1
   cached_network_image: ^3.4.1
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -47,3 +48,5 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+  assets:
+    - assets/
