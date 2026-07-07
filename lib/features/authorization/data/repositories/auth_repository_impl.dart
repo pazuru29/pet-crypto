@@ -92,10 +92,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return Ok(session.toEntity());
     } on ParsingException {
       return Err(ParsingFailure('Failed to process session data'));
-    } on StorageException catch (e) {
-      return Err(StorageFailure(e.message));
     } catch (e) {
-      return Err(StorageFailure('Failed to restore session'));
+      return Err(UnexpectedFailure('Failed to restore session'));
     }
   }
 
@@ -105,7 +103,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await local.clearSession();
       return const Ok(null);
     } catch (e) {
-      return Err(StorageFailure('Failed to clear session'));
+      return Err(UnexpectedFailure('Failed to clear session'));
     }
   }
 }
