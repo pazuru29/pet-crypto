@@ -2,16 +2,16 @@ import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
 
-class RefreshToken {
+class AuthLogoutUser {
   final AuthRepository repo;
 
-  RefreshToken({required this.repo});
+  const AuthLogoutUser({required this.repo});
 
   Future<Result<AuthStatus>> call() async {
-    Result<void> response = await repo.refreshToken();
+    final response = await repo.clearSession();
     switch (response) {
       case Ok():
-        return Ok(.authorized);
+        return Ok(.unauthorized);
       case Err(failure: final error):
         return Err(error);
     }

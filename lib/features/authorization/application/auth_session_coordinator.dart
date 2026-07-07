@@ -3,16 +3,16 @@ import 'package:pet_crypto/core/application/session_scope_controller.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/check_auth_status.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/login_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/logout_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/refresh_token.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 
 class AuthSessionCoordinator {
-  final CheckAuthStatus checkAuthStatus;
-  final LoginUser loginUser;
-  final LogoutUser logoutUser;
-  final RefreshToken refreshToken;
+  final AuthCheckStatus checkAuthStatus;
+  final AuthLoginUser loginUser;
+  final AuthLogoutUser logoutUser;
+  final AuthRefreshToken refreshToken;
   final SessionScopeController sessionScopeController;
 
   const AuthSessionCoordinator({

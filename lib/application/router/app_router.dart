@@ -50,9 +50,7 @@ class AppRouter {
         name: AppRoutes.dashboard.routeName,
         builder: (context, state) => BlocProvider(
           create: (context) => dependencies.createDashboardBloc(),
-          child: DashboardScreen(
-            profileImage: dependencies.authCubit.state.authSession?.image,
-          ),
+          child: DashboardScreen(),
         ),
       ),
       GoRoute(

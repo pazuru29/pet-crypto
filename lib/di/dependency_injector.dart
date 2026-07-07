@@ -24,16 +24,21 @@ import 'package:pet_crypto/features/authorization/data/datasources/auth_local_da
 import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource_impl.dart';
 import 'package:pet_crypto/features/authorization/data/repositories/auth_repository_impl.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/check_auth_status.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/login_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/logout_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/refresh_token.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource.dart';
 import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource_impl.dart';
+import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_local_datasource.dart';
+import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_local_datasource_impl.dart';
 import 'package:pet_crypto/features/dashboard/data/repositories/cryptocurrency_repository_impl.dart';
+import 'package:pet_crypto/features/dashboard/data/repositories/dashboard_local_repository_impl.dart';
 import 'package:pet_crypto/features/dashboard/domain/repositories/cryptocurrency_repository.dart';
-import 'package:pet_crypto/features/dashboard/domain/usecases/get_cryptocurrency.dart';
+import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_local_repository.dart';
+import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_cryptocurrency.dart';
+import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_user_image.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,11 +54,11 @@ class DI {
   static Future<void> init() async {
     String dioClientName = 'AuthDioClientImpl';
 
-    // Init Helper
+    // Helper
     AuthDioHelper httpHelper = AuthDioHelper();
     await httpHelper.init();
 
-    // Remote Datasource
+    // Dio
     Dio dio = Dio(httpHelper.options)
       ..interceptors.addAll([LoggingInterceptor()]);
 
@@ -61,11 +66,13 @@ class DI {
       () => DioClientImpl(dio: dio),
       instanceName: dioClientName,
     );
+
+    // Remote DataSources
     _i.registerLazySingleton<AuthDatasource>(
       () => AuthDatasourceImpl(client: _i.get(instanceName: dioClientName)),
     );
 
-    // Local Datasource
+    // Local DataSources
     final secureStorage = const FlutterSecureStorage();
     final preferencesStorage = await SharedPreferences.getInstance();
 
@@ -82,26 +89,28 @@ class DI {
       ),
     );
 
-    // Init Localization
+    // Localization
     _i.registerLazySingleton<S>(() => S(storage: _i()));
 
-    // Init Theme
+    // Theme
     _i.registerLazySingleton<AppThemeProvider>(
       () => AppThemeProvider(storage: _i()),
     );
 
-    // Auth Repository
+    // Repositories
     _i.registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(remote: _i(), local: _i()),
     );
 
     // UseCases
-    _i.registerLazySingleton<LoginUser>(() => LoginUser(repo: _i()));
-    _i.registerLazySingleton<RefreshToken>(() => RefreshToken(repo: _i()));
-    _i.registerLazySingleton<CheckAuthStatus>(
-      () => CheckAuthStatus(repo: _i()),
+    _i.registerLazySingleton<AuthLoginUser>(() => AuthLoginUser(repo: _i()));
+    _i.registerLazySingleton<AuthRefreshToken>(
+      () => AuthRefreshToken(repo: _i()),
     );
-    _i.registerLazySingleton<LogoutUser>(() => LogoutUser(repo: _i()));
+    _i.registerLazySingleton<AuthCheckStatus>(
+      () => AuthCheckStatus(repo: _i()),
+    );
+    _i.registerLazySingleton<AuthLogoutUser>(() => AuthLogoutUser(repo: _i()));
 
     // Auth Coordinator
     _i.registerLazySingleton<SessionScopeController>(
@@ -123,7 +132,7 @@ class DI {
     // Auth Cubit
     _i.registerLazySingleton<AuthCubit>(() => AuthCubit(coordinator: _i()));
 
-    // Init App Router
+    // App Router
     _i.registerLazySingleton<AppRouter>(
       () => AppRouter(
         dependencies: AppRouterDependencies(
@@ -143,11 +152,11 @@ class DI {
 
     _i.pushNewScope(scopeName: _userScopeName);
 
-    // Init Helper
+    // Helper
     UserDioHelper httpHelper = UserDioHelper();
     await httpHelper.init();
 
-    // Create Dio
+    // Dio
     Dio dio = Dio(httpHelper.options)
       ..interceptors.addAll([
         ApiInterceptor(apiKey: httpHelper.apiKey),
@@ -158,18 +167,39 @@ class DI {
       () => DioClientImpl(dio: dio),
       instanceName: dioClientName,
     );
+
+    // Remote DataSources
     _i.registerLazySingleton<CryptocurrencyDataSource>(
       () => CryptocurrencyDatasourceImpl(
         client: _i.get(instanceName: dioClientName),
       ),
     );
+
+    // Local DataSources
+    _i.registerLazySingleton<DashboardLocalDatasource>(
+      () => DashboardLocalDatasourceImpl(preferencesStorage: _i()),
+    );
+
+    // Repositories
     _i.registerLazySingleton<CryptocurrencyRepository>(
       () => CryptocurrencyRepositoryImpl(remote: _i()),
     );
-    _i.registerLazySingleton<GetCryptocurrency>(
-      () => GetCryptocurrency(repo: _i()),
+    _i.registerLazySingleton<DashboardLocalRepository>(
+      () => DashboardLocalRepositoryImpl(local: _i()),
     );
-    _i.registerFactory<DashboardBloc>(() => DashboardBloc(_i()));
+
+    // Init UseCases
+    _i.registerLazySingleton<DashboardGetCryptocurrency>(
+      () => DashboardGetCryptocurrency(repo: _i()),
+    );
+    _i.registerLazySingleton<DashboardGetUserImage>(
+      () => DashboardGetUserImage(repo: _i()),
+    );
+
+    // Init Bloc
+    _i.registerFactory<DashboardBloc>(
+      () => DashboardBloc(getCryptocurrency: _i(), getUserImage: _i()),
+    );
   }
 
   static Future<void> disposeUserScope() async {

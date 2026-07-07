@@ -12,9 +12,7 @@ class ProfileScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           crossAxisAlignment: .start,
-          children: [
-            AppTitle(title: S.of(context).profileTitle),
-          ],
+          children: [AppTitle(title: S.of(context).profileTitle)],
         ),
       ),
     );

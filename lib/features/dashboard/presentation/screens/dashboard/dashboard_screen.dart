@@ -11,9 +11,7 @@ import 'package:pet_crypto/widgets/app_text.dart';
 import 'package:pet_crypto/widgets/app_title_profile.dart';
 
 class DashboardScreen extends StatefulWidget {
-  final String? profileImage;
-
-  const DashboardScreen({super.key, required this.profileImage});
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -34,64 +32,60 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: Column(
-          mainAxisSize: .min,
-          crossAxisAlignment: .end,
-          children: [
-            AppTitleProfile(
-              title: S.of(context).dashboardTitle,
-              imageUrl: widget.profileImage,
-            ),
-            BlocConsumer<DashboardBloc, DashboardState>(
-              listener: (context, state) {
-                if (state.alertMessage != null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: AppText(
-                        text: state.alertMessage!.text,
-                        textStyle: .bodySemibold,
-                        textColor: state.alertMessage!.type.foregroundColor(
-                          context,
-                        ),
-                      ),
-                      backgroundColor: state.alertMessage!.type.backgroundColor(
-                        context,
-                      ),
+        child: BlocConsumer<DashboardBloc, DashboardState>(
+          listener: (context, state) {
+            if (state.alertMessage != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: AppText(
+                    text: state.alertMessage!.text,
+                    textStyle: .bodySemibold,
+                    textColor: state.alertMessage!.type.foregroundColor(
+                      context,
                     ),
-                  );
-                }
-              },
-              builder: (context, state) {
-                switch (state.status) {
-                  case .initial:
-                  case .loading:
-                    return Flexible(child: const DashboardLoadingView());
-                  case .error:
-                    return Flexible(
-                      child: DashboardErrorView(
-                        message: state.errorMessage,
-                        onTryAgain: () {
-                          _dashboardBloc.add(DashboardInitEvent());
-                        },
-                      ),
-                    );
-                  case .loaded:
-                    if (state.listOfCrypto.isEmpty) {
-                      return Flexible(child: DashboardEmptyView());
-                    }
-
-                    return Flexible(
-                      child: CryptocurrencyList(
-                        listOfCrypto: state.listOfCrypto,
-                        onRefresh: () async {
-                          _dashboardBloc.add(DashboardRefreshDataEvent());
-                        },
-                      ),
-                    );
-                }
-              },
-            ),
-          ],
+                  ),
+                  backgroundColor: state.alertMessage!.type.backgroundColor(
+                    context,
+                  ),
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              crossAxisAlignment: .start,
+              children: [
+                AppTitleProfile(
+                  title: S.of(context).dashboardTitle,
+                  imageUrl: state.userImage,
+                  placeHolder:
+                      state.status == .loaded && state.userImage == null,
+                ),
+                if (state.status == .initial || state.status == .loading)
+                  Flexible(child: const DashboardLoadingView()),
+                if (state.status == .error)
+                  Flexible(
+                    child: DashboardErrorView(
+                      message: state.errorMessage,
+                      onTryAgain: () {
+                        _dashboardBloc.add(DashboardInitEvent());
+                      },
+                    ),
+                  ),
+                if (state.status == .loaded && state.listOfCrypto.isEmpty)
+                  Flexible(child: DashboardEmptyView()),
+                if (state.status == .loaded && state.listOfCrypto.isNotEmpty)
+                  Flexible(
+                    child: CryptocurrencyList(
+                      listOfCrypto: state.listOfCrypto,
+                      onRefresh: () async {
+                        _dashboardBloc.add(DashboardRefreshDataEvent());
+                      },
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
       ),
     );

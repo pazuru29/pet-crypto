@@ -8,15 +8,19 @@ import 'package:shimmer_animation/shimmer_animation.dart';
 class AppTitleProfile extends StatelessWidget {
   final String title;
   final String? imageUrl;
+  final bool placeHolder;
 
   const AppTitleProfile({
     super.key,
     required this.title,
     required this.imageUrl,
+    this.placeHolder = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return AppTitle(
       title: title,
       child: InkWell(
@@ -27,16 +31,20 @@ class AppTitleProfile extends StatelessWidget {
           height: 40,
           decoration: BoxDecoration(
             borderRadius: .circular(100),
-            color: Colors.grey.shade300,
+            color: colorScheme.primaryContainer,
           ),
           child: ClipRRect(
             borderRadius: .circular(100),
-            child: imageUrl == null
+            child: placeHolder
+                ? Icon(Icons.person, color: colorScheme.primary)
+                : imageUrl == null
                 ? const _LoadingProfileImage()
                 : CachedNetworkImage(
                     imageUrl: imageUrl!,
+                    fit: .contain,
                     placeholder: (context, url) => const _LoadingProfileImage(),
-                    errorWidget: (context, url, error) => Icon(Icons.person),
+                    errorWidget: (context, url, error) =>
+                        Icon(Icons.person, color: colorScheme.primary),
                   ),
           ),
         ),
