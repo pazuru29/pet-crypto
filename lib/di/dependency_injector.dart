@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pet_crypto/application/localization/s.dart';
+import 'package:pet_crypto/application/router/app_router.dart';
+import 'package:pet_crypto/application/router/app_router_dependencies.dart';
 import 'package:pet_crypto/application/theme/app_theme_provider.dart';
 import 'package:pet_crypto/core/network/http_client/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
@@ -120,6 +122,16 @@ class DI {
 
     // Auth Cubit
     _i.registerLazySingleton<AuthCubit>(() => AuthCubit(coordinator: _i()));
+
+    // Init App Router
+    _i.registerLazySingleton<AppRouter>(
+      () => AppRouter(
+        dependencies: AppRouterDependencies(
+          authCubit: _i(),
+          createDashboardBloc: () => _i(),
+        ),
+      ),
+    );
   }
 
   static Future<void> initUserScope() async {

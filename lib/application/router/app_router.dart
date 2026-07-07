@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pet_crypto/application/router/app_router_dependencies.dart';
 import 'package:pet_crypto/application/router/app_routes.dart';
 import 'package:pet_crypto/application/router/go_router_refresh_stream.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
-import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/auth_gate/auth_gate_screen.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/login/login_screen.dart';
-import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_screen.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/profile_screen.dart';
 
 class AppRouter {
-  final AuthCubit authCubit;
-  final DashboardBloc Function() createDashboardBloc;
+  final AppRouterDependencies dependencies;
 
-  AppRouter({required this.authCubit, required this.createDashboardBloc});
+  AppRouter({required this.dependencies});
 
   late final GoRouter router = GoRouter(
     initialLocation: AppRoutes.authGate.path,
-    refreshListenable: GoRouterRefreshStream(authCubit.stream),
+    refreshListenable: GoRouterRefreshStream(dependencies.authCubit.stream),
     routes: [
       GoRoute(
         path: AppRoutes.authGate.path,
@@ -51,9 +49,9 @@ class AppRouter {
         path: AppRoutes.dashboard.path,
         name: AppRoutes.dashboard.routeName,
         builder: (context, state) => BlocProvider(
-          create: (context) => createDashboardBloc(),
+          create: (context) => dependencies.createDashboardBloc(),
           child: DashboardScreen(
-            profileImage: authCubit.state.authSession?.image,
+            profileImage: dependencies.authCubit.state.authSession?.image,
           ),
         ),
       ),
@@ -64,7 +62,7 @@ class AppRouter {
       ),
     ],
     redirect: (context, state) {
-      final authState = authCubit.state;
+      final authState = dependencies.authCubit.state;
       final location = state.matchedLocation;
 
       final isAuthGate = location == AppRoutes.authGate.path;

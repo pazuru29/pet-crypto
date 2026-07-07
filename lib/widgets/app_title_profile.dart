@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_crypto/application/router/app_routes.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AppTitleProfile extends StatelessWidget {
   final String title;
@@ -31,14 +32,29 @@ class AppTitleProfile extends StatelessWidget {
           child: ClipRRect(
             borderRadius: .circular(100),
             child: imageUrl == null
-                ? CircularProgressIndicator()
+                ? const _LoadingProfileImage()
                 : CachedNetworkImage(
                     imageUrl: imageUrl!,
-                    placeholder: (context, url) => CircularProgressIndicator(),
+                    placeholder: (context, url) => const _LoadingProfileImage(),
                     errorWidget: (context, url, error) => Icon(Icons.person),
                   ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LoadingProfileImage extends StatelessWidget {
+  const _LoadingProfileImage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer(
+      child: Container(
+        height: 40,
+        width: 40,
+        decoration: BoxDecoration(color: Colors.grey.shade300),
       ),
     );
   }

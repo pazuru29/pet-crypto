@@ -11,7 +11,6 @@ import 'package:pet_crypto/core/util/bloc/observers/app_bloc_observer.dart';
 import 'package:pet_crypto/core/util/log.dart';
 import 'package:pet_crypto/di/dependency_injector.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
-import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -73,10 +72,7 @@ class _MyAppState extends State<MyApp> {
     localeProvider = context.read<S>();
     themeProvider = context.read<AppThemeProvider>();
     authCubit = DI.get<AuthCubit>();
-    appRouter = AppRouter(
-      authCubit: authCubit,
-      createDashboardBloc: () => DI.get<DashboardBloc>(),
-    );
+    appRouter = DI.get<AppRouter>();
     super.initState();
   }
 
