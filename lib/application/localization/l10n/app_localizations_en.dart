@@ -18,12 +18,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileTitle => 'Profile';
 
   @override
-  String cryptoTitle(String name, String symbol) {
+  String dashboardCryptoTitle(String name, String symbol) {
     return '$name ($symbol)';
   }
 
   @override
-  String priceCrypto(String currencyCode, double value) {
+  String dashboardPriceCrypto(String currencyCode, double value) {
     return '$currencyCode: $value';
   }
+
+  @override
+  String get profileTheme => 'Theme';
+
+  @override
+  String get profileLocalization => 'Localization';
+
+  @override
+  String get profileLogout => 'Logout';
 }

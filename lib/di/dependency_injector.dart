@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pet_crypto/application/app_settings_controller.dart';
 import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/application/router/app_router.dart';
 import 'package:pet_crypto/application/router/app_router_dependencies.dart';
@@ -208,10 +209,17 @@ class DI {
       () => ProfileRepositoryImpl(local: _i()),
     );
 
+    // AppSettingsController
+    _i.registerLazySingleton<AppSettingsController>(
+      () => AppSettingsController(themeProvider: _i(), localeProvider: _i()),
+    );
+
     // UseCases
     _i.registerLazySingleton<ProfileGetData>(() => ProfileGetData(repo: _i()));
 
     // Bloc
-    _i.registerFactory<ProfileBloc>(() => ProfileBloc(profileGetData: _i()));
+    _i.registerFactory<ProfileBloc>(
+      () => ProfileBloc(profileGetData: _i(), appSettingsController: _i()),
+    );
   }
 }

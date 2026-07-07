@@ -31,14 +31,19 @@ class DashboardCryptocurrencyList extends StatelessWidget {
                 spacing: 8,
                 children: [
                   AppText(
-                    text: S.of(context).cryptoTitle(item.name, item.symbol),
+                    text: S
+                        .of(context)
+                        .dashboardCryptoTitle(item.name, item.symbol),
                     textStyle: .headerBold,
                   ),
                   for (final price in item.prices)
                     AppText(
                       text: S
                           .of(context)
-                          .priceCrypto(price.currencyCode, price.amount),
+                          .dashboardPriceCrypto(
+                            price.currencyCode,
+                            price.amount,
+                          ),
                       textStyle: .bodyRegular,
                     ),
                 ],

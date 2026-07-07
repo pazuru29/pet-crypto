@@ -2,6 +2,9 @@
   "appTitle": "Pet Crypto",
   "dashboardTitle": "Дашборд",
   "profileTitle": "Профиль",
-  "cryptoTitle": "{name} ({symbol})",
-  "priceCrypto": "{currencyCode}: {value}"
+  "dashboardCryptoTitle": "{name} ({symbol})",
+  "dashboardPriceCrypto": "{currencyCode}: {value}",
+  "profileTheme": "Тема",
+  "profileLocalization": "Локализация",
+  "profileLogout": "Выйти"
 }

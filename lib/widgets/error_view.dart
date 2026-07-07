@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:pet_crypto/widgets/app_button.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 
-class DashboardErrorView extends StatelessWidget {
+class ErrorView extends StatelessWidget {
   final String? message;
   final VoidCallback onTryAgain;
 
-  const DashboardErrorView({
-    super.key,
-    required this.onTryAgain,
-    required this.message,
-  });
+  const ErrorView({super.key, required this.message, required this.onTryAgain});
 
   @override
   Widget build(BuildContext context) {

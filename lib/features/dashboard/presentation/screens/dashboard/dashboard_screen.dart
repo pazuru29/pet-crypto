@@ -5,10 +5,10 @@ import 'package:pet_crypto/core/ui/bloc_message_colors.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_cryptocurrency_list.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_empty_view.dart';
-import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_error_view.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_loading_view.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 import 'package:pet_crypto/widgets/app_title_profile.dart';
+import 'package:pet_crypto/widgets/error_view.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -65,7 +65,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Flexible(child: const DashboardLoadingView()),
                 if (state.status == .error)
                   Flexible(
-                    child: DashboardErrorView(
+                    child: ErrorView(
                       message: state.errorMessage,
                       onTryAgain: () {
                         _dashboardBloc.add(DashboardInitEvent());

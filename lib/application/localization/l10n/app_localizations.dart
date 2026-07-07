@@ -120,13 +120,31 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{name} ({symbol})'**
-  String cryptoTitle(String name, String symbol);
+  String dashboardCryptoTitle(String name, String symbol);
 
   /// Price of crypto
   ///
   /// In en, this message translates to:
   /// **'{currencyCode}: {value}'**
-  String priceCrypto(String currencyCode, double value);
+  String dashboardPriceCrypto(String currencyCode, double value);
+
+  /// Title of theme mode block
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get profileTheme;
+
+  /// Title of localization block
+  ///
+  /// In en, this message translates to:
+  /// **'Localization'**
+  String get profileLocalization;
+
+  /// Logout button text
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get profileLogout;
 }
 
 class _AppLocalizationsDelegate

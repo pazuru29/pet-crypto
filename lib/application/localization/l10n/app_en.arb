@@ -11,8 +11,8 @@
   "@profileTitle": {
     "description": "Profile Title"
   },
-  "cryptoTitle": "{name} ({symbol})",
-  "@cryptoTitle": {
+  "dashboardCryptoTitle": "{name} ({symbol})",
+  "@dashboardCryptoTitle": {
     "description": "Title of crypto",
     "placeholders": {
       "name": {
@@ -25,8 +25,8 @@
       }
     }
   },
-  "priceCrypto": "{currencyCode}: {value}",
-  "@priceCrypto": {
+  "dashboardPriceCrypto": "{currencyCode}: {value}",
+  "@dashboardPriceCrypto": {
     "description": "Price of crypto",
     "placeholders": {
       "currencyCode": {
@@ -38,5 +38,17 @@
         "example": "1.1"
       }
     }
+  },
+  "profileTheme": "Theme",
+  "@profileTheme": {
+    "description": "Title of theme mode block"
+  },
+  "profileLocalization": "Localization",
+  "@profileLocalization": {
+    "description": "Title of localization block"
+  },
+  "profileLogout": "Logout",
+  "@profileLogout": {
+    "description": "Logout button text"
   }
 }
