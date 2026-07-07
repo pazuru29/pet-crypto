@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pet_crypto/core/router/app_routes.dart';
-import 'package:pet_crypto/core/router/go_router_refresh_stream.dart';
+import 'package:pet_crypto/application/router/app_routes.dart';
+import 'package:pet_crypto/application/router/go_router_refresh_stream.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/auth_gate/auth_gate_screen.dart';

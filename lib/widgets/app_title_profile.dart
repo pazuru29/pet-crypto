@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pet_crypto/core/router/app_routes.dart';
+import 'package:pet_crypto/application/router/app_routes.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
 
 class AppTitleProfile extends StatelessWidget {

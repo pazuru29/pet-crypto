@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:pet_crypto/core/localization/l10n/app_localizations.dart';
+import 'package:pet_crypto/application/localization/l10n/app_localizations.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class S extends ChangeNotifier {

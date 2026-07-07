@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pet_crypto/core/localization/provider/s.dart';
+import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/core/ui/bloc_message_colors.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/cryptocurrency_list.dart';

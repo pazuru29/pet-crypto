@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pet_crypto/core/localization/provider/s.dart';
+import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/cryptocurrency.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 

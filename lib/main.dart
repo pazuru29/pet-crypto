@@ -4,16 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
-import 'package:pet_crypto/app/router/app_router.dart';
-import 'package:pet_crypto/core/theme/app_theme_provider.dart';
+import 'package:pet_crypto/application/localization/s.dart';
+import 'package:pet_crypto/application/router/app_router.dart';
+import 'package:pet_crypto/application/theme/app_theme_provider.dart';
 import 'package:pet_crypto/core/util/bloc/observers/app_bloc_observer.dart';
 import 'package:pet_crypto/core/util/log.dart';
 import 'package:pet_crypto/di/dependency_injector.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:provider/provider.dart';
-
-import 'core/localization/provider/s.dart';
 
 void main() {
   runZonedGuarded(
