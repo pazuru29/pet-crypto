@@ -7,17 +7,14 @@ import 'package:pet_crypto/application/router/app_router_dependencies.dart';
 import 'package:pet_crypto/application/theme/app_theme_provider.dart';
 import 'package:pet_crypto/core/network/http_client/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
+import 'package:pet_crypto/core/network/http_client/dashboard_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
-import 'package:pet_crypto/core/network/http_client/user_dio_helper.dart';
-import 'package:pet_crypto/core/network/interceptors/api_interceptor.dart';
+import 'package:pet_crypto/core/network/interceptors/dashboard_api_interceptor.dart';
 import 'package:pet_crypto/core/network/interceptors/logging_interceptor.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/storage/preferences_storage_impl.dart';
 import 'package:pet_crypto/core/storage/secure_storage.dart';
 import 'package:pet_crypto/core/storage/secure_storage_impl.dart';
-import 'package:pet_crypto/features/authorization/application/auth_session_coordinator.dart';
-import 'package:pet_crypto/core/application/session_scope_controller.dart';
-import 'package:pet_crypto/di/user_session_controller.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
@@ -40,10 +37,10 @@ import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_loca
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_cryptocurrency.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_user_image.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
+import 'package:pet_crypto/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GetIt _i = GetIt.instance;
-const String _userScopeName = 'user';
 
 class DI {
   DI._();
@@ -52,6 +49,42 @@ class DI {
       _i<T>(instanceName: instanceName);
 
   static Future<void> init() async {
+    // Local Storages
+    final secureStorage = const FlutterSecureStorage();
+    final preferencesStorage = await SharedPreferences.getInstance();
+
+    _i.registerLazySingleton<SecureStorage>(
+      () => SecureStorageImpl(storage: secureStorage),
+    );
+    _i.registerLazySingleton<PreferencesStorage>(
+      () => PreferencesStorageImpl(storage: preferencesStorage),
+    );
+
+    // Localization
+    _i.registerLazySingleton<S>(() => S(storage: _i()));
+
+    // Theme
+    _i.registerLazySingleton<AppThemeProvider>(
+      () => AppThemeProvider(storage: _i()),
+    );
+
+    await _registerAuthDependencies();
+    await _registerDashboardDependencies();
+    await _registerProfileDependencies();
+
+    // App Router
+    _i.registerLazySingleton<AppRouter>(
+      () => AppRouter(
+        dependencies: AppRouterDependencies(
+          authCubit: _i(),
+          createDashboardBloc: () => _i(),
+          createProfileBloc: () => _i(),
+        ),
+      ),
+    );
+  }
+
+  static Future<void> _registerAuthDependencies() async {
     String dioClientName = 'AuthDioClientImpl';
 
     // Helper
@@ -73,28 +106,11 @@ class DI {
     );
 
     // Local DataSources
-    final secureStorage = const FlutterSecureStorage();
-    final preferencesStorage = await SharedPreferences.getInstance();
-
-    _i.registerLazySingleton<SecureStorage>(
-      () => SecureStorageImpl(storage: secureStorage),
-    );
-    _i.registerLazySingleton<PreferencesStorage>(
-      () => PreferencesStorageImpl(storage: preferencesStorage),
-    );
     _i.registerLazySingleton<AuthLocalDatasource>(
       () => AuthLocalDatasourceImpl(
         secureStorage: _i(),
         preferencesStorage: _i(),
       ),
-    );
-
-    // Localization
-    _i.registerLazySingleton<S>(() => S(storage: _i()));
-
-    // Theme
-    _i.registerLazySingleton<AppThemeProvider>(
-      () => AppThemeProvider(storage: _i()),
     );
 
     // Repositories
@@ -112,54 +128,28 @@ class DI {
     );
     _i.registerLazySingleton<AuthLogoutUser>(() => AuthLogoutUser(repo: _i()));
 
-    // Auth Coordinator
-    _i.registerLazySingleton<SessionScopeController>(
-      () => UserSessionController(
-        init: DI.initUserScope,
-        dispose: DI.disposeUserScope,
-      ),
-    );
-    _i.registerLazySingleton<AuthSessionCoordinator>(
-      () => AuthSessionCoordinator(
-        checkAuthStatus: _i(),
+    // Auth Cubit
+    _i.registerLazySingleton<AuthCubit>(
+      () => AuthCubit(
+        authStatus: _i(),
         loginUser: _i(),
         logoutUser: _i(),
         refreshToken: _i(),
-        sessionScopeController: _i(),
-      ),
-    );
-
-    // Auth Cubit
-    _i.registerLazySingleton<AuthCubit>(() => AuthCubit(coordinator: _i()));
-
-    // App Router
-    _i.registerLazySingleton<AppRouter>(
-      () => AppRouter(
-        dependencies: AppRouterDependencies(
-          authCubit: _i(),
-          createDashboardBloc: () => _i(),
-        ),
       ),
     );
   }
 
-  static Future<void> initUserScope() async {
-    if (_i.hasScope(_userScopeName)) {
-      return;
-    }
-
-    String dioClientName = 'UserDioClientImpl';
-
-    _i.pushNewScope(scopeName: _userScopeName);
+  static Future<void> _registerDashboardDependencies() async {
+    String dioClientName = 'DashboardDioClientImpl';
 
     // Helper
-    UserDioHelper httpHelper = UserDioHelper();
+    DashboardDioHelper httpHelper = DashboardDioHelper();
     await httpHelper.init();
 
     // Dio
     Dio dio = Dio(httpHelper.options)
       ..interceptors.addAll([
-        ApiInterceptor(apiKey: httpHelper.apiKey),
+        DashboardApiInterceptor(apiKey: httpHelper.apiKey),
         LoggingInterceptor(),
       ]);
 
@@ -202,16 +192,7 @@ class DI {
     );
   }
 
-  static Future<void> disposeUserScope() async {
-    if (!_i.hasScope(_userScopeName)) {
-      return;
-    }
-
-    if (_i.currentScopeName == _userScopeName) {
-      await _i.popScope();
-      return;
-    }
-
-    await _i.dropScope(_userScopeName);
+  static Future<void> _registerProfileDependencies() async {
+    _i.registerFactory<ProfileBloc>(() => ProfileBloc());
   }
 }

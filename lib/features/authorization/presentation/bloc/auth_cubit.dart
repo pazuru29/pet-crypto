@@ -3,21 +3,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
-import 'package:pet_crypto/features/authorization/application/auth_session_coordinator.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
+import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({required this.coordinator}) : super(AuthState.initial());
+  AuthCubit({
+    required this.authStatus,
+    required this.loginUser,
+    required this.logoutUser,
+    required this.refreshToken,
+  }) : super(AuthState.initial());
 
-  final AuthSessionCoordinator coordinator;
+  final AuthCheckStatus authStatus;
+  final AuthLoginUser loginUser;
+  final AuthLogoutUser logoutUser;
+  final AuthRefreshToken refreshToken;
 
   void checkAuthStatus() async {
     emit(state.copyWith(status: .loading));
-    final response = await coordinator.restoreSession();
+    final response = await authStatus.call();
     switch (response) {
       case Ok(value: final session):
         if (session == null) {
@@ -33,7 +44,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void login(String login, String password) async {
     emit(state.copyWith(status: .loading));
-    final response = await coordinator.login(
+    final response = await loginUser.call(
       AuthRequest(login: login, password: password),
     );
 
@@ -47,7 +58,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void logout() async {
     emit(state.copyWith(status: .loading));
-    final response = await coordinator.logout();
+    final response = await logoutUser.call();
 
     switch (response) {
       case Ok(value: final status):
@@ -59,7 +70,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void refresh() async {
     emit(state.copyWith(status: .loading));
-    final response = await coordinator.refresh();
+    final response = await refreshToken.call();
 
     switch (response) {
       case Ok(value: final status):

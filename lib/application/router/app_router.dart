@@ -56,7 +56,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.profile.path,
         name: AppRoutes.profile.routeName,
-        builder: (context, state) => ProfileScreen(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => dependencies.createProfileBloc(),
+          child: ProfileScreen(),
+        ),
       ),
     ],
     redirect: (context, state) {
