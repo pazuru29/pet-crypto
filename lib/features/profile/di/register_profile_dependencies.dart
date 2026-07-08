@@ -1,7 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:pet_crypto/features/profile/data/datasources/profile_datasource.dart';
 import 'package:pet_crypto/features/profile/data/datasources/profile_datasource_impl.dart';
+import 'package:pet_crypto/application/repositories/app_settings_repository_impl.dart';
 import 'package:pet_crypto/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:pet_crypto/features/profile/domain/repositories/app_settings_repository.dart';
 import 'package:pet_crypto/features/profile/domain/repositories/profile_repository.dart';
 import 'package:pet_crypto/features/profile/domain/usecases/profile_change_locale.dart';
 import 'package:pet_crypto/features/profile/domain/usecases/profile_change_theme_mode.dart';
@@ -19,14 +21,17 @@ class RegisterProfileDependencies {
     i.registerLazySingleton<ProfileRepository>(
       () => ProfileRepositoryImpl(local: i()),
     );
+    i.registerLazySingleton<AppSettingsRepository>(
+      () => AppSettingsRepositoryImpl(localeProvider: i(), themeProvider: i()),
+    );
 
     // UseCases
     i.registerLazySingleton<ProfileGetData>(() => ProfileGetData(repo: i()));
     i.registerLazySingleton<ProfileChangeLocale>(
-      () => ProfileChangeLocale(localeProvider: i()),
+      () => ProfileChangeLocale(repo: i()),
     );
     i.registerLazySingleton<ProfileChangeThemeMode>(
-      () => ProfileChangeThemeMode(themeProvider: i()),
+      () => ProfileChangeThemeMode(repo: i()),
     );
 
     // Bloc

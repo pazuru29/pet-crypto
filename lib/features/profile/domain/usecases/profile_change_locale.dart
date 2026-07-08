@@ -1,11 +1,11 @@
-import 'package:pet_crypto/application/localization/s.dart';
+import 'package:pet_crypto/features/profile/domain/repositories/app_settings_repository.dart';
 
 class ProfileChangeLocale {
-  final S localeProvider;
+  final AppSettingsRepository repo;
 
-  const ProfileChangeLocale({required this.localeProvider});
+  const ProfileChangeLocale({required this.repo});
 
   Future<void> setLocale(String languageCode) async {
-    return await localeProvider.setLocale(languageCode);
+    return await repo.setLocale(languageCode);
   }
 }

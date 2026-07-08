@@ -1,13 +1,11 @@
-import 'package:pet_crypto/application/theme/app_theme_provider.dart';
+import 'package:pet_crypto/features/profile/domain/repositories/app_settings_repository.dart';
 
 class ProfileChangeThemeMode {
-  final AppThemeProvider themeProvider;
+  final AppSettingsRepository repo;
 
-  const ProfileChangeThemeMode({
-    required this.themeProvider,
-  });
+  const ProfileChangeThemeMode({required this.repo});
 
   Future<void> setThemeMode(int themeModeIndex) async {
-    return await themeProvider.setMode(themeModeIndex);
+    return await repo.setThemeMode(themeModeIndex);
   }
 }
