@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_crypto/application/router/app_routes.dart';
+import 'package:pet_crypto/core/util/app_hero_tags.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
 import 'package:pet_crypto/widgets/profile_image.dart';
 
@@ -29,7 +30,7 @@ class AppTitleProfile extends StatelessWidget {
           queryParameters: {'initUserImage': imageUrl},
         ),
         child: Hero(
-          tag: 'profileImage',
+          tag: AppHeroTags.profileImageTag,
           child: ProfileImage(
             height: 40,
             width: 40,

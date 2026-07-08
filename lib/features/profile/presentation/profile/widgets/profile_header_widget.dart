@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/core/util/app_hero_tags.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 import 'package:pet_crypto/widgets/profile_image.dart';
@@ -29,7 +30,7 @@ class ProfileHeaderWidget extends StatelessWidget {
         spacing: 8,
         children: [
           Hero(
-            tag: 'profileImage',
+            tag: AppHeroTags.profileImageTag,
             child: ProfileImage(
               height: 80,
               width: 80,

@@ -1,6 +1,7 @@
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/storage/secure_storage.dart';
+import 'package:pet_crypto/core/util/app_storage_keys.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_session_model.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_tokens_model.dart';
@@ -14,12 +15,6 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
     required this.preferencesStorage,
   });
 
-  static const _accessTokenKey = 'auth.accessToken';
-  static const _refreshTokenKey = 'auth.refreshToken';
-  static const _emailKey = 'auth.email';
-  static const _fullNameKey = 'auth.fullName';
-  static const _imageKey = 'auth.image';
-
   @override
   Future<AuthSessionModel?> getSession() async {
     final accessToken = await getAccessToken();
@@ -29,9 +24,9 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
       return null;
     }
 
-    final email = preferencesStorage.getString(_emailKey);
-    final fullName = preferencesStorage.getString(_fullNameKey);
-    final image = preferencesStorage.getString(_imageKey);
+    final email = preferencesStorage.getString(AppStorageKeys.emailKey);
+    final fullName = preferencesStorage.getString(AppStorageKeys.fullNameKey);
+    final image = preferencesStorage.getString(AppStorageKeys.imageKey);
 
     return AuthSessionModel(
       accessToken: accessToken,
@@ -44,12 +39,12 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
 
   @override
   Future<String?> getAccessToken() {
-    return secureStorage.read(_accessTokenKey);
+    return secureStorage.read(AppStorageKeys.accessTokenKey);
   }
 
   @override
   Future<String?> getRefreshToken() {
-    return secureStorage.read(_refreshTokenKey);
+    return secureStorage.read(AppStorageKeys.refreshTokenKey);
   }
 
   @override
@@ -65,28 +60,34 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
       throw StorageException('Refresh token is missing');
     }
 
-    await secureStorage.write(_accessTokenKey, accessToken);
-    await secureStorage.write(_refreshTokenKey, refreshToken);
+    await secureStorage.write(AppStorageKeys.accessTokenKey, accessToken);
+    await secureStorage.write(AppStorageKeys.refreshTokenKey, refreshToken);
 
-    await _setOptionalString(_emailKey, session.email);
-    await _setOptionalString(_fullNameKey, session.fullName);
-    await _setOptionalString(_imageKey, session.image);
+    await _setOptionalString(AppStorageKeys.emailKey, session.email);
+    await _setOptionalString(AppStorageKeys.fullNameKey, session.fullName);
+    await _setOptionalString(AppStorageKeys.imageKey, session.image);
   }
 
   @override
   Future<void> clearSession() async {
-    await secureStorage.delete(_accessTokenKey);
-    await secureStorage.delete(_refreshTokenKey);
+    await secureStorage.delete(AppStorageKeys.accessTokenKey);
+    await secureStorage.delete(AppStorageKeys.refreshTokenKey);
 
-    await preferencesStorage.remove(_emailKey);
-    await preferencesStorage.remove(_fullNameKey);
-    await preferencesStorage.remove(_imageKey);
+    await preferencesStorage.remove(AppStorageKeys.emailKey);
+    await preferencesStorage.remove(AppStorageKeys.fullNameKey);
+    await preferencesStorage.remove(AppStorageKeys.imageKey);
   }
 
   @override
   Future<void> saveTokens(AuthTokensModel tokens) async {
-    await secureStorage.write(_accessTokenKey, tokens.accessToken);
-    await secureStorage.write(_refreshTokenKey, tokens.refreshToken);
+    await secureStorage.write(
+      AppStorageKeys.accessTokenKey,
+      tokens.accessToken,
+    );
+    await secureStorage.write(
+      AppStorageKeys.refreshTokenKey,
+      tokens.refreshToken,
+    );
   }
 
   Future<void> _setOptionalString(String key, String? value) async {
