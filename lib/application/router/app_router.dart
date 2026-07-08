@@ -17,7 +17,7 @@ class AppRouter {
 
   late final GoRouter router = GoRouter(
     initialLocation: AppRoutes.authGate.path,
-    refreshListenable: GoRouterRefreshStream(dependencies.authCubit.stream),
+    refreshListenable: GoRouterRefreshStream(dependencies.authBloc.stream),
     routes: [
       GoRoute(
         path: AppRoutes.authGate.path,
@@ -65,7 +65,7 @@ class AppRouter {
       ),
     ],
     redirect: (context, state) {
-      final authState = dependencies.authCubit.state;
+      final authState = dependencies.authBloc.state;
       final location = state.matchedLocation;
 
       final isAuthGate = location == AppRoutes.authGate.path;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
+import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 import 'package:pet_crypto/widgets/app_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,11 +12,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  late AuthCubit _authCubit;
+  late AuthBloc _authCubit;
 
   @override
   void initState() {
-    _authCubit = context.read<AuthCubit>();
+    _authCubit = context.read<AuthBloc>();
     super.initState();
   }
 
@@ -29,7 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
             text: S.of(context).authorizationLogin,
             onPressed: () {
               //TODO
-              _authCubit.login('emilys', 'emilyspass');
+              _authCubit.add(
+                AuthLoginEvent(username: 'emilys', password: 'emilyspass'),
+              );
             },
           ),
         ),

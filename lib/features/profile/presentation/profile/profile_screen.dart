@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
+import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 import 'package:pet_crypto/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_header_widget.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_loading_view.dart';
@@ -40,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: .start,
           children: [
-            AppTitle(title: S.of(context).profileTitle),
+            AppTitle(title: S.of(context).profileTitle, secondary: true),
             Flexible(
               child: BlocBuilder<ProfileBloc, ProfileState>(
                 builder: (context, state) {
@@ -97,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               backgroundColor: colorScheme.error,
                               foregroundColor: colorScheme.errorContainer,
                               onPressed: () {
-                                context.read<AuthCubit>().logout();
+                                context.read<AuthBloc>().add(AuthLogoutEvent());
                               },
                             ),
                           ),

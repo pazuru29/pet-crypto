@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/core/result/result.dart';
@@ -11,64 +14,89 @@ import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_use
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 
+part 'auth_event.dart';
+
 part 'auth_state.dart';
 
-class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  AuthBloc({
     required this.authStatus,
     required this.loginUser,
     required this.logoutUser,
     required this.refreshToken,
-  }) : super(AuthState.initial());
+  }) : super(AuthState.initial()) {
+    on<AuthCheckEvent>(_authCheckEvent);
+    on<AuthLoginEvent>(_authLoginEvent, transformer: droppable());
+    on<AuthLogoutEvent>(_authLogoutEvent, transformer: droppable());
+    on<AuthRefreshTokenEvent>(_authRefreshTokenEvent, transformer: droppable());
+  }
 
   final AuthCheckStatus authStatus;
   final AuthLoginUser loginUser;
   final AuthLogoutUser logoutUser;
   final AuthRefreshToken refreshToken;
 
-  void checkAuthStatus() async {
+  FutureOr<void> _authCheckEvent(
+    AuthCheckEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(status: .loading));
     final response = await authStatus.call();
     switch (response) {
       case Ok(value: final session):
         if (session == null) {
-          await _unauthorize();
+          await _unauthorize(emit);
           return;
         }
 
-        await _authorize(session);
+        await _authorize(emit, session);
       case Err(failure: final error):
-        await _unauthorize(errorMessage: error.message);
+        await _unauthorize(emit, errorMessage: error.message);
     }
   }
 
-  void login(String login, String password) async {
+  FutureOr<void> _authLoginEvent(
+    AuthLoginEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(status: .loading));
     final response = await loginUser.call(
-      AuthRequest(login: login, password: password),
+      AuthRequest(login: event.username, password: event.password),
     );
 
     switch (response) {
       case Ok(value: final session):
-        await _authorize(session);
+        await _authorize(emit, session);
       case Err(failure: final error):
-        await _unauthorize(alertMessage: BlocMessage.error(error.message));
+        await _unauthorize(
+          emit,
+          alertMessage: BlocMessage.error(error.message),
+        );
     }
   }
 
-  void logout() async {
+  FutureOr<void> _authLogoutEvent(
+    AuthLogoutEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(status: .loading));
     final response = await logoutUser.call();
 
     switch (response) {
       case Ok(value: final status):
-        await _unauthorize(authStatus: status);
+        await _unauthorize(emit, authStatus: status);
       case Err(failure: final error):
-        await _unauthorize(alertMessage: BlocMessage.error(error.message));
+        await _unauthorize(
+          emit,
+          alertMessage: BlocMessage.error(error.message),
+        );
     }
   }
 
-  void refresh() async {
+  FutureOr<void> _authRefreshTokenEvent(
+    AuthRefreshTokenEvent event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(status: .loading));
     final response = await refreshToken.call();
 
@@ -76,15 +104,19 @@ class AuthCubit extends Cubit<AuthState> {
       case Ok(value: final status):
         emit(state.copyWith(status: .loaded, authStatus: status));
       case Err(failure: final error):
-        await _unauthorize(alertMessage: BlocMessage.error(error.message));
+        await _unauthorize(
+          emit,
+          alertMessage: BlocMessage.error(error.message),
+        );
     }
   }
 
-  Future<void> _authorize(AuthTokens session) async {
+  Future<void> _authorize(Emitter<AuthState> emit, AuthTokens session) async {
     emit(state.copyWith(status: .loaded, authStatus: .authorized));
   }
 
-  Future<void> _unauthorize({
+  Future<void> _unauthorize(
+    Emitter<AuthState> emit, {
     AuthStatus authStatus = AuthStatus.unauthorized,
     BlocMessage? alertMessage,
     String? errorMessage,

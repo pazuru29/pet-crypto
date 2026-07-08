@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
+import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 
 class AuthGateScreen extends StatefulWidget {
   const AuthGateScreen({super.key});
@@ -10,12 +10,12 @@ class AuthGateScreen extends StatefulWidget {
 }
 
 class _AuthGateScreenState extends State<AuthGateScreen> {
-  late AuthCubit _authCubit;
+  late AuthBloc _authCubit;
 
   @override
   void initState() {
-    _authCubit = context.read<AuthCubit>();
-    _authCubit.checkAuthStatus();
+    _authCubit = context.read<AuthBloc>();
+    _authCubit.add(AuthCheckEvent());
     super.initState();
   }
 

@@ -6,9 +6,15 @@ import 'package:pet_crypto/widgets/app_text.dart';
 
 class AppTitle extends StatelessWidget {
   final String title;
+  final bool secondary;
   final Widget? child;
 
-  const AppTitle({super.key, required this.title, this.child});
+  const AppTitle({
+    super.key,
+    required this.title,
+    this.secondary = false,
+    this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +27,7 @@ class AppTitle extends StatelessWidget {
             mainAxisSize: .min,
             spacing: 8,
             children: [
-              if (context.canPop())
+              if (secondary)
                 AppIconButton.icon(
                   icon: Icons.arrow_back_ios_new,
                   onPressed: () => context.pop(),

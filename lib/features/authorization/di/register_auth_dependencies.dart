@@ -14,7 +14,7 @@ import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_sta
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
-import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
+import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 
 class RegisterAuthDependencies {
   static Future<void> call(GetIt i) async {
@@ -57,8 +57,8 @@ class RegisterAuthDependencies {
     i.registerLazySingleton<AuthLogoutUser>(() => AuthLogoutUser(repo: i()));
 
     // Cubit
-    i.registerLazySingleton<AuthCubit>(
-      () => AuthCubit(
+    i.registerLazySingleton<AuthBloc>(
+      () => AuthBloc(
         authStatus: i(),
         loginUser: i(),
         logoutUser: i(),

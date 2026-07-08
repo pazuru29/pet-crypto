@@ -64,7 +64,7 @@ class DI {
     _i.registerLazySingleton<AppRouter>(
       () => AppRouter(
         dependencies: AppRouterDependencies(
-          authCubit: _i(),
+          authBloc: _i(),
           createDashboardBloc: () => _i(),
           createProfileBloc: () => _i(),
         ),

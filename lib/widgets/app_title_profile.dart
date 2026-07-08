@@ -9,12 +9,14 @@ class AppTitleProfile extends StatelessWidget {
   final String title;
   final String? imageUrl;
   final bool placeHolder;
+  final bool secondary;
 
   const AppTitleProfile({
     super.key,
     required this.title,
     required this.imageUrl,
     this.placeHolder = false,
+    this.secondary = false,
   });
 
   @override
@@ -23,6 +25,7 @@ class AppTitleProfile extends StatelessWidget {
 
     return AppTitle(
       title: title,
+      secondary: secondary,
       child: InkWell(
         borderRadius: .circular(100),
         onTap: () => context.pushNamed(
