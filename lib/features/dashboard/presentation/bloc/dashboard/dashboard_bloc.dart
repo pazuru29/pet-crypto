@@ -50,12 +50,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         );
     }
 
-    emit(state.copyWith(currentPaginationStart: 1, currentPaginationLimit: 20));
+    const int start = 1;
+    const int limit = 20;
 
-    final request = DashboardCryptocurrencyRequest(
-      start: state.currentPaginationStart,
-      limit: state.currentPaginationLimit,
-    );
+    final request = DashboardCryptocurrencyRequest(start: start, limit: limit);
 
     final response = await getCryptocurrency.call(request: request);
 
@@ -64,12 +62,21 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         emit(
           state.copyWith(
             status: .loaded,
+            currentPaginationStart: start,
+            currentPaginationLimit: limit,
             listOfCrypto: listOfCrypto,
             hasNextPage: _checkForHasNextPage(listOfCrypto.length),
           ),
         );
       case Err(failure: final failure):
-        emit(state.copyWith(status: .error, errorMessage: failure.message));
+        emit(
+          state.copyWith(
+            status: .error,
+            errorMessage: failure.message,
+            currentPaginationLimit: limit,
+            currentPaginationStart: start,
+          ),
+        );
     }
   }
 

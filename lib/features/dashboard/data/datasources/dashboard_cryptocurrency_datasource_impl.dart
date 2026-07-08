@@ -17,8 +17,8 @@ class DashboardCryptocurrencyDatasourceImpl
     final (status, body) = await client.get(
       '/v1/cryptocurrency/listings/latest',
       queryParameters: {
-        'start': '${request?.start}',
-        'limit': '${request?.limit}',
+        if (request?.start != null) 'start': '${request!.start}',
+        if (request?.limit != null) 'limit': '${request!.limit}',
       },
     );
 

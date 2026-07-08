@@ -26,6 +26,7 @@ class DashboardCryptocurrencyList extends StatefulWidget {
 class _DashboardCryptocurrencyListState
     extends State<DashboardCryptocurrencyList> {
   late final ScrollController _controller;
+  static const double _paginationThreshold = 100;
 
   @override
   void initState() {
@@ -43,8 +44,10 @@ class _DashboardCryptocurrencyListState
   }
 
   void _onScroll() {
-    if (_controller.hasClients &&
-        _controller.position.maxScrollExtent == _controller.offset) {
+    if (!_controller.hasClients) return;
+
+    if (_controller.position.extentAfter < _paginationThreshold &&
+        !widget.paginationLoading) {
       widget.onScroll();
     }
   }
@@ -63,7 +66,7 @@ class _DashboardCryptocurrencyListState
             if (widget.paginationLoading) {
               return AppPaginationLoading();
             } else {
-              return SizedBox(height: 30);
+              return SizedBox(height: 28);
             }
           }
 
