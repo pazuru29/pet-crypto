@@ -95,7 +95,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     DashboardNextPageEvent event,
     Emitter<DashboardState> emit,
   ) async {
-    if (!state.hasNextPage || state.paginationLoading) {
+    if (state.status != .loaded ||
+        !state.hasNextPage ||
+        state.paginationLoading) {
       return;
     }
 

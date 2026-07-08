@@ -14,7 +14,7 @@ class AppPaginationLoading extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: colorScheme.primaryContainer,
             borderRadius: .circular(100),
             boxShadow: [
               BoxShadow(
@@ -31,7 +31,7 @@ class AppPaginationLoading extends StatelessWidget {
               width: 16,
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
-                color: colorScheme.primary,
+                color: colorScheme.onPrimaryContainer,
               ),
             ),
           ),
