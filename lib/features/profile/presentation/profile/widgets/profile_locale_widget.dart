@@ -32,10 +32,57 @@ class ProfileLocaleWidget extends StatelessWidget {
             textColor: colorScheme.onPrimaryContainer,
           ),
           DropdownMenu<String>(
+            selectOnly: true,
             initialSelection: localeProvider.locale.languageCode,
             onSelected: onLanguageChoose,
+            alignmentOffset: Offset(0, 8),
+            trailingIcon: Icon(
+              Icons.keyboard_arrow_down,
+              color: colorScheme.onPrimaryContainer,
+            ),
+            selectedTrailingIcon: Icon(
+              Icons.keyboard_arrow_up,
+              color: colorScheme.onPrimaryContainer,
+            ),
+            textStyle: AppTextStyle.bodySemibold.style.copyWith(
+              color: colorScheme.onPrimaryContainer,
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: colorScheme.primaryContainer,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: .circular(8),
+                borderSide: BorderSide(color: colorScheme.primary),
+              ),
+            ),
+            menuStyle: MenuStyle(
+              padding: WidgetStatePropertyAll(.zero),
+              backgroundColor: WidgetStatePropertyAll(
+                colorScheme.primaryContainer,
+              ),
+              surfaceTintColor: WidgetStatePropertyAll(colorScheme.onPrimary),
+              side: WidgetStatePropertyAll(
+                BorderSide(color: colorScheme.primary),
+              ),
+              elevation: WidgetStatePropertyAll(8),
+            ),
             dropdownMenuEntries: S.supportedLocales.keys
-                .map((e) => DropdownMenuEntry(value: e, label: e.toUpperCase()))
+                .map(
+                  (e) => DropdownMenuEntry(
+                    value: e,
+                    label: e.toUpperCase(),
+                    style: ButtonStyle(
+                      foregroundColor: WidgetStatePropertyAll(
+                        colorScheme.onPrimaryContainer,
+                      ),
+                      textStyle: WidgetStatePropertyAll(
+                        AppTextStyle.bodySemibold.style.copyWith(
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
                 .toList(),
           ),
         ],
