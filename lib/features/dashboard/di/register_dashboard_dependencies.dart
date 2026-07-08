@@ -14,8 +14,6 @@ import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_loca
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_cryptocurrency.dart';
 import 'package:pet_crypto/features/dashboard/domain/usecases/dashboard_get_user_image.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
-import 'package:pet_crypto/features/user/data/datasources/user_local_datasource.dart';
-import 'package:pet_crypto/features/user/data/datasources/user_local_datasource_impl.dart';
 
 class RegisterDashboardDependencies {
   static Future<void> call(GetIt i) async {
@@ -42,11 +40,6 @@ class RegisterDashboardDependencies {
       () => DashboardCryptocurrencyDatasourceImpl(
         client: i.get(instanceName: dioClientName),
       ),
-    );
-
-    // Local DataSources
-    i.registerLazySingleton<UserLocalDatasource>(
-      () => i<UserLocalDatasourceImpl>(),
     );
 
     // Repositories

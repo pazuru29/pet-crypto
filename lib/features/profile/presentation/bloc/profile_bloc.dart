@@ -33,7 +33,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(state.copyWith(status: .loading));
-    final response = await profileGetData.call();
+    final response = profileGetData.call();
     switch (response) {
       case Ok(value: final profileData):
         emit(state.copyWith(status: .loaded, profileData: profileData));

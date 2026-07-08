@@ -11,7 +11,10 @@ import 'package:pet_crypto/core/storage/secure_storage_impl.dart';
 import 'package:pet_crypto/features/authorization/di/register_auth_dependencies.dart';
 import 'package:pet_crypto/features/dashboard/di/register_dashboard_dependencies.dart';
 import 'package:pet_crypto/features/profile/di/register_profile_dependencies.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_local_datasource.dart';
 import 'package:pet_crypto/features/user/data/datasources/user_local_datasource_impl.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_reader_local_datasource.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_writer_local_datasource.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GetIt _i = GetIt.instance;
@@ -35,8 +38,14 @@ class DI {
     );
 
     // User Datasource Impl
-    _i.registerLazySingleton<UserLocalDatasourceImpl>(
+    _i.registerLazySingleton<UserLocalDatasource>(
       () => UserLocalDatasourceImpl(preferencesStorage: _i()),
+    );
+    _i.registerLazySingleton<UserReaderLocalDatasource>(
+      () => _i<UserLocalDatasource>(),
+    );
+    _i.registerLazySingleton<UserWriterLocalDatasource>(
+      () => _i<UserLocalDatasource>(),
     );
 
     // Localization

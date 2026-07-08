@@ -1,11 +1,9 @@
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/util/app_storage_keys.dart';
-import 'package:pet_crypto/features/profile/data/datasources/profile_user_local_datasource.dart';
 import 'package:pet_crypto/features/user/data/datasources/user_local_datasource.dart';
 import 'package:pet_crypto/features/user/data/models/user_data_model.dart';
 
-class UserLocalDatasourceImpl
-    implements ProfileUserLocalDatasource, UserLocalDatasource {
+class UserLocalDatasourceImpl implements UserLocalDatasource {
   final PreferencesStorage preferencesStorage;
 
   const UserLocalDatasourceImpl({required this.preferencesStorage});

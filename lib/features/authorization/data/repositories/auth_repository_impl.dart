@@ -11,14 +11,14 @@ import 'package:pet_crypto/features/authorization/domain/entities/auth_refresh_r
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_tokens.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
-import 'package:pet_crypto/features/profile/data/datasources/profile_user_local_datasource.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_writer_local_datasource.dart';
 import 'package:pet_crypto/features/user/data/models/user_data_model.dart';
 import 'package:pet_crypto/features/user/domain/entities/user_data.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDatasource remote;
   final AuthTokensLocalDatasource localTokens;
-  final ProfileUserLocalDatasource localUser;
+  final UserWriterLocalDatasource localUser;
 
   AuthRepositoryImpl({
     required this.remote,

@@ -1,12 +1,12 @@
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
-import 'package:pet_crypto/features/profile/data/datasources/profile_user_local_datasource.dart';
 import 'package:pet_crypto/features/profile/domain/repositories/profile_repository.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_reader_local_datasource.dart';
 import 'package:pet_crypto/features/user/data/models/user_data_model.dart';
 import 'package:pet_crypto/features/user/domain/entities/user_data.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-  final ProfileUserLocalDatasource local;
+  final UserReaderLocalDatasource local;
 
   const ProfileRepositoryImpl({required this.local});
 

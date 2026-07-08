@@ -15,7 +15,6 @@ import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_use
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
-import 'package:pet_crypto/features/user/data/datasources/user_local_datasource_impl.dart';
 
 class RegisterAuthDependencies {
   static Future<void> call(GetIt i) async {
@@ -46,11 +45,7 @@ class RegisterAuthDependencies {
 
     // Repositories
     i.registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(
-        remote: i(),
-        localTokens: i(),
-        localUser: i<UserLocalDatasourceImpl>(),
-      ),
+      () => AuthRepositoryImpl(remote: i(), localTokens: i(), localUser: i()),
     );
 
     // UseCases
