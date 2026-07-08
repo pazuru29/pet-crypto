@@ -1,7 +1,6 @@
 import 'package:get_it/get_it.dart';
-import 'package:pet_crypto/features/profile/data/datasources/profile_datasource.dart';
-import 'package:pet_crypto/features/profile/data/datasources/profile_datasource_impl.dart';
 import 'package:pet_crypto/application/repositories/app_settings_repository_impl.dart';
+import 'package:pet_crypto/features/profile/data/datasources/profile_user_local_datasource.dart';
 import 'package:pet_crypto/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:pet_crypto/features/profile/domain/repositories/app_settings_repository.dart';
 import 'package:pet_crypto/features/profile/domain/repositories/profile_repository.dart';
@@ -9,12 +8,13 @@ import 'package:pet_crypto/features/profile/domain/usecases/profile_change_local
 import 'package:pet_crypto/features/profile/domain/usecases/profile_change_theme_mode.dart';
 import 'package:pet_crypto/features/profile/domain/usecases/profile_get_data.dart';
 import 'package:pet_crypto/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_local_datasource_impl.dart';
 
 class RegisterProfileDependencies {
   static Future<void> call(GetIt i) async {
     // DataSources
-    i.registerLazySingleton<ProfileDatasource>(
-      () => ProfileDatasourceImpl(preferencesStorage: i()),
+    i.registerLazySingleton<ProfileUserLocalDatasource>(
+      () => i<UserLocalDatasourceImpl>(),
     );
 
     // Repositories

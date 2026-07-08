@@ -1,10 +1,10 @@
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
-import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_local_datasource.dart';
 import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_local_repository.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_local_datasource.dart';
 
 class DashboardLocalRepositoryImpl implements DashboardLocalRepository {
-  final DashboardLocalDatasource local;
+  final UserLocalDatasource local;
 
   DashboardLocalRepositoryImpl({required this.local});
 

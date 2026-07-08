@@ -3,7 +3,7 @@ part of 'profile_bloc.dart';
 class ProfileState extends Equatable {
   final BlocStatus status;
   final String? errorMessage;
-  final ProfileData? profileData;
+  final UserData? profileData;
 
   const ProfileState({
     required this.status,
@@ -16,7 +16,7 @@ class ProfileState extends Equatable {
   ProfileState copyWith({
     BlocStatus? status,
     String? errorMessage,
-    ProfileData? profileData,
+    UserData? profileData,
   }) => ProfileState(
     status: status ?? this.status,
     errorMessage: errorMessage,

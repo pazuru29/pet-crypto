@@ -4,8 +4,8 @@ import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
-import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
+import 'package:pet_crypto/features/authorization/domain/entities/auth_tokens.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
@@ -80,14 +80,8 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> _authorize(AuthSession session) async {
-    emit(
-      state.copyWith(
-        status: .loaded,
-        authStatus: .authorized,
-        authSession: session,
-      ),
-    );
+  Future<void> _authorize(AuthTokens session) async {
+    emit(state.copyWith(status: .loaded, authStatus: .authorized));
   }
 
   Future<void> _unauthorize({
@@ -101,7 +95,6 @@ class AuthCubit extends Cubit<AuthState> {
         authStatus: authStatus,
         alertToShow: alertMessage,
         errorMessage: errorMessage,
-        clearAuthSession: true,
       ),
     );
   }

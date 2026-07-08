@@ -1,11 +1,11 @@
-class ProfileData {
+class UserData {
   final String? fullName;
   final String? email;
-  final String? userImage;
+  final String? image;
 
-  ProfileData({
+  UserData({
     required this.fullName,
     required this.email,
-    required this.userImage,
+    required this.image,
   });
 }

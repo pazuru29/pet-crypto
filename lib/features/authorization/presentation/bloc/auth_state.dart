@@ -5,14 +5,12 @@ class AuthState extends Equatable {
   final BlocMessage? alertMessage;
   final String? errorMessage;
   final AuthStatus authStatus;
-  final AuthSession? authSession;
 
   const AuthState({
     required this.status,
     this.authStatus = .unknown,
     this.alertMessage,
     this.errorMessage,
-    this.authSession,
   });
 
   const AuthState.initial() : this(status: .initial);
@@ -22,22 +20,13 @@ class AuthState extends Equatable {
     AuthStatus? authStatus,
     String? errorMessage,
     BlocMessage? alertToShow,
-    AuthSession? authSession,
-    bool clearAuthSession = false,
   }) => AuthState(
     status: status ?? this.status,
     authStatus: authStatus ?? this.authStatus,
     alertMessage: alertToShow,
     errorMessage: errorMessage,
-    authSession: clearAuthSession ? null : authSession ?? this.authSession,
   );
 
   @override
-  List<Object?> get props => [
-    status,
-    authStatus,
-    alertMessage,
-    errorMessage,
-    authSession,
-  ];
+  List<Object?> get props => [status, authStatus, alertMessage, errorMessage];
 }

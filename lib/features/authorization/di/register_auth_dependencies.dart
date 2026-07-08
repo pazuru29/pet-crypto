@@ -6,8 +6,8 @@ import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
 import 'package:pet_crypto/core/network/interceptors/logging_interceptor.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
-import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
-import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource_impl.dart';
+import 'package:pet_crypto/features/authorization/data/datasources/auth_tokens_local_datasource.dart';
+import 'package:pet_crypto/features/authorization/data/datasources/auth_tokens_local_datasource_impl.dart';
 import 'package:pet_crypto/features/authorization/data/repositories/auth_repository_impl.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
@@ -15,6 +15,7 @@ import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_use
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
+import 'package:pet_crypto/features/user/data/datasources/user_local_datasource_impl.dart';
 
 class RegisterAuthDependencies {
   static Future<void> call(GetIt i) async {
@@ -38,15 +39,18 @@ class RegisterAuthDependencies {
       () => AuthDatasourceImpl(client: i.get(instanceName: dioClientName)),
     );
 
-    // Local DataSources
-    i.registerLazySingleton<AuthLocalDatasource>(
-      () =>
-          AuthLocalDatasourceImpl(secureStorage: i(), preferencesStorage: i()),
+    // Local Datasource
+    i.registerLazySingleton<AuthTokensLocalDatasource>(
+      () => AuthTokensLocalDatasourceImpl(secureStorage: i()),
     );
 
     // Repositories
     i.registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(remote: i(), local: i()),
+      () => AuthRepositoryImpl(
+        remote: i(),
+        localTokens: i(),
+        localUser: i<UserLocalDatasourceImpl>(),
+      ),
     );
 
     // UseCases

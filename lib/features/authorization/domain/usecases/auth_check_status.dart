@@ -1,5 +1,5 @@
 import 'package:pet_crypto/core/result/result.dart';
-import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
+import 'package:pet_crypto/features/authorization/domain/entities/auth_tokens.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
 
 class AuthCheckStatus {
@@ -7,7 +7,7 @@ class AuthCheckStatus {
 
   const AuthCheckStatus({required this.repo});
 
-  Future<Result<AuthSession?>> call() {
+  Future<Result<AuthTokens?>> call() {
     return repo.restoreSession();
   }
 }

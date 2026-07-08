@@ -2,31 +2,42 @@ import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
-import 'package:pet_crypto/features/authorization/data/datasources/auth_local_datasource.dart';
+import 'package:pet_crypto/features/authorization/data/datasources/auth_tokens_local_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_refresh_request_model.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_request_model.dart';
-import 'package:pet_crypto/features/authorization/data/models/auth_session_model.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_tokens_model.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_refresh_request.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_refresh_response.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
-import 'package:pet_crypto/features/authorization/domain/entities/auth_session.dart';
+import 'package:pet_crypto/features/authorization/domain/entities/auth_tokens.dart';
 import 'package:pet_crypto/features/authorization/domain/repositories/auth_repository.dart';
+import 'package:pet_crypto/features/profile/data/datasources/profile_user_local_datasource.dart';
+import 'package:pet_crypto/features/user/data/models/user_data_model.dart';
+import 'package:pet_crypto/features/user/domain/entities/user_data.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthDatasource remote;
-  final AuthLocalDatasource local;
+  final AuthTokensLocalDatasource localTokens;
+  final ProfileUserLocalDatasource localUser;
 
-  AuthRepositoryImpl({required this.remote, required this.local});
+  AuthRepositoryImpl({
+    required this.remote,
+    required this.localTokens,
+    required this.localUser,
+  });
 
   @override
-  Future<Result<AuthSession>> login(AuthRequest request) async {
+  Future<Result<AuthTokens>> login(AuthRequest request) async {
     try {
       final response = await remote.login(AuthRequestModel.fromEntity(request));
 
-      AuthSession session = response.toEntity();
+      AuthTokens session = response.toAuthTokensEntity();
 
-      await local.saveSession(AuthSessionModel.fromEntity(session));
+      await localTokens.saveTokens(AuthTokensModel.fromEntity(session));
+
+      UserData userData = response.toUserDataEntity();
+
+      await localUser.saveUserData(UserDataModel.fromEntity(userData));
 
       return Ok(session);
     } on ServerException {
@@ -45,7 +56,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<void>> refreshToken() async {
     try {
-      String? token = await local.getRefreshToken();
+      String? token = await localTokens.fetchRefreshToken();
 
       if (token == null) {
         throw StorageException('RefreshToken is missing');
@@ -64,7 +75,7 @@ class AuthRepositoryImpl implements AuthRepository {
         refreshToken: result.refreshToken,
       );
 
-      await local.saveTokens(tokensModel);
+      await localTokens.saveTokens(tokensModel);
 
       return Ok(null);
     } on StorageException catch (e) {
@@ -81,9 +92,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Result<AuthSession?>> restoreSession() async {
+  Future<Result<AuthTokens?>> restoreSession() async {
     try {
-      final session = await local.getSession();
+      final session = await localTokens.fetchTokens();
 
       if (session == null) {
         return const Ok(null);
@@ -100,7 +111,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<void>> clearSession() async {
     try {
-      await local.clearSession();
+      await localTokens.clearTokens();
+      await localUser.clearUserData();
       return const Ok(null);
     } catch (e) {
       return Err(UnexpectedFailure('Failed to clear session'));

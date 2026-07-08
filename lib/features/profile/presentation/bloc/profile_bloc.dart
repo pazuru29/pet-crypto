@@ -4,10 +4,10 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
-import 'package:pet_crypto/features/profile/domain/entities/profile_data.dart';
 import 'package:pet_crypto/features/profile/domain/usecases/profile_change_locale.dart';
 import 'package:pet_crypto/features/profile/domain/usecases/profile_change_theme_mode.dart';
 import 'package:pet_crypto/features/profile/domain/usecases/profile_get_data.dart';
+import 'package:pet_crypto/features/user/domain/entities/user_data.dart';
 
 part 'profile_event.dart';
 

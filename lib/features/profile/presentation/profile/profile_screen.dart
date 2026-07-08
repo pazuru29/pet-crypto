@@ -58,10 +58,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SliverToBoxAdapter(
                         child: ProfileHeaderWidget(
                           initUserImage: widget.initUserImage,
-                          profileImage: state.profileData?.userImage,
+                          profileImage: state.profileData?.image,
                           fullName: state.profileData?.fullName,
                           needPlaceHolder:
-                              state.profileData?.userImage == null &&
+                              state.profileData?.image == null &&
                               state.status == .loaded,
                         ),
                       ),
