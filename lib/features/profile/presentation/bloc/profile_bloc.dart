@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/core/result/result.dart';
@@ -20,8 +21,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     required this.profileChangeThemeMode,
   }) : super(ProfileState.initial()) {
     on<ProfileInitEvent>(_profileInitEvent);
-    on<ProfileChangeThemeModeEvent>(_profileChangeThemeModeEvent);
-    on<ProfileChangeLocaleEvent>(_profileChangeLocaleEvent);
+    on<ProfileChangeThemeModeEvent>(
+      _profileChangeThemeModeEvent,
+      transformer: sequential(),
+    );
+    on<ProfileChangeLocaleEvent>(
+      _profileChangeLocaleEvent,
+      transformer: sequential(),
+    );
   }
 
   final ProfileChangeLocale profileChangeLocale;

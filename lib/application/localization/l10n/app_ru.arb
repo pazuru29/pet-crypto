@@ -6,5 +6,6 @@
   "dashboardPriceCrypto": "{currencyCode}: {value}",
   "profileTheme": "Тема",
   "profileLocalization": "Локализация",
-  "profileLogout": "Выйти"
+  "profileLogout": "Выйти",
+  "authorizationLogin": "Войти"
 }

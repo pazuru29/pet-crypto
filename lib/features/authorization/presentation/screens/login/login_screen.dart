@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_cubit.dart';
 import 'package:pet_crypto/widgets/app_button.dart';
 
@@ -25,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: AppButton(
-            text: 'Log In',
+            text: S.of(context).authorizationLogin,
             onPressed: () {
               //TODO
               _authCubit.login('emilys', 'emilyspass');

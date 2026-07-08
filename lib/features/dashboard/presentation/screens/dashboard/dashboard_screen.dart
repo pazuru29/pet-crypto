@@ -78,8 +78,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Flexible(
                     child: DashboardCryptocurrencyList(
                       listOfCrypto: state.listOfCrypto,
+                      paginationLoading: state.paginationLoading,
                       onRefresh: () async {
                         _dashboardBloc.add(DashboardRefreshDataEvent());
+                      },
+                      onScroll: () {
+                        _dashboardBloc.add(DashboardNextPageEvent());
                       },
                     ),
                   ),

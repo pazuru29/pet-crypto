@@ -50,5 +50,9 @@
   "profileLogout": "Logout",
   "@profileLogout": {
     "description": "Logout button text"
+  },
+  "authorizationLogin": "Login",
+  "@authorizationLogin": {
+    "description": "Login button text"
   }
 }

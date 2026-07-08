@@ -35,4 +35,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileLogout => 'Выйти';
+
+  @override
+  String get authorizationLogin => 'Войти';
 }

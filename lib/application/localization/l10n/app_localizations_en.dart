@@ -35,4 +35,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileLogout => 'Logout';
+
+  @override
+  String get authorizationLogin => 'Login';
 }
