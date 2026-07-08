@@ -51,6 +51,8 @@ class _DashboardCryptocurrencyListState
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return RefreshIndicator(
       onRefresh: widget.onRefresh,
       child: ListView.builder(
@@ -61,13 +63,14 @@ class _DashboardCryptocurrencyListState
             if (widget.paginationLoading) {
               return AppPaginationLoading();
             } else {
-              return SizedBox.shrink();
+              return SizedBox(height: 30);
             }
           }
 
           final item = widget.listOfCrypto[index];
 
           return Card(
+            color: colorScheme.primaryContainer,
             child: Padding(
               padding: .symmetric(horizontal: 16, vertical: 8),
               child: Column(
@@ -80,6 +83,7 @@ class _DashboardCryptocurrencyListState
                         .of(context)
                         .dashboardCryptoTitle(item.name, item.symbol),
                     textStyle: .headerBold,
+                    textColor: colorScheme.onPrimaryContainer,
                   ),
                   for (final price in item.prices)
                     AppText(
@@ -90,6 +94,7 @@ class _DashboardCryptocurrencyListState
                             price.amount,
                           ),
                       textStyle: .bodyRegular,
+                      textColor: colorScheme.onPrimaryContainer,
                     ),
                 ],
               ),
