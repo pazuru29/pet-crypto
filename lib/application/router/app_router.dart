@@ -7,6 +7,7 @@ import 'package:pet_crypto/application/router/go_router_refresh_stream.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/auth_gate/auth_gate_screen.dart';
 import 'package:pet_crypto/features/authorization/presentation/screens/login/login_screen.dart';
+import 'package:pet_crypto/features/dashboard/presentation/screens/crypto_details/crypto_details_screen.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/dashboard_screen.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/profile_screen.dart';
 
@@ -52,6 +53,13 @@ class AppRouter {
           create: (context) => dependencies.createDashboardBloc(),
           child: DashboardScreen(),
         ),
+        routes: [
+          GoRoute(
+            path: AppRoutes.dashboardCryptoDetails.path,
+            name: AppRoutes.dashboardCryptoDetails.routeName,
+            builder: (context, state) => CryptoDetailsScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.profile.path,

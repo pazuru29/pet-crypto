@@ -2,6 +2,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
+import 'package:pet_crypto/features/dashboard/data/models/dashboard_platform_model.dart';
+import 'package:pet_crypto/features/dashboard/data/models/dashboard_status_model.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_cryptocurrency.dart';
 
 part 'dashboard_cryptocurrency_response_model.g.dart';
@@ -9,12 +11,9 @@ part 'dashboard_cryptocurrency_response_model.g.dart';
 @JsonSerializable()
 class DashboardCryptocurrencyResponseModel {
   final List<DashboardCryptocurrencyModel>? data;
-  final DashboardCryptocurrencyStatusModel? status;
+  final DashboardStatusModel? status;
 
-  const DashboardCryptocurrencyResponseModel({
-    required this.data,
-    required this.status,
-  });
+  const DashboardCryptocurrencyResponseModel({this.data, this.status});
 
   factory DashboardCryptocurrencyResponseModel.fromJson(JSON json) =>
       _$DashboardCryptocurrencyResponseModelFromJson(json);
@@ -30,33 +29,6 @@ class DashboardCryptocurrencyResponseModel {
 
     return data.map((e) => e.toEntity()).toList();
   }
-}
-
-@JsonSerializable()
-class DashboardCryptocurrencyStatusModel {
-  @JsonKey(name: "timestamp")
-  final String? timestamp;
-  @JsonKey(name: "error_code")
-  final int? errorCode;
-  @JsonKey(name: "error_message")
-  final String? errorMessage;
-  @JsonKey(name: "elapsed")
-  final int? elapsed;
-  @JsonKey(name: "credit_count")
-  final int? creditCount;
-
-  const DashboardCryptocurrencyStatusModel({
-    required this.timestamp,
-    required this.errorCode,
-    required this.errorMessage,
-    required this.elapsed,
-    required this.creditCount,
-  });
-
-  factory DashboardCryptocurrencyStatusModel.fromJson(JSON json) =>
-      _$DashboardCryptocurrencyStatusModelFromJson(json);
-
-  JSON toJson() => _$DashboardCryptocurrencyStatusModelToJson(this);
 }
 
 @JsonSerializable()
@@ -86,28 +58,28 @@ class DashboardCryptocurrencyModel {
   @JsonKey(name: "tags")
   final List<String>? tags;
   @JsonKey(name: "platform")
-  final JSON? platform;
+  final DashboardPlatformModel? platform;
   @JsonKey(name: "minted_market_cap")
   final double? mintedMarketCap;
   @JsonKey(name: "quote")
   final Map<String, DashboardCurrencyModel>? quote;
 
   const DashboardCryptocurrencyModel({
-    required this.id,
-    required this.name,
-    required this.symbol,
-    required this.slug,
-    required this.cmcRank,
-    required this.numMarketPairs,
-    required this.circulatingSupply,
-    required this.totalSupply,
-    required this.maxSupply,
-    required this.lastUpdated,
-    required this.dateAdded,
-    required this.tags,
-    required this.platform,
-    required this.mintedMarketCap,
-    required this.quote,
+    this.id,
+    this.name,
+    this.symbol,
+    this.slug,
+    this.cmcRank,
+    this.numMarketPairs,
+    this.circulatingSupply,
+    this.totalSupply,
+    this.maxSupply,
+    this.lastUpdated,
+    this.dateAdded,
+    this.tags,
+    this.platform,
+    this.mintedMarketCap,
+    this.quote,
   });
 
   factory DashboardCryptocurrencyModel.fromJson(JSON json) =>
@@ -152,16 +124,16 @@ class DashboardCurrencyModel {
   final String? lastUpdated;
 
   const DashboardCurrencyModel({
-    required this.price,
-    required this.volume24h,
-    required this.volumeChange24h,
-    required this.percentChange1h,
-    required this.percentChange24h,
-    required this.percentChange7d,
-    required this.marketCap,
-    required this.marketCapDominance,
-    required this.fullyDilutedMarketCap,
-    required this.lastUpdated,
+    this.price,
+    this.volume24h,
+    this.volumeChange24h,
+    this.percentChange1h,
+    this.percentChange24h,
+    this.percentChange7d,
+    this.marketCap,
+    this.marketCapDominance,
+    this.fullyDilutedMarketCap,
+    this.lastUpdated,
   });
 
   factory DashboardCurrencyModel.fromJson(JSON json) =>

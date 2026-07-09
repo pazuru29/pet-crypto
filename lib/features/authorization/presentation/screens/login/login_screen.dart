@@ -131,7 +131,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 )
                               : null,
-                          onPressed: state.status == .loading ? null : _login,
+                          onPressed:
+                              state.status == .loading ||
+                                  state.authStatus == .authorized
+                              ? null
+                              : _login,
                         ),
                         Spacer(),
                       ],
@@ -147,7 +151,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() {
-    if (_authCubit.state.status == .loading) return;
+    if (_authCubit.state.status == .loading ||
+        _authCubit.state.authStatus == .authorized) {
+      return;
+    }
 
     if (_formKey.currentState?.validate() != true) return;
 

@@ -7,45 +7,22 @@ part of 'dashboard_cryptocurrency_response_model.dart';
 // **************************************************************************
 
 DashboardCryptocurrencyResponseModel
-_$DashboardCryptocurrencyResponseModelFromJson(Map<String, dynamic> json) =>
-    DashboardCryptocurrencyResponseModel(
-      data: (json['data'] as List<dynamic>?)
-          ?.map(
-            (e) => DashboardCryptocurrencyModel.fromJson(
-              e as Map<String, dynamic>,
-            ),
-          )
-          .toList(),
-      status: json['status'] == null
-          ? null
-          : DashboardCryptocurrencyStatusModel.fromJson(
-              json['status'] as Map<String, dynamic>,
-            ),
-    );
+_$DashboardCryptocurrencyResponseModelFromJson(
+  Map<String, dynamic> json,
+) => DashboardCryptocurrencyResponseModel(
+  data: (json['data'] as List<dynamic>?)
+      ?.map(
+        (e) => DashboardCryptocurrencyModel.fromJson(e as Map<String, dynamic>),
+      )
+      .toList(),
+  status: json['status'] == null
+      ? null
+      : DashboardStatusModel.fromJson(json['status'] as Map<String, dynamic>),
+);
 
 Map<String, dynamic> _$DashboardCryptocurrencyResponseModelToJson(
   DashboardCryptocurrencyResponseModel instance,
 ) => <String, dynamic>{'data': instance.data, 'status': instance.status};
-
-DashboardCryptocurrencyStatusModel _$DashboardCryptocurrencyStatusModelFromJson(
-  Map<String, dynamic> json,
-) => DashboardCryptocurrencyStatusModel(
-  timestamp: json['timestamp'] as String?,
-  errorCode: (json['error_code'] as num?)?.toInt(),
-  errorMessage: json['error_message'] as String?,
-  elapsed: (json['elapsed'] as num?)?.toInt(),
-  creditCount: (json['credit_count'] as num?)?.toInt(),
-);
-
-Map<String, dynamic> _$DashboardCryptocurrencyStatusModelToJson(
-  DashboardCryptocurrencyStatusModel instance,
-) => <String, dynamic>{
-  'timestamp': instance.timestamp,
-  'error_code': instance.errorCode,
-  'error_message': instance.errorMessage,
-  'elapsed': instance.elapsed,
-  'credit_count': instance.creditCount,
-};
 
 DashboardCryptocurrencyModel _$DashboardCryptocurrencyModelFromJson(
   Map<String, dynamic> json,
@@ -62,7 +39,11 @@ DashboardCryptocurrencyModel _$DashboardCryptocurrencyModelFromJson(
   lastUpdated: json['last_updated'] as String?,
   dateAdded: json['date_added'] as String?,
   tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-  platform: json['platform'] as Map<String, dynamic>?,
+  platform: json['platform'] == null
+      ? null
+      : DashboardPlatformModel.fromJson(
+          json['platform'] as Map<String, dynamic>,
+        ),
   mintedMarketCap: (json['minted_market_cap'] as num?)?.toDouble(),
   quote: (json['quote'] as Map<String, dynamic>?)?.map(
     (k, e) =>
