@@ -10,6 +10,8 @@ class AppTextFormFiled extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final bool obscureText;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
 
   const AppTextFormFiled({
     super.key,
@@ -21,6 +23,8 @@ class AppTextFormFiled extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.obscureText = false,
+    this.textInputAction,
+    this.onFieldSubmitted,
   });
 
   @override
@@ -36,6 +40,8 @@ class AppTextFormFiled extends StatelessWidget {
       style: AppTextStyle.bodySemibold.style.copyWith(
         color: colorScheme.secondary,
       ),
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
       decoration: InputDecoration(
         labelText: labelText,
         errorMaxLines: 2,

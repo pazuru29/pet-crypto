@@ -8,8 +8,6 @@ import 'package:pet_crypto/widgets/app_icon_button.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 
 class AlertHelper {
-  static Timer? _timer;
-
   static void showSnackBar(BuildContext context, BlocMessage message) {
     Color foregroundColor = message.type.foregroundColor(context);
     Color backgroundColor = message.type.backgroundColor(context);
@@ -34,54 +32,46 @@ class AlertHelper {
   }
 
   static void showBanner(BuildContext context, BlocMessage message) {
-    Color foregroundColor = message.type.foregroundColor(context);
-    Color backgroundColor = message.type.backgroundColor(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final foregroundColor = message.type.foregroundColor(context);
+    final backgroundColor = message.type.backgroundColor(context);
 
-    List<Widget> actions = [];
+    Timer? timer;
 
-    actions.add(
-      AppIconButton.icon(
-        icon: Icons.close,
-        iconColor: foregroundColor,
-        splashColor: foregroundColor,
-        highlightColor: message.type
-            .backgroundColor(context)
-            .withValues(alpha: 0.5),
-        onPressed: () {
-          _timer?.cancel();
-          ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-        },
-      ),
-    );
+    late final ScaffoldFeatureController<
+      MaterialBanner,
+      MaterialBannerClosedReason
+    >
+    controller;
 
-    Widget? leadingIcon = Icon(
-      Icons.info_outline,
-      color: foregroundColor,
-      size: 20,
-    );
-
-    MaterialBanner banner = MaterialBanner(
+    final banner = MaterialBanner(
+      leading: Icon(Icons.info_outline, color: foregroundColor, size: 20),
       content: AppText(
         text: message.text,
         textStyle: AppTextStyle.bodySemibold,
         textColor: foregroundColor,
       ),
-      padding: .symmetric(horizontal: 24),
-      leading: leadingIcon,
-      actions: actions,
-      overflowAlignment: OverflowBarAlignment.center,
-      forceActionsBelow: false,
       backgroundColor: backgroundColor,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      actions: [
+        AppIconButton.icon(
+          icon: Icons.close,
+          iconColor: foregroundColor,
+          onPressed: () {
+            timer?.cancel();
+            controller.close();
+          },
+        ),
+      ],
     );
 
-    ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-    ScaffoldMessenger.of(context).showMaterialBanner(banner);
+    messenger.removeCurrentMaterialBanner();
+    controller = messenger.showMaterialBanner(banner);
 
-    _timer?.cancel();
-    _timer = Timer(const Duration(seconds: 3), () {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-      }
+    timer = Timer(const Duration(seconds: 3), controller.close);
+
+    controller.closed.whenComplete(() {
+      timer?.cancel();
     });
   }
 }
