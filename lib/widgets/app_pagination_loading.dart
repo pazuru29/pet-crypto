@@ -18,7 +18,7 @@ class AppPaginationLoading extends StatelessWidget {
             borderRadius: .circular(100),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey,
+                color: Colors.black26,
                 spreadRadius: 0.2,
                 blurRadius: 2,
                 offset: Offset(0, 2),

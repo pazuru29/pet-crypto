@@ -6,10 +6,13 @@ class DashboardLoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     return ListView.builder(
       itemCount: 15,
       itemBuilder: (context, index) => Shimmer(
         child: Card(
+          color: colorScheme.primaryContainer,
           child: Padding(
             padding: .symmetric(horizontal: 16, vertical: 8),
             child: Column(
@@ -21,14 +24,18 @@ class DashboardLoadingView extends StatelessWidget {
                   height: 24,
                   width: 100,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.3),
+                    color: colorScheme.onPrimaryContainer.withValues(
+                      alpha: 0.5,
+                    ),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
                 Container(
                   height: 20,
                   decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.3),
+                    color: colorScheme.onPrimaryContainer.withValues(
+                      alpha: 0.5,
+                    ),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
