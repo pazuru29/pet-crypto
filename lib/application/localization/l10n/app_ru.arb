@@ -7,5 +7,11 @@
   "profileTheme": "Тема",
   "profileLocalization": "Локализация",
   "profileLogout": "Выйти",
-  "authorizationLogin": "Войти"
+  "loginButton": "Войти",
+  "loginTitle": "Вход",
+  "loginUsername": "Имя пользователя",
+  "loginPassword": "Пароль",
+  "loginCorrectUsername": "Пожалуйста, введите правильное имя пользователя",
+  "loginCorrectPassword": "Пожалуйста, введите правильный пароль",
+  "loginLengthPassword": "Пароль должен содержать минимум {count} символов"
 }

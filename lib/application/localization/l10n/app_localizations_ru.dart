@@ -37,5 +37,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileLogout => 'Выйти';
 
   @override
-  String get authorizationLogin => 'Войти';
+  String get loginButton => 'Войти';
+
+  @override
+  String get loginTitle => 'Вход';
+
+  @override
+  String get loginUsername => 'Имя пользователя';
+
+  @override
+  String get loginPassword => 'Пароль';
+
+  @override
+  String get loginCorrectUsername =>
+      'Пожалуйста, введите правильное имя пользователя';
+
+  @override
+  String get loginCorrectPassword => 'Пожалуйста, введите правильный пароль';
+
+  @override
+  String loginLengthPassword(int count) {
+    return 'Пароль должен содержать минимум $count символов';
+  }
 }

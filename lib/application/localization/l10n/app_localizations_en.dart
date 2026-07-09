@@ -37,5 +37,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLogout => 'Logout';
 
   @override
-  String get authorizationLogin => 'Login';
+  String get loginButton => 'Login';
+
+  @override
+  String get loginTitle => 'LogIn';
+
+  @override
+  String get loginUsername => 'Username';
+
+  @override
+  String get loginPassword => 'Password';
+
+  @override
+  String get loginCorrectUsername => 'Please enter the correct username';
+
+  @override
+  String get loginCorrectPassword => 'Please enter the correct password';
+
+  @override
+  String loginLengthPassword(int count) {
+    return 'The password must be $count characters or more';
+  }
 }

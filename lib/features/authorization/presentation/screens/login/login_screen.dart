@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
+import 'package:pet_crypto/core/ui/alert_helper.dart';
 import 'package:pet_crypto/core/util/app_icons.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
+import 'package:pet_crypto/core/util/login_validator.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 import 'package:pet_crypto/widgets/app_button.dart';
 import 'package:pet_crypto/widgets/app_icon_button.dart';
@@ -20,13 +22,23 @@ class _LoginScreenState extends State<LoginScreen> {
   late AuthBloc _authCubit;
   late final TextEditingController _usernameController;
   late final TextEditingController _passwordController;
+  late final GlobalKey<FormState> _formKey;
+  bool _showPassword = false;
 
   @override
   void initState() {
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
+    _formKey = GlobalKey<FormState>();
     _authCubit = context.read<AuthBloc>();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _usernameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -35,70 +47,103 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
-          builder: (context, constraints) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: .symmetric(horizontal: 16, vertical: 24),
-                  child: Column(
-                    mainAxisAlignment: .center,
-                    spacing: 16,
-                    children: [
-                      Spacer(),
-                      AppText(
-                        text: 'LogIn',
-                        textStyle: AppTextStyle.titleBold,
-                        textColor: colorScheme.primary,
-                      ),
-                      AppTextFormFiled(
-                        controller: _usernameController,
-                        autofillHints: const [
-                          AutofillHints.username,
-                          AutofillHints.email,
-                        ],
-                        labelText: 'Username',
-                        prefixIcon: Icon(
-                          Icons.person,
-                          size: 20,
-                          color: colorScheme.secondary,
+          builder: (context, constraints) => BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state.alertMessage != null) {
+                AlertHelper.showBanner(context, state.alertMessage!);
+              }
+            },
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: .symmetric(horizontal: 16, vertical: 24),
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      spacing: 20,
+                      children: [
+                        Spacer(),
+                        AppText(
+                          text: S.of(context).loginTitle,
+                          textStyle: AppTextStyle.titleBold,
+                          textColor: colorScheme.primary,
                         ),
-                      ),
-                      AppTextFormFiled(
-                        controller: _passwordController,
-                        keyboardType: TextInputType.visiblePassword,
-                        autofillHints: const [AutofillHints.password],
-                        obscureText: !false,
-                        labelText: 'Password',
-                        prefixIcon: Icon(
-                          Icons.lock,
-                          size: 20,
-                          color: colorScheme.secondary,
-                        ),
-                        suffixIcon: AppIconButton.svgIcon(
-                          svgIcon: false ? AppIcons.icEye : AppIcons.icEyeSlash,
-                          borderRadius: .only(
-                            topRight: .circular(10),
-                            bottomRight: .circular(10),
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            spacing: 16,
+                            children: [
+                              AppTextFormFiled(
+                                controller: _usernameController,
+                                validator: (text) =>
+                                    LoginValidator.validateUsername(
+                                      context,
+                                      text,
+                                    ),
+                                autofillHints: const [
+                                  AutofillHints.username,
+                                  AutofillHints.email,
+                                ],
+                                labelText: S.of(context).loginUsername,
+                                prefixIcon: Icon(
+                                  Icons.person,
+                                  size: 20,
+                                  color: colorScheme.secondary,
+                                ),
+                              ),
+                              AppTextFormFiled(
+                                controller: _passwordController,
+                                validator: (text) =>
+                                    LoginValidator.validatePassword(
+                                      context,
+                                      text,
+                                    ),
+                                keyboardType: TextInputType.visiblePassword,
+                                autofillHints: const [AutofillHints.password],
+                                obscureText: !_showPassword,
+                                labelText: S.of(context).loginPassword,
+                                prefixIcon: Icon(
+                                  Icons.lock,
+                                  size: 20,
+                                  color: colorScheme.secondary,
+                                ),
+                                suffixIcon: AppIconButton.svgIcon(
+                                  svgIcon: _showPassword
+                                      ? AppIcons.icEye
+                                      : AppIcons.icEyeSlash,
+                                  borderRadius: .only(
+                                    topRight: .circular(10),
+                                    bottomRight: .circular(10),
+                                  ),
+                                  iconColor: colorScheme.secondary,
+                                  padding: .all(14),
+                                  onPressed: () {
+                                    setState(() {
+                                      _showPassword = !_showPassword;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                          iconColor: colorScheme.secondary,
-                          padding: .all(14),
-                          onPressed: () {},
                         ),
-                      ),
-                      AppButton(
-                        text: S.of(context).authorizationLogin,
-                        onPressed: () {
-                          _authCubit.add(
-                            AuthLoginEvent(
-                              username: _usernameController.text,
-                              password: _passwordController.text,
-                            ),
-                          );
-                        },
-                      ),
-                      Spacer(),
-                    ],
+                        AppButton(
+                          text: S.of(context).loginButton,
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() == true) {
+                              _authCubit.add(
+                                AuthLoginEvent(
+                                  username: _usernameController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        Spacer(),
+                      ],
+                    ),
                   ),
                 ),
               ),

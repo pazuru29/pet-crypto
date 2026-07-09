@@ -150,7 +150,43 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Login'**
-  String get authorizationLogin;
+  String get loginButton;
+
+  /// Title of login screen
+  ///
+  /// In en, this message translates to:
+  /// **'LogIn'**
+  String get loginTitle;
+
+  /// Hint of username text filed
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get loginUsername;
+
+  /// Hint of password text filed
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get loginPassword;
+
+  /// Text displayed after a failed username validation
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the correct username'**
+  String get loginCorrectUsername;
+
+  /// Text displayed after a failed password validation
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the correct password'**
+  String get loginCorrectPassword;
+
+  /// Text displayed after a failed password length check
+  ///
+  /// In en, this message translates to:
+  /// **'The password must be {count} characters or more'**
+  String loginLengthPassword(int count);
 }
 
 class _AppLocalizationsDelegate

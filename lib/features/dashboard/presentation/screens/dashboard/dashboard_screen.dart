@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/core/ui/bloc_message_colors.dart';
+import 'package:pet_crypto/core/ui/alert_helper.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_cryptocurrency_list.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_empty_view.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_loading_view.dart';
-import 'package:pet_crypto/widgets/app_text.dart';
 import 'package:pet_crypto/widgets/app_title_profile.dart';
 import 'package:pet_crypto/widgets/error_view.dart';
 
@@ -35,20 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: BlocConsumer<DashboardBloc, DashboardState>(
           listener: (context, state) {
             if (state.alertMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: AppText(
-                    text: state.alertMessage!.text,
-                    textStyle: .bodySemibold,
-                    textColor: state.alertMessage!.type.foregroundColor(
-                      context,
-                    ),
-                  ),
-                  backgroundColor: state.alertMessage!.type.backgroundColor(
-                    context,
-                  ),
-                ),
-              );
+              AlertHelper.showSnackBar(context, state.alertMessage!);
             }
           },
           builder: (context, state) {

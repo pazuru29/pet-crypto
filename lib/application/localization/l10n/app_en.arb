@@ -51,8 +51,38 @@
   "@profileLogout": {
     "description": "Logout button text"
   },
-  "authorizationLogin": "Login",
-  "@authorizationLogin": {
+  "loginButton": "Login",
+  "@loginButton": {
     "description": "Login button text"
+  },
+  "loginTitle": "LogIn",
+  "@loginTitle": {
+    "description": "Title of login screen"
+  },
+  "loginUsername": "Username",
+  "@loginUsername": {
+    "description": "Hint of username text filed"
+  },
+  "loginPassword": "Password",
+  "@loginPassword": {
+    "description": "Hint of password text filed"
+  },
+  "loginCorrectUsername": "Please enter the correct username",
+  "@loginCorrectUsername": {
+    "description": "Text displayed after a failed username validation"
+  },
+  "loginCorrectPassword": "Please enter the correct password",
+  "@loginCorrectPassword": {
+    "description": "Text displayed after a failed password validation"
+  },
+  "loginLengthPassword": "The password must be {count} characters or more",
+  "@loginLengthPassword": {
+    "description": "Text displayed after a failed password length check",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "8"
+      }
+    }
   }
 }
