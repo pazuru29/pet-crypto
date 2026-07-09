@@ -47,13 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
-          builder: (context, constraints) => BlocListener<AuthBloc, AuthState>(
+          builder: (context, constraints) => BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state.alertMessage != null) {
                 AlertHelper.showBanner(context, state.alertMessage!);
               }
             },
-            child: SingleChildScrollView(
+            builder: (context, state) => SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: IntrinsicHeight(
@@ -130,16 +130,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         AppButton(
                           text: S.of(context).loginButton,
-                          onPressed: () {
-                            if (_formKey.currentState?.validate() == true) {
-                              _authCubit.add(
-                                AuthLoginEvent(
-                                  username: _usernameController.text,
-                                  password: _passwordController.text,
-                                ),
-                              );
-                            }
-                          },
+                          prefixIcon: state.status == .loading
+                              ? SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 1,
+                                  ),
+                                )
+                              : null,
+                          onPressed: state.status == .loading
+                              ? null
+                              : () {
+                                  if (_formKey.currentState?.validate() ==
+                                      true) {
+                                    _authCubit.add(
+                                      AuthLoginEvent(
+                                        username: _usernameController.text,
+                                        password: _passwordController.text,
+                                      ),
+                                    );
+                                  }
+                                },
                         ),
                         Spacer(),
                       ],

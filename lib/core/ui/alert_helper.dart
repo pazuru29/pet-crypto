@@ -48,6 +48,7 @@ class AlertHelper {
             .backgroundColor(context)
             .withValues(alpha: 0.5),
         onPressed: () {
+          _timer?.cancel();
           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
         },
       ),
