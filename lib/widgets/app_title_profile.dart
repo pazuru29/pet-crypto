@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_crypto/application/router/app_routes.dart';
 import 'package:pet_crypto/core/util/app_hero_tags.dart';
+import 'package:pet_crypto/widgets/app_cached_image.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
-import 'package:pet_crypto/widgets/profile_image.dart';
 
 class AppTitleProfile extends StatelessWidget {
   final String title;
@@ -34,13 +34,14 @@ class AppTitleProfile extends StatelessWidget {
         ),
         child: Hero(
           tag: AppHeroTags.profileImageTag,
-          child: ProfileImage(
+          child: AppCachedImage(
             height: 40,
             width: 40,
             backgroundColor: colorScheme.primaryContainer,
             needPlaceHolder: placeHolder,
             iconPlaceHolderColor: colorScheme.primary,
             imageUrl: imageUrl,
+            icon: Icons.person,
           ),
         ),
       ),

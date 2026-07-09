@@ -7,18 +7,21 @@ part of 'dashboard_cryptocurrency_response_model.dart';
 // **************************************************************************
 
 DashboardCryptocurrencyResponseModel
-_$DashboardCryptocurrencyResponseModelFromJson(
-  Map<String, dynamic> json,
-) => DashboardCryptocurrencyResponseModel(
-  data: (json['data'] as List<dynamic>?)
-      ?.map(
-        (e) => DashboardCryptocurrencyModel.fromJson(e as Map<String, dynamic>),
-      )
-      .toList(),
-  status: json['status'] == null
-      ? null
-      : DashboardStatusModel.fromJson(json['status'] as Map<String, dynamic>),
-);
+_$DashboardCryptocurrencyResponseModelFromJson(Map<String, dynamic> json) =>
+    DashboardCryptocurrencyResponseModel(
+      data: (json['data'] as List<dynamic>?)
+          ?.map(
+            (e) => DashboardCryptocurrencyModel.fromJson(
+              e as Map<String, dynamic>,
+            ),
+          )
+          .toList(),
+      status: json['status'] == null
+          ? null
+          : CryptocurrencyStatusModel.fromJson(
+              json['status'] as Map<String, dynamic>,
+            ),
+    );
 
 Map<String, dynamic> _$DashboardCryptocurrencyResponseModelToJson(
   DashboardCryptocurrencyResponseModel instance,
@@ -41,7 +44,7 @@ DashboardCryptocurrencyModel _$DashboardCryptocurrencyModelFromJson(
   tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
   platform: json['platform'] == null
       ? null
-      : DashboardPlatformModel.fromJson(
+      : CryptocurrencyPlatformModel.fromJson(
           json['platform'] as Map<String, dynamic>,
         ),
   mintedMarketCap: (json['minted_market_cap'] as num?)?.toDouble(),

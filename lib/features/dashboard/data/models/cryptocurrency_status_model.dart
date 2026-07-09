@@ -1,10 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
 
-part 'dashboard_status_model.g.dart';
+part 'cryptocurrency_status_model.g.dart';
 
 @JsonSerializable()
-class DashboardStatusModel {
+class CryptocurrencyStatusModel {
   @JsonKey(name: "timestamp")
   final String? timestamp;
   @JsonKey(name: "error_code")
@@ -18,7 +18,7 @@ class DashboardStatusModel {
   @JsonKey(name: "notice")
   final String? notice;
 
-  const DashboardStatusModel({
+  const CryptocurrencyStatusModel({
     this.timestamp,
     this.errorCode,
     this.errorMessage,
@@ -27,8 +27,8 @@ class DashboardStatusModel {
     this.notice,
   });
 
-  factory DashboardStatusModel.fromJson(JSON json) =>
-      _$DashboardStatusModelFromJson(json);
+  factory CryptocurrencyStatusModel.fromJson(JSON json) =>
+      _$CryptocurrencyStatusModelFromJson(json);
 
-  JSON toJson() => _$DashboardStatusModelToJson(this);
+  JSON toJson() => _$CryptocurrencyStatusModelToJson(this);
 }

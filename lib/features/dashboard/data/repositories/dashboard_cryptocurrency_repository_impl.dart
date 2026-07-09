@@ -9,7 +9,7 @@ import 'package:pet_crypto/features/dashboard/domain/repositories/dashboard_cryp
 
 class DashboardCryptocurrencyRepositoryImpl
     implements DashboardCryptocurrencyRepository {
-  final DashboardCryptocurrencyDataSource remote;
+  final DashboardCryptocurrencyDatasource remote;
 
   const DashboardCryptocurrencyRepositoryImpl({required this.remote});
 

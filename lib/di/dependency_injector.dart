@@ -67,6 +67,7 @@ class DI {
           authBloc: _i(),
           createDashboardBloc: () => _i(),
           createProfileBloc: () => _i(),
+          createCryptoDetailsBloc: () => _i(),
         ),
       ),
     );

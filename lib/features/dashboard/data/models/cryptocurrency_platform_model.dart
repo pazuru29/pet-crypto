@@ -1,10 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
 
-part 'dashboard_platform_model.g.dart';
+part 'cryptocurrency_platform_model.g.dart';
 
 @JsonSerializable()
-class DashboardPlatformModel {
+class CryptocurrencyPlatformModel {
   @JsonKey(name: "id")
   final int? id;
   @JsonKey(name: "slug")
@@ -16,7 +16,7 @@ class DashboardPlatformModel {
   @JsonKey(name: "token_address")
   final String? tokenAddress;
 
-  DashboardPlatformModel({
+  const CryptocurrencyPlatformModel({
     this.id,
     this.slug,
     this.name,
@@ -24,8 +24,8 @@ class DashboardPlatformModel {
     this.tokenAddress,
   });
 
-  factory DashboardPlatformModel.fromJson(JSON json) =>
-      _$DashboardPlatformModelFromJson(json);
+  factory CryptocurrencyPlatformModel.fromJson(JSON json) =>
+      _$CryptocurrencyPlatformModelFromJson(json);
 
-  JSON toJson() => _$DashboardPlatformModelToJson(this);
+  JSON toJson() => _$CryptocurrencyPlatformModelToJson(this);
 }

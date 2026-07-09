@@ -1,23 +1,23 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'dashboard_platform_model.dart';
+part of 'crypto_info_platform_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-DashboardPlatformModel _$DashboardPlatformModelFromJson(
+CryptoInfoPlatformModel _$CryptoInfoPlatformModelFromJson(
   Map<String, dynamic> json,
-) => DashboardPlatformModel(
-  id: (json['id'] as num?)?.toInt(),
+) => CryptoInfoPlatformModel(
+  id: json['id'] as String?,
   slug: json['slug'] as String?,
   name: json['name'] as String?,
   symbol: json['symbol'] as String?,
   tokenAddress: json['token_address'] as String?,
 );
 
-Map<String, dynamic> _$DashboardPlatformModelToJson(
-  DashboardPlatformModel instance,
+Map<String, dynamic> _$CryptoInfoPlatformModelToJson(
+  CryptoInfoPlatformModel instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'slug': instance.slug,

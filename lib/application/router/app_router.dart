@@ -57,7 +57,10 @@ class AppRouter {
           GoRoute(
             path: AppRoutes.dashboardCryptoDetails.path,
             name: AppRoutes.dashboardCryptoDetails.routeName,
-            builder: (context, state) => CryptoDetailsScreen(),
+            builder: (context, state) => BlocProvider(
+              create: (context) => dependencies.createCryptoDetailsBloc(),
+              child: CryptoDetailsScreen(id: state.pathParameters['id']),
+            ),
           ),
         ],
       ),

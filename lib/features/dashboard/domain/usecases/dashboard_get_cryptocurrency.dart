@@ -10,7 +10,7 @@ class DashboardGetCryptocurrency {
 
   Future<Result<List<DashboardCryptocurrency>>> call({
     DashboardCryptocurrencyRequest? request,
-  }) {
-    return repo.getCryptocurrency(request: request);
+  }) async {
+    return await repo.getCryptocurrency(request: request);
   }
 }

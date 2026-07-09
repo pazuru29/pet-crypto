@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pet_crypto/application/localization/s.dart';
+import 'package:pet_crypto/application/router/app_routes.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_cryptocurrency.dart';
 import 'package:pet_crypto/widgets/app_pagination_loading.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
@@ -101,32 +103,43 @@ class _DashboardCryptocurrencyListState
 
               return Card(
                 color: colorScheme.primaryContainer,
-                child: Padding(
-                  padding: .symmetric(horizontal: 16, vertical: 8),
-                  child: Column(
-                    mainAxisSize: .min,
-                    crossAxisAlignment: .start,
-                    spacing: 8,
-                    children: [
-                      AppText(
-                        text: S
-                            .of(context)
-                            .dashboardCryptoTitle(item.name, item.symbol),
-                        textStyle: .headerBold,
-                        textColor: colorScheme.onPrimaryContainer,
-                      ),
-                      for (final price in item.prices)
+                child: InkWell(
+                  onTap: () {
+                    context.pushNamed(
+                      AppRoutes.dashboardCryptoDetails.routeName,
+                      pathParameters: {'id': '${item.id}'},
+                    );
+                  },
+                  borderRadius: .circular(10),
+                  splashColor: colorScheme.primaryContainer,
+                  highlightColor: colorScheme.primary.withValues(alpha: 0.5),
+                  child: Padding(
+                    padding: .symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      mainAxisSize: .min,
+                      crossAxisAlignment: .start,
+                      spacing: 8,
+                      children: [
                         AppText(
                           text: S
                               .of(context)
-                              .dashboardPriceCrypto(
-                                price.currencyCode,
-                                price.amount,
-                              ),
-                          textStyle: .bodyRegular,
+                              .dashboardCryptoTitle(item.name, item.symbol),
+                          textStyle: .headerBold,
                           textColor: colorScheme.onPrimaryContainer,
                         ),
-                    ],
+                        for (final price in item.prices)
+                          AppText(
+                            text: S
+                                .of(context)
+                                .dashboardPriceCrypto(
+                                  price.currencyCode,
+                                  price.amount,
+                                ),
+                            textStyle: .bodyRegular,
+                            textColor: colorScheme.onPrimaryContainer,
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               );

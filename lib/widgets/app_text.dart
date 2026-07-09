@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
 
@@ -7,6 +8,9 @@ class AppText extends StatelessWidget {
   final Color? textColor;
   final TextOverflow? textOverflow;
   final int? maxLines;
+  final TextAlign? textAlign;
+  final String? url;
+  final VoidCallback? onTap;
 
   const AppText({
     super.key,
@@ -15,15 +19,45 @@ class AppText extends StatelessWidget {
     this.textColor,
     this.textOverflow,
     this.maxLines,
+    this.textAlign,
+  }) : url = null,
+       onTap = null;
+
+  const AppText.link({
+    super.key,
+    required this.url,
+    required this.textStyle,
+    required this.onTap,
+    this.textColor,
+    this.textOverflow,
+    this.maxLines,
+    this.textAlign,
+    this.text = '',
   });
 
   @override
   Widget build(BuildContext context) {
+    if (url != null) {
+      return RichText(
+        maxLines: maxLines,
+        textAlign: textAlign ?? .start,
+        text: TextSpan(
+          text: text.isEmpty ? url : text,
+          style: textStyle.style.copyWith(
+            color: textColor,
+            decoration: TextDecoration.underline,
+            overflow: textOverflow,
+          ),
+          recognizer: TapGestureRecognizer()..onTap = onTap,
+        ),
+      );
+    }
+
     return Text(
       text,
-      style: textStyle.style.copyWith(color: textColor),
-      overflow: textOverflow,
+      style: textStyle.style.copyWith(color: textColor, overflow: textOverflow),
       maxLines: maxLines,
+      textAlign: textAlign,
     );
   }
 }

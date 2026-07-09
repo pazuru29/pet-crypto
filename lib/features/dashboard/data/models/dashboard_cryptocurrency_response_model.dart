@@ -2,8 +2,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
-import 'package:pet_crypto/features/dashboard/data/models/dashboard_platform_model.dart';
-import 'package:pet_crypto/features/dashboard/data/models/dashboard_status_model.dart';
+import 'package:pet_crypto/features/dashboard/data/models/cryptocurrency_platform_model.dart';
+import 'package:pet_crypto/features/dashboard/data/models/cryptocurrency_status_model.dart';
 import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_cryptocurrency.dart';
 
 part 'dashboard_cryptocurrency_response_model.g.dart';
@@ -11,7 +11,7 @@ part 'dashboard_cryptocurrency_response_model.g.dart';
 @JsonSerializable()
 class DashboardCryptocurrencyResponseModel {
   final List<DashboardCryptocurrencyModel>? data;
-  final DashboardStatusModel? status;
+  final CryptocurrencyStatusModel? status;
 
   const DashboardCryptocurrencyResponseModel({this.data, this.status});
 
@@ -58,7 +58,7 @@ class DashboardCryptocurrencyModel {
   @JsonKey(name: "tags")
   final List<String>? tags;
   @JsonKey(name: "platform")
-  final DashboardPlatformModel? platform;
+  final CryptocurrencyPlatformModel? platform;
   @JsonKey(name: "minted_market_cap")
   final double? mintedMarketCap;
   @JsonKey(name: "quote")

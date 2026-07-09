@@ -23,6 +23,10 @@ class StorageFailure extends Failure {
   const StorageFailure(super.message);
 }
 
+class RequestFailure extends Failure {
+  const RequestFailure(super.message);
+}
+
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure(super.message);
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pet_crypto/core/util/app_hero_tags.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
+import 'package:pet_crypto/widgets/app_cached_image.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
-import 'package:pet_crypto/widgets/profile_image.dart';
 
 class ProfileHeaderWidget extends StatelessWidget {
   final String? initUserImage;
@@ -31,13 +31,14 @@ class ProfileHeaderWidget extends StatelessWidget {
         children: [
           Hero(
             tag: AppHeroTags.profileImageTag,
-            child: ProfileImage(
+            child: AppCachedImage(
               height: 80,
               width: 80,
               backgroundColor: colorScheme.primaryContainer,
               needPlaceHolder: needPlaceHolder,
               iconPlaceHolderColor: colorScheme.primary,
               imageUrl: profileImage ?? initUserImage,
+              icon: Icons.person,
             ),
           ),
           AppText(

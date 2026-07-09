@@ -2,27 +2,27 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/util/required_field.dart';
 import 'package:pet_crypto/core/util/typedef.dart';
-import 'package:pet_crypto/features/dashboard/data/models/dashboard_platform_model.dart';
-import 'package:pet_crypto/features/dashboard/data/models/dashboard_status_model.dart';
-import 'package:pet_crypto/features/dashboard/domain/entities/dashboard_crypto_info.dart';
+import 'package:pet_crypto/features/dashboard/data/models/crypto_info_platform_model.dart';
+import 'package:pet_crypto/features/dashboard/data/models/cryptocurrency_status_model.dart';
+import 'package:pet_crypto/features/dashboard/domain/entities/crypto_info.dart';
 
-part 'dashboard_crypto_info_response_model.g.dart';
+part 'crypto_info_response_model.g.dart';
 
 @JsonSerializable()
-class DashboardCryptoInfoResponseModel {
+class CryptoInfoResponseModel {
   @JsonKey(name: 'data')
-  final Map<String, DashboardCryptoInfoDataModel>? data;
+  final Map<String, CryptoInfoDataModel>? data;
   @JsonKey(name: 'status')
-  final DashboardStatusModel? status;
+  final CryptocurrencyStatusModel? status;
 
-  const DashboardCryptoInfoResponseModel({this.data, this.status});
+  const CryptoInfoResponseModel({this.data, this.status});
 
-  factory DashboardCryptoInfoResponseModel.fromJson(JSON json) =>
-      _$DashboardCryptoInfoResponseModelFromJson(json);
+  factory CryptoInfoResponseModel.fromJson(JSON json) =>
+      _$CryptoInfoResponseModelFromJson(json);
 
-  JSON toJson() => _$DashboardCryptoInfoResponseModelToJson(this);
+  JSON toJson() => _$CryptoInfoResponseModelToJson(this);
 
-  DashboardCryptoInfo toEntity() {
+  CryptoInfo toEntity() {
     final data = this.data;
 
     if (data == null || data.isEmpty) {
@@ -34,9 +34,9 @@ class DashboardCryptoInfoResponseModel {
 }
 
 @JsonSerializable()
-class DashboardCryptoInfoDataModel {
+class CryptoInfoDataModel {
   @JsonKey(name: 'urls')
-  final DashboardUrlsModel? urls;
+  final CryptocurrencyUrlsModel? urls;
   @JsonKey(name: 'logo')
   final String? logo;
   @JsonKey(name: 'id')
@@ -56,11 +56,11 @@ class DashboardCryptoInfoDataModel {
   @JsonKey(name: 'tags')
   final List<String>? tags;
   @JsonKey(name: 'platform')
-  final DashboardPlatformModel? platform;
+  final CryptoInfoPlatformModel? platform;
   @JsonKey(name: 'category')
   final String? category;
 
-  const DashboardCryptoInfoDataModel({
+  const CryptoInfoDataModel({
     this.urls,
     this.logo,
     this.id,
@@ -75,12 +75,12 @@ class DashboardCryptoInfoDataModel {
     this.category,
   });
 
-  factory DashboardCryptoInfoDataModel.fromJson(JSON json) =>
-      _$DashboardCryptoInfoDataModelFromJson(json);
+  factory CryptoInfoDataModel.fromJson(JSON json) =>
+      _$CryptoInfoDataModelFromJson(json);
 
-  JSON toJson() => _$DashboardCryptoInfoDataModelToJson(this);
+  JSON toJson() => _$CryptoInfoDataModelToJson(this);
 
-  DashboardCryptoInfo toEntity() => DashboardCryptoInfo(
+  CryptoInfo toEntity() => CryptoInfo(
     name: requiredField(name, 'name'),
     symbol: requiredField(symbol, 'symbol'),
     logo: logo,
@@ -93,7 +93,7 @@ class DashboardCryptoInfoDataModel {
 }
 
 @JsonSerializable()
-class DashboardUrlsModel {
+class CryptocurrencyUrlsModel {
   @JsonKey(name: 'website')
   final List<String>? website;
   @JsonKey(name: 'technical_doc')
@@ -113,7 +113,7 @@ class DashboardUrlsModel {
   @JsonKey(name: 'source_code')
   final List<String>? sourceCode;
 
-  const DashboardUrlsModel({
+  const CryptocurrencyUrlsModel({
     this.website,
     this.technicalDoc,
     this.twitter,
@@ -125,8 +125,8 @@ class DashboardUrlsModel {
     this.sourceCode,
   });
 
-  factory DashboardUrlsModel.fromJson(JSON json) =>
-      _$DashboardUrlsModelFromJson(json);
+  factory CryptocurrencyUrlsModel.fromJson(JSON json) =>
+      _$CryptocurrencyUrlsModelFromJson(json);
 
-  JSON toJson() => _$DashboardUrlsModelToJson(this);
+  JSON toJson() => _$CryptocurrencyUrlsModelToJson(this);
 }

@@ -1,4 +1,4 @@
-class DashboardCryptoInfo {
+class CryptoInfo {
   final String name;
   final String symbol;
   final String? logo;
@@ -8,7 +8,7 @@ class DashboardCryptoInfo {
   final List<String>? technicalDoc;
   final List<String>? sourceCode;
 
-  DashboardCryptoInfo({
+  CryptoInfo({
     required this.name,
     required this.symbol,
     this.logo,

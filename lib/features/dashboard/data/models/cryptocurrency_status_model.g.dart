@@ -1,14 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'dashboard_status_model.dart';
+part of 'cryptocurrency_status_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-DashboardStatusModel _$DashboardStatusModelFromJson(
+CryptocurrencyStatusModel _$CryptocurrencyStatusModelFromJson(
   Map<String, dynamic> json,
-) => DashboardStatusModel(
+) => CryptocurrencyStatusModel(
   timestamp: json['timestamp'] as String?,
   errorCode: (json['error_code'] as num?)?.toInt(),
   errorMessage: json['error_message'] as String?,
@@ -17,8 +17,8 @@ DashboardStatusModel _$DashboardStatusModelFromJson(
   notice: json['notice'] as String?,
 );
 
-Map<String, dynamic> _$DashboardStatusModelToJson(
-  DashboardStatusModel instance,
+Map<String, dynamic> _$CryptocurrencyStatusModelToJson(
+  CryptocurrencyStatusModel instance,
 ) => <String, dynamic>{
   'timestamp': instance.timestamp,
   'error_code': instance.errorCode,

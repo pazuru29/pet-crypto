@@ -15,32 +15,31 @@ class ProfileLocaleWidget extends StatelessWidget {
     final localeProvider = context.watch<S>();
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
+    return Card(
       margin: .only(left: 16, right: 16, top: 16),
-      padding: .symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: .circular(10),
-      ),
-      child: Column(
-        mainAxisSize: .min,
-        crossAxisAlignment: .start,
-        spacing: 8,
-        children: [
-          AppText(
-            text: S.of(context).profileLocalization,
-            textStyle: AppTextStyle.bodyBold,
-            textColor: colorScheme.onPrimaryContainer,
-          ),
-          AppDropdownMenu(
-            initialSelection: localeProvider.locale.languageCode,
-            onSelected: onLanguageChoose,
-            entries: S.supportedLocales.keys.toList(),
-            labelBuilder: (localeCode) {
-              return localeCode.toUpperCase();
-            },
-          ),
-        ],
+      color: colorScheme.primaryContainer,
+      child: Padding(
+        padding: .symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
+          spacing: 8,
+          children: [
+            AppText(
+              text: S.of(context).profileLocalization,
+              textStyle: AppTextStyle.bodyBold,
+              textColor: colorScheme.onPrimaryContainer,
+            ),
+            AppDropdownMenu(
+              initialSelection: localeProvider.locale.languageCode,
+              onSelected: onLanguageChoose,
+              entries: S.supportedLocales.keys.toList(),
+              labelBuilder: (localeCode) {
+                return localeCode.toUpperCase();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

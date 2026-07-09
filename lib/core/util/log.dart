@@ -12,6 +12,7 @@ class Log {
     Logger.root.onRecord.listen((record) {
       debugPrint(
         '${record.level.name} [${record.time.toIso8601String()}]:\n${record.message}',
+        wrapWidth: 1024,
       );
     });
   }

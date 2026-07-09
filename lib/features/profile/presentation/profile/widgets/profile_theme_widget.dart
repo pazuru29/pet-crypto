@@ -29,44 +29,43 @@ class _ProfileThemeWidgetState extends State<ProfileThemeWidget> {
     final themeProvider = context.watch<AppThemeProvider>();
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
+    return Card(
       margin: .only(left: 16, right: 16, top: 16),
-      padding: .symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: .circular(10),
-      ),
-      child: Column(
-        mainAxisSize: .min,
-        crossAxisAlignment: .start,
-        spacing: 8,
-        children: [
-          AppText(
-            text: S.of(context).profileTheme,
-            textStyle: AppTextStyle.bodyBold,
-            textColor: colorScheme.onPrimaryContainer,
-          ),
-          AppRowBuilder(
-            itemCount: ThemeMode.values.length,
-            builder: (context, index) {
-              bool isSelected = themeProvider.mode.index == index;
-              return AppIconButton.svgIcon(
-                padding: .all(12),
-                borderRadius: .zero,
-                svgIcon: listOfThemeIcons[index],
-                backgroundColor: isSelected
-                    ? colorScheme.primary
-                    : Colors.transparent,
-                iconColor: isSelected
-                    ? colorScheme.onPrimary
-                    : colorScheme.onPrimaryContainer,
-                highlightColor: colorScheme.primary.withValues(alpha: 0.3),
-                splashColor: colorScheme.primary.withValues(alpha: 0.3),
-                onPressed: () => widget.onButtonPressed(index),
-              );
-            },
-          ),
-        ],
+      color: colorScheme.primaryContainer,
+      child: Padding(
+        padding: .symmetric(horizontal: 16, vertical: 8),
+        child: Column(
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
+          spacing: 8,
+          children: [
+            AppText(
+              text: S.of(context).profileTheme,
+              textStyle: AppTextStyle.bodyBold,
+              textColor: colorScheme.onPrimaryContainer,
+            ),
+            AppRowBuilder(
+              itemCount: ThemeMode.values.length,
+              builder: (context, index) {
+                bool isSelected = themeProvider.mode.index == index;
+                return AppIconButton.svgIcon(
+                  padding: .all(12),
+                  borderRadius: .zero,
+                  svgIcon: listOfThemeIcons[index],
+                  backgroundColor: isSelected
+                      ? colorScheme.primary
+                      : Colors.transparent,
+                  iconColor: isSelected
+                      ? colorScheme.onPrimary
+                      : colorScheme.onPrimaryContainer,
+                  highlightColor: colorScheme.primary.withValues(alpha: 0.3),
+                  splashColor: colorScheme.primary.withValues(alpha: 0.3),
+                  onPressed: () => widget.onButtonPressed(index),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

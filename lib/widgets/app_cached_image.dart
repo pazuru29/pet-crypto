@@ -2,22 +2,26 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
-class ProfileImage extends StatelessWidget {
+class AppCachedImage extends StatelessWidget {
   final double height;
   final double width;
   final Color backgroundColor;
   final bool needPlaceHolder;
   final Color iconPlaceHolderColor;
+  final IconData icon;
   final String? imageUrl;
+  final BorderRadius? borderRadius;
 
-  const ProfileImage({
+  const AppCachedImage({
     super.key,
     required this.height,
     required this.width,
     required this.backgroundColor,
     required this.needPlaceHolder,
     required this.iconPlaceHolderColor,
+    required this.icon,
     this.imageUrl,
+    this.borderRadius,
   });
 
   @override
@@ -26,33 +30,45 @@ class ProfileImage extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        borderRadius: .circular(100),
+        borderRadius: borderRadius ?? .circular(100),
         color: backgroundColor,
       ),
       child: ClipRRect(
-        borderRadius: .circular(100),
+        borderRadius: borderRadius ?? .circular(100),
         child: needPlaceHolder
-            ? Icon(Icons.person, color: iconPlaceHolderColor)
+            ? Icon(icon, color: iconPlaceHolderColor)
             : imageUrl == null
-            ? _LoadingProfileImage(height: height, width: width)
+            ? _LoadingAppCachedImage(
+                height: height,
+                width: width,
+                color: backgroundColor,
+              )
             : CachedNetworkImage(
                 imageUrl: imageUrl!,
                 fit: .contain,
-                placeholder: (context, url) =>
-                    _LoadingProfileImage(height: height, width: width),
+                placeholder: (context, url) => _LoadingAppCachedImage(
+                  height: height,
+                  width: width,
+                  color: backgroundColor,
+                ),
                 errorWidget: (context, url, error) =>
-                    Icon(Icons.person, color: iconPlaceHolderColor),
+                    Icon(icon, color: iconPlaceHolderColor),
               ),
       ),
     );
   }
 }
 
-class _LoadingProfileImage extends StatelessWidget {
+class _LoadingAppCachedImage extends StatelessWidget {
   final double height;
   final double width;
+  final Color color;
 
-  const _LoadingProfileImage({required this.height, required this.width});
+  const _LoadingAppCachedImage({
+    required this.height,
+    required this.width,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +76,7 @@ class _LoadingProfileImage extends StatelessWidget {
       child: Container(
         height: height,
         width: width,
-        decoration: BoxDecoration(color: Colors.grey.shade300),
+        decoration: BoxDecoration(color: color),
       ),
     );
   }

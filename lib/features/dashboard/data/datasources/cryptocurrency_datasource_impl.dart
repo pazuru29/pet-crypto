@@ -1,14 +1,14 @@
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
-import 'package:pet_crypto/features/dashboard/data/datasources/dashboard_cryptocurrency_datasource.dart';
+import 'package:pet_crypto/features/dashboard/data/datasources/cryptocurrency_datasource.dart';
+import 'package:pet_crypto/features/dashboard/data/models/crypto_info_response_model.dart';
 import 'package:pet_crypto/features/dashboard/data/models/dashboard_cryptocurrency_request_model.dart';
 import 'package:pet_crypto/features/dashboard/data/models/dashboard_cryptocurrency_response_model.dart';
 
-class DashboardCryptocurrencyDatasourceImpl
-    implements DashboardCryptocurrencyDataSource {
+class CryptocurrencyDatasourceImpl implements CryptocurrencyDatasource {
   final BaseHttpClient client;
 
-  const DashboardCryptocurrencyDatasourceImpl({required this.client});
+  const CryptocurrencyDatasourceImpl({required this.client});
 
   @override
   Future<DashboardCryptocurrencyResponseModel> fetchCryptoCurrency({
@@ -29,6 +29,25 @@ class DashboardCryptocurrencyDatasourceImpl
     try {
       return DashboardCryptocurrencyResponseModel.fromJson(body);
     } catch (e) {
+      throw ParsingException(e.toString());
+    }
+  }
+
+  @override
+  Future<CryptoInfoResponseModel> fetchCryptoInfo(int? id) async {
+    final (status, body) = await client.get(
+      '/v2/cryptocurrency/info',
+      queryParameters: {'id': '$id'},
+    );
+
+    if (status != 200 || body == null) {
+      throw ServerException('Server error: $status');
+    }
+
+    try {
+      return CryptoInfoResponseModel.fromJson(body);
+    } catch (e) {
+      print(e.toString());
       throw ParsingException(e.toString());
     }
   }

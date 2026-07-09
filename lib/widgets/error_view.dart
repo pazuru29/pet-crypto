@@ -22,6 +22,7 @@ class ErrorView extends StatelessWidget {
               text: message ?? 'Something went wrong',
               textStyle: .headerSemibold,
               textColor: Theme.of(context).colorScheme.onSurface,
+              textAlign: .center,
             ),
             AppButton(onPressed: onTryAgain, text: 'Try Again'),
           ],
