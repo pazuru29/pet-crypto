@@ -1,3 +1,4 @@
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/profile/domain/repositories/profile_repository.dart';
@@ -15,8 +16,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
     try {
       UserDataModel model = local.fetchUserData();
       return Ok(model.toEntity());
+    } on StorageException catch (e) {
+      return Err(StorageFailure(e.message));
     } catch (e) {
-      return Err(StorageFailure(e.toString()));
+      return Err(UnexpectedFailure(e.toString()));
     }
   }
 }

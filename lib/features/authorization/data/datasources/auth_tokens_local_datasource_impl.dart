@@ -23,6 +23,8 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
         accessToken: accessToken,
         refreshToken: refreshToken,
       );
+    } on StorageException {
+      rethrow;
     } catch (_) {
       throw StorageException('Something went wrong');
     }
@@ -32,6 +34,8 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
   Future<String?> fetchAccessToken() async {
     try {
       return await secureStorage.read(AppStorageKeys.accessTokenKey);
+    } on StorageException {
+      rethrow;
     } catch (_) {
       throw StorageException('Something went wrong');
     }
@@ -41,6 +45,8 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
   Future<String?> fetchRefreshToken() async {
     try {
       return await secureStorage.read(AppStorageKeys.refreshTokenKey);
+    } on StorageException {
+      rethrow;
     } catch (_) {
       throw StorageException('Something went wrong');
     }
@@ -62,6 +68,8 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
 
       await secureStorage.write(AppStorageKeys.accessTokenKey, accessToken);
       await secureStorage.write(AppStorageKeys.refreshTokenKey, refreshToken);
+    } on StorageException {
+      rethrow;
     } catch (_) {
       throw StorageException('Something went wrong');
     }
@@ -72,6 +80,8 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
     try {
       await secureStorage.delete(AppStorageKeys.accessTokenKey);
       await secureStorage.delete(AppStorageKeys.refreshTokenKey);
+    } on StorageException {
+      rethrow;
     } catch (_) {
       throw StorageException('Something went wrong');
     }

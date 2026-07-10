@@ -35,12 +35,14 @@ class CryptocurrencyDatasourceImpl implements CryptocurrencyDatasource {
           throw AuthorizationException('Access Denied');
         case 404: //not found
           throw ServerException('Data not found');
-        case 500: //internal server error
+        case int status when status >= 500 && status < 600: //server error
           throw ServerException('Server is unavailable');
         default:
           throw NetworkException('Check your Internet connection');
       }
-    } catch (e) {
+    } on AppException {
+      rethrow;
+    } catch (_) {
       throw NetworkException('Check your Internet connection');
     }
 
@@ -69,12 +71,14 @@ class CryptocurrencyDatasourceImpl implements CryptocurrencyDatasource {
           throw AuthorizationException('Access Denied');
         case 404: //not found
           throw ServerException('Data not found');
-        case 500: //internal server error
+        case int status when status >= 500 && status < 600: //server error
           throw ServerException('Server is unavailable');
         default:
           throw NetworkException('Check your Internet connection');
       }
-    } catch (e) {
+    } on AppException {
+      rethrow;
+    } catch (_) {
       throw NetworkException('Check your Internet connection');
     }
 
