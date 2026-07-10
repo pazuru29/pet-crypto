@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:pet_crypto/core/network/http_client/dashboard_dio_helper.dart';
+import 'package:pet_crypto/core/network/helper/app_request_headers.dart';
 
 class DashboardApiInterceptor extends Interceptor {
   final String apiKey;
@@ -8,7 +8,10 @@ class DashboardApiInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers.putIfAbsent(DashboardDioHelper.apiKeyHeader, () => apiKey);
+    options.headers.putIfAbsent(
+      AppRequestHeaders.dashboardApiKeyHeader,
+      () => apiKey,
+    );
     super.onRequest(options, handler);
   }
 }

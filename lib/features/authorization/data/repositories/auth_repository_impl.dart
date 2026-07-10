@@ -54,6 +54,29 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Result<void>> updateCurrentUser() async {
+    try {
+      final response = await remote.fetchCurrentUser();
+
+      UserData userData = response.toUserDataEntity();
+
+      await localUser.saveUserData(UserDataModel.fromEntity(userData));
+
+      return Ok(null);
+    } on ServerException {
+      return Err(RemoteFailure('Authorization service unavailable'));
+    } on NetworkException {
+      return Err(NetworkFailure('Check your connection'));
+    } on ParsingException {
+      return Err(ParsingFailure('Failed to process authorization data'));
+    } on StorageException catch (e) {
+      return Err(StorageFailure(e.message));
+    } catch (e) {
+      return Err(UnexpectedFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<void>> refreshToken() async {
     try {
       String? token = await localTokens.fetchRefreshToken();

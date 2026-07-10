@@ -11,55 +11,85 @@ class DioClientImpl implements BaseHttpClient {
   @override
   Future<(int?, JSON?)> get(
     String path, {
+    Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
     return _request(
-      () => dio.get(path, data: body, queryParameters: queryParameters),
+      () => dio.get(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: headers),
+      ),
     );
   }
 
   @override
   Future<(int?, JSON?)> post(
     String path, {
+    Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
     return _request(
-      () => dio.post(path, data: body, queryParameters: queryParameters),
+      () => dio.post(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: headers),
+      ),
     );
   }
 
   @override
   Future<(int?, JSON?)> put(
     String path, {
+    Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
     return _request(
-      () => dio.put(path, data: body, queryParameters: queryParameters),
+      () => dio.put(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: headers),
+      ),
     );
   }
 
   @override
   Future<(int?, JSON?)> patch(
     String path, {
+    Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
     return _request(
-      () => dio.patch(path, data: body, queryParameters: queryParameters),
+      () => dio.patch(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: headers),
+      ),
     );
   }
 
   @override
   Future<(int?, JSON?)> delete(
     String path, {
+    Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
     return _request(
-      () => dio.delete(path, data: body, queryParameters: queryParameters),
+      () => dio.delete(
+        path,
+        data: body,
+        queryParameters: queryParameters,
+        options: Options(headers: headers),
+      ),
     );
   }
 

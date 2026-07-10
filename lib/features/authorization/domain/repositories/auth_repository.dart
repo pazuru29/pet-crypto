@@ -5,6 +5,8 @@ import 'package:pet_crypto/features/authorization/domain/entities/auth_tokens.da
 abstract interface class AuthRepository {
   Future<Result<AuthTokens>> login(AuthRequest request);
 
+  Future<Result<void>> updateCurrentUser();
+
   Future<Result<void>> refreshToken();
 
   Future<Result<AuthTokens?>> restoreSession();

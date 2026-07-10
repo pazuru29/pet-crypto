@@ -1,10 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
-import 'package:pet_crypto/core/network/http_client/base_dio_helper.dart';
+import 'package:pet_crypto/core/network/helper/base_dio_helper.dart';
 
 class DashboardDioHelper extends BaseDioHelper {
-  static const String apiKeyHeader = 'X-CMC_PRO_API_KEY';
-
   late final String _baseURL;
   late final String _apiKey;
   late final BaseOptions _options;

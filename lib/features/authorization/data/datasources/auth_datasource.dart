@@ -6,6 +6,8 @@ import 'package:pet_crypto/features/authorization/data/models/auth_response_mode
 abstract interface class AuthDatasource {
   Future<AuthResponseModel> login(AuthRequestModel request);
 
+  Future<AuthResponseModel> fetchCurrentUser();
+
   Future<AuthRefreshResponseModel> refreshToken(
     AuthRefreshRequestModel request,
   );

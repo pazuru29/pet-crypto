@@ -7,7 +7,24 @@ class AuthCheckStatus {
 
   const AuthCheckStatus({required this.repo});
 
-  Future<Result<AuthTokens?>> call() {
-    return repo.restoreSession();
+  Future<Result<bool>> call() async {
+    Result<AuthTokens?> response = await repo.restoreSession();
+
+    switch (response) {
+      case Ok(value: final session):
+        if (session == null) {
+          return Ok(false);
+        }
+        final userResponse = await repo.updateCurrentUser();
+        switch (userResponse) {
+          case Ok():
+            return Ok(true);
+          case Err(failure: final error):
+            return Err(error);
+        }
+
+      case Err(failure: final error):
+        return Err(error);
+    }
   }
 }

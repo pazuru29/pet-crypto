@@ -8,7 +8,6 @@ import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_request.dart';
 import 'package:pet_crypto/features/authorization/domain/entities/auth_status.dart';
-import 'package:pet_crypto/features/authorization/domain/entities/auth_tokens.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
@@ -41,15 +40,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(state.copyWith(status: .loading));
+
     final response = await authStatus.call();
     switch (response) {
-      case Ok(value: final session):
-        if (session == null) {
+      case Ok(value: final hasSession):
+        if (!hasSession) {
           await _unauthorize(emit);
           return;
         }
-
-        await _authorize(emit, session);
+        await _authorize(emit);
       case Err(failure: final error):
         await _unauthorize(emit, errorMessage: error.message);
     }
@@ -65,8 +64,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     switch (response) {
-      case Ok(value: final session):
-        await _authorize(emit, session);
+      case Ok():
+        await _authorize(emit);
       case Err(failure: final error):
         await _unauthorize(
           emit,
@@ -111,7 +110,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _authorize(Emitter<AuthState> emit, AuthTokens session) async {
+  Future<void> _authorize(Emitter<AuthState> emit) async {
     emit(state.copyWith(status: .loaded, authStatus: .authorized));
   }
 

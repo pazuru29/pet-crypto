@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:pet_crypto/core/network/http_client/auth_dio_helper.dart';
+import 'package:pet_crypto/core/network/helper/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
 import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
+import 'package:pet_crypto/core/network/interceptors/auth_api_interceptor.dart';
 import 'package:pet_crypto/core/network/interceptors/logging_interceptor.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
@@ -20,13 +21,24 @@ class RegisterAuthDependencies {
   static Future<void> call(GetIt i) async {
     String dioClientName = 'AuthDioClientImpl';
 
+    // Local Datasource
+    i.registerLazySingleton<AuthTokensLocalDatasource>(
+      () => AuthTokensLocalDatasourceImpl(secureStorage: i()),
+    );
+
     // Helper
     AuthDioHelper httpHelper = AuthDioHelper();
     await httpHelper.init();
 
     // Dio
     Dio dio = Dio(httpHelper.options)
-      ..interceptors.addAll([LoggingInterceptor()]);
+      ..interceptors.addAll([
+        AuthApiInterceptor(
+          fetchAccessToken: () =>
+              i<AuthTokensLocalDatasource>().fetchAccessToken(),
+        ),
+        LoggingInterceptor(),
+      ]);
 
     i.registerLazySingleton<BaseHttpClient>(
       () => DioClientImpl(dio: dio),
@@ -36,11 +48,6 @@ class RegisterAuthDependencies {
     // Remote DataSources
     i.registerLazySingleton<AuthDatasource>(
       () => AuthDatasourceImpl(client: i.get(instanceName: dioClientName)),
-    );
-
-    // Local Datasource
-    i.registerLazySingleton<AuthTokensLocalDatasource>(
-      () => AuthTokensLocalDatasourceImpl(secureStorage: i()),
     );
 
     // Repositories

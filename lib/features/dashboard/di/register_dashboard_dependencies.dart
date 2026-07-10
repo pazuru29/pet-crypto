@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
-import 'package:pet_crypto/core/network/http_client/dashboard_dio_helper.dart';
+import 'package:pet_crypto/core/network/helper/dashboard_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
 import 'package:pet_crypto/core/network/interceptors/dashboard_api_interceptor.dart';
 import 'package:pet_crypto/core/network/interceptors/logging_interceptor.dart';
