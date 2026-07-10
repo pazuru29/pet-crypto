@@ -53,7 +53,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     const int start = 1;
     const int limit = 20;
 
-    final response = await _getCryptocurrency(emit, start: start, limit: limit);
+    final response = await _getCryptocurrency(start: start, limit: limit);
 
     switch (response) {
       case Ok(value: final listOfCrypto):
@@ -86,11 +86,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       const int start = 1;
       const int limit = 20;
 
-      final response = await _getCryptocurrency(
-        emit,
-        start: start,
-        limit: limit,
-      );
+      final response = await _getCryptocurrency(start: start, limit: limit);
 
       switch (response) {
         case Ok(value: final listOfCrypto):
@@ -161,8 +157,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     }
   }
 
-  Future<Result<List<DashboardCryptocurrency>>> _getCryptocurrency(
-    Emitter<DashboardState> emit, {
+  Future<Result<List<DashboardCryptocurrency>>> _getCryptocurrency({
     required int start,
     required int limit,
   }) async {
