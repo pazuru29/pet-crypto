@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 
 class CryptoInfoLinks extends StatelessWidget {
@@ -30,19 +31,19 @@ class CryptoInfoLinks extends StatelessWidget {
           children: [
             if (website?.isNotEmpty == true)
               _TitleList(
-                title: 'Website',
+                title: S.of(context).cryptoDetailsWebsite,
                 list: website!,
                 onLinkTap: onLinkTap,
               ),
             if (technicalDoc?.isNotEmpty == true)
               _TitleList(
-                title: 'Technical doc',
+                title: S.of(context).cryptoDetailsTechnicalDoc,
                 list: technicalDoc!,
                 onLinkTap: onLinkTap,
               ),
             if (sourceCode?.isNotEmpty == true)
               _TitleList(
-                title: 'Source code',
+                title: S.of(context).cryptoDetailsSourceCode,
                 list: sourceCode!,
                 onLinkTap: onLinkTap,
               ),

@@ -58,4 +58,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String loginLengthPassword(int count) {
     return 'The password must be $count characters or more';
   }
+
+  @override
+  String get errorViewPlaceholder => 'Something went wrong...';
+
+  @override
+  String get errorViewTryAgain => 'Try Again';
+
+  @override
+  String get cryptoDetailsTitle => 'Details';
+
+  @override
+  String cryptoDetailsCoinName(String name, String symbol) {
+    return '$name ($symbol)';
+  }
+
+  @override
+  String get cryptoDetailsWebsite => 'Website';
+
+  @override
+  String get cryptoDetailsTechnicalDoc => 'Technical doc';
+
+  @override
+  String get cryptoDetailsSourceCode => 'Source code';
 }

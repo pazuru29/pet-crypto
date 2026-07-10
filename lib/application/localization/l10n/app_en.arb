@@ -84,5 +84,43 @@
         "example": "8"
       }
     }
+  },
+  "errorViewPlaceholder": "Something went wrong...",
+  "@errorViewPlaceholder": {
+    "description": "Text if error view show but error message is null"
+  },
+  "errorViewTryAgain": "Try Again",
+  "@errorViewTryAgain": {
+    "description": "Text of try again button"
+  },
+  "cryptoDetailsTitle": "Details",
+  "@cryptoDetailsTitle": {
+    "description": "Title of crypto details screen"
+  },
+  "cryptoDetailsCoinName": "{name} ({symbol})",
+  "@cryptoDetailsCoinName": {
+    "description": "Name of coin with symbol",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bitcoin"
+      },
+      "symbol": {
+        "type": "String",
+        "example": "BTC"
+      }
+    }
+  },
+  "cryptoDetailsWebsite": "Website",
+  "@cryptoDetailsWebsite": {
+    "description": "Title of website links"
+  },
+  "cryptoDetailsTechnicalDoc": "Technical doc",
+  "@cryptoDetailsTechnicalDoc": {
+    "description": "Title of technical doc links"
+  },
+  "cryptoDetailsSourceCode": "Source code",
+  "@cryptoDetailsSourceCode": {
+    "description": "Title of source code links"
   }
 }

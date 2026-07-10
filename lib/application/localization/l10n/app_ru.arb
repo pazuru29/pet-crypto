@@ -13,5 +13,12 @@
   "loginPassword": "Пароль",
   "loginCorrectUsername": "Пожалуйста, введите правильное имя пользователя",
   "loginCorrectPassword": "Пожалуйста, введите правильный пароль",
-  "loginLengthPassword": "Пароль должен содержать минимум {count} символов"
+  "loginLengthPassword": "Пароль должен содержать минимум {count} символов",
+  "errorViewPlaceholder": "Что-то пошло не так...",
+  "errorViewTryAgain": "Попробовать снова",
+  "cryptoDetailsTitle": "Детали",
+  "cryptoDetailsCoinName": "{name} ({symbol})",
+  "cryptoDetailsWebsite": "Веб-сайт",
+  "cryptoDetailsTechnicalDoc": "Техническая документация",
+  "cryptoDetailsSourceCode": "Исходный код"
 }

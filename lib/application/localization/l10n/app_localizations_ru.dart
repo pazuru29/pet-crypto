@@ -59,4 +59,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String loginLengthPassword(int count) {
     return 'Пароль должен содержать минимум $count символов';
   }
+
+  @override
+  String get errorViewPlaceholder => 'Что-то пошло не так...';
+
+  @override
+  String get errorViewTryAgain => 'Попробовать снова';
+
+  @override
+  String get cryptoDetailsTitle => 'Детали';
+
+  @override
+  String cryptoDetailsCoinName(String name, String symbol) {
+    return '$name ($symbol)';
+  }
+
+  @override
+  String get cryptoDetailsWebsite => 'Веб-сайт';
+
+  @override
+  String get cryptoDetailsTechnicalDoc => 'Техническая документация';
+
+  @override
+  String get cryptoDetailsSourceCode => 'Исходный код';
 }

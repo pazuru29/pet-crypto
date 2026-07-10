@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
 import 'package:pet_crypto/widgets/app_cached_image.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
@@ -36,7 +37,7 @@ class CryptoInfoHeader extends StatelessWidget {
             imageUrl: logo,
           ),
           AppText(
-            text: '$name ($symbol)',
+            text: S.of(context).cryptoDetailsCoinName(name, symbol),
             textStyle: AppTextStyle.headerBold,
             textColor: colorScheme.onPrimary,
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/core/ui/alert_helper.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/crypto_details/crypto_details_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/crypto_details/widgets/crypto_details_loading_view.dart';
@@ -33,7 +34,7 @@ class _CryptoDetailsScreenState extends State<CryptoDetailsScreen> {
         bottom: false,
         child: Column(
           children: [
-            AppTitle(title: 'Details', secondary: true),
+            AppTitle(title: S.of(context).cryptoDetailsTitle, secondary: true),
             Expanded(
               child: BlocConsumer<CryptoDetailsBloc, CryptoDetailsState>(
                 listener: (context, state) {

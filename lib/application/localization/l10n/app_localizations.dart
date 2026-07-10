@@ -187,6 +187,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The password must be {count} characters or more'**
   String loginLengthPassword(int count);
+
+  /// Text if error view show but error message is null
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong...'**
+  String get errorViewPlaceholder;
+
+  /// Text of try again button
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get errorViewTryAgain;
+
+  /// Title of crypto details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get cryptoDetailsTitle;
+
+  /// Name of coin with symbol
+  ///
+  /// In en, this message translates to:
+  /// **'{name} ({symbol})'**
+  String cryptoDetailsCoinName(String name, String symbol);
+
+  /// Title of website links
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get cryptoDetailsWebsite;
+
+  /// Title of technical doc links
+  ///
+  /// In en, this message translates to:
+  /// **'Technical doc'**
+  String get cryptoDetailsTechnicalDoc;
+
+  /// Title of source code links
+  ///
+  /// In en, this message translates to:
+  /// **'Source code'**
+  String get cryptoDetailsSourceCode;
 }
 
 class _AppLocalizationsDelegate

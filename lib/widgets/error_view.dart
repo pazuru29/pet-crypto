@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/widgets/app_button.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
 
@@ -19,12 +20,15 @@ class ErrorView extends StatelessWidget {
           spacing: 16,
           children: [
             AppText(
-              text: message ?? 'Something went wrong',
+              text: message ?? S.of(context).errorViewPlaceholder,
               textStyle: .headerSemibold,
               textColor: Theme.of(context).colorScheme.onSurface,
               textAlign: .center,
             ),
-            AppButton(onPressed: onTryAgain, text: 'Try Again'),
+            AppButton(
+              onPressed: onTryAgain,
+              text: S.of(context).errorViewTryAgain,
+            ),
           ],
         ),
       ),
