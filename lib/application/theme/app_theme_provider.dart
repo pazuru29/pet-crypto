@@ -19,7 +19,15 @@ class AppThemeProvider extends ChangeNotifier {
   ThemeMode get mode => _mode;
 
   void init() {
-    final index = storage.getInt('themeMode') ?? 0;
+    final storageIndex = storage.getInt('themeMode');
+    final length = ThemeMode.values.length;
+
+    final index = storageIndex == null
+        ? 0
+        : storageIndex >= 0 && storageIndex < length
+        ? storageIndex
+        : 0;
+
     _mode = ThemeMode.values[index];
     notifyListeners();
   }

@@ -64,7 +64,16 @@ class CryptoDetailsBloc extends Bloc<CryptoDetailsEvent, CryptoDetailsState> {
       return;
     }
 
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    bool opened;
+
+    try {
+      opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      emit(
+        state.copyWith(alertToShow: BlocMessage.error('Could not open link')),
+      );
+      return;
+    }
 
     if (!opened) {
       emit(

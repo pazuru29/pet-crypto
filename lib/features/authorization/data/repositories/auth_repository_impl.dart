@@ -32,12 +32,16 @@ class AuthRepositoryImpl implements AuthRepository {
       final response = await remote.login(AuthRequestModel.fromEntity(request));
 
       AuthTokens session = response.toAuthTokensEntity();
-
-      await localTokens.saveTokens(AuthTokensModel.fromEntity(session));
-
       UserData userData = response.toUserDataEntity();
 
-      await localUser.saveUserData(UserDataModel.fromEntity(userData));
+      try {
+        await localUser.saveUserData(UserDataModel.fromEntity(userData));
+        await localTokens.saveTokens(AuthTokensModel.fromEntity(session));
+      } catch (e) {
+        await localUser.clearUserData();
+        await localTokens.clearTokens();
+        rethrow;
+      }
 
       return Ok(session);
     } on AuthorizationException catch (e) {

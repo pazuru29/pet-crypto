@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
+import 'package:pet_crypto/widgets/error_view.dart';
 
 class AuthGateScreen extends StatefulWidget {
   const AuthGateScreen({super.key});
@@ -21,8 +22,18 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: Center(child: CircularProgressIndicator())),
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) => switch (state.status) {
+        .error => ErrorView(
+          message: state.errorMessage,
+          onTryAgain: () {
+            _authCubit.add(AuthCheckEvent());
+          },
+        ),
+        .initial || .loading || .loaded => Scaffold(
+          body: SafeArea(child: Center(child: CircularProgressIndicator())),
+        ),
+      },
     );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
@@ -49,8 +50,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           return;
         }
         await _authorize(emit);
-      case Err():
-        await _unauthorize(emit);
+      case Err(failure: final error):
+        if (error case AuthorizationFailure()) {
+          await _unauthorize(emit);
+        } else {
+          emit(state.copyWith(status: .error, errorMessage: error.message));
+        }
     }
   }
 
