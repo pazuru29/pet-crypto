@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/network/helper/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
@@ -64,7 +65,14 @@ class RegisterAuthDependencies {
           };
         },
         onSessionExpired: () async {
-          await i<AuthRepository>().clearSession();
+          final result = await i<AuthRepository>().clearSession();
+
+          if (result case Err(failure: final failure)) {
+            Logger(
+              'AuthSession',
+            ).severe('Failed to clear expired session: ${failure.message}');
+          }
+
           i<AuthBloc>().add(AuthSessionExpiredEvent());
         },
       ),

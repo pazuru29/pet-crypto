@@ -27,6 +27,11 @@ class CryptocurrencyDatasourceImpl implements CryptocurrencyDatasource {
         },
       );
     } on DioException catch (e) {
+      final error = e.error;
+      if (error is AppException) {
+        throw error;
+      }
+
       switch (e.response?.statusCode) {
         case 400: //bad request
         case 401: //not authorized
@@ -63,6 +68,11 @@ class CryptocurrencyDatasourceImpl implements CryptocurrencyDatasource {
         queryParameters: {'id': '$id'},
       );
     } on DioException catch (e) {
+      final error = e.error;
+      if (error is AppException) {
+        throw error;
+      }
+
       switch (e.response?.statusCode) {
         case 400: //bad request
         case 401: //not authorized

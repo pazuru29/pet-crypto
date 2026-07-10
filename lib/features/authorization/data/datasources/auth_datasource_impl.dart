@@ -22,6 +22,11 @@ class AuthDatasourceImpl implements AuthDatasource {
     try {
       result = await client.post<JSON>('/auth/login', body: request.toJson());
     } on DioException catch (e) {
+      final error = e.error;
+      if (error is AppException) {
+        throw error;
+      }
+
       switch (e.response?.statusCode) {
         case 400: //bad request
         case 401: //not authorized
@@ -58,6 +63,11 @@ class AuthDatasourceImpl implements AuthDatasource {
         headers: {AppRequestHeaders.authRequiresAccessToken: true},
       );
     } on DioException catch (e) {
+      final error = e.error;
+      if (error is AppException) {
+        throw error;
+      }
+
       switch (e.response?.statusCode) {
         case 400: //bad request
         case 401: //not authorized
@@ -96,6 +106,11 @@ class AuthDatasourceImpl implements AuthDatasource {
         body: request.toJson(),
       );
     } on DioException catch (e) {
+      final error = e.error;
+      if (error is AppException) {
+        throw error;
+      }
+
       switch (e.response?.statusCode) {
         case 400: //bad request
         case 401: //not authorized

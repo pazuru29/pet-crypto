@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/network/helper/app_request_headers.dart';
 
 class AuthApiInterceptor extends Interceptor {
@@ -26,7 +27,10 @@ class AuthApiInterceptor extends Interceptor {
 
     if (accessToken == null || accessToken.isEmpty) {
       handler.reject(
-        DioException(requestOptions: options, error: 'Access token is missing'),
+        DioException(
+          requestOptions: options,
+          error: const AuthorizationException('Access token is missing'),
+        ),
       );
       return;
     }
