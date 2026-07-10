@@ -35,7 +35,8 @@ class RegisterAuthDependencies {
     await httpHelper.init();
 
     // Dio
-    final Dio refreshDio = Dio(httpHelper.options);
+    final Dio refreshDio = Dio(httpHelper.options)
+      ..interceptors.add(LoggingInterceptor());
 
     i.registerLazySingleton<BaseHttpClient>(
       () => DioClientImpl(dio: refreshDio),
