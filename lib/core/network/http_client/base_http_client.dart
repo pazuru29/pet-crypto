@@ -1,35 +1,35 @@
 import 'package:pet_crypto/core/util/typedef.dart';
 
 abstract interface class BaseHttpClient {
-  Future<(int? status, JSON? json)> get(
+  Future<(int? status, T data)> get<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   });
 
-  Future<(int? status, JSON? json)> post(
+  Future<(int? status, T data)> post<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   });
 
-  Future<(int? status, JSON? json)> put(
+  Future<(int? status, T data)> put<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   });
 
-  Future<(int? status, JSON? json)> patch(
+  Future<(int? status, T data)> patch<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   });
 
-  Future<(int? status, JSON? json)> delete(
+  Future<(int? status, T data)> delete<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,

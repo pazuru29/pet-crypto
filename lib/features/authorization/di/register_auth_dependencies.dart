@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/network/helper/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
 import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
@@ -57,12 +58,14 @@ class RegisterAuthDependencies {
           final result = await i<AuthRepository>().refreshToken();
 
           return switch (result) {
-            Ok() => true,
-            Err() => false,
+            Ok() => .refreshed,
+            Err(failure: final error) =>
+              error is AuthorizationFailure ? .rejected : .temporaryFailure,
           };
         },
-        onSessionExpired: () {
-          i<AuthBloc>().add(AuthLogoutEvent());
+        onSessionExpired: () async {
+          await i<AuthRepository>().clearSession();
+          i<AuthBloc>().add(AuthSessionExpiredEvent());
         },
       ),
       LoggingInterceptor(),

@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/network/helper/app_request_headers.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
+import 'package:pet_crypto/core/util/typedef.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_refresh_request_model.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_refresh_response_model.dart';
@@ -15,17 +17,30 @@ class AuthDatasourceImpl implements AuthDatasource {
 
   @override
   Future<AuthResponseModel> login(AuthRequestModel request) async {
-    final (status, body) = await client.post(
-      '/auth/login',
-      body: request.toJson(),
-    );
+    (int? statusCode, JSON body) result;
 
-    if (status != 200 || body == null) {
-      throw ServerException('Server error: $status');
+    try {
+      result = await client.post<JSON>('/auth/login', body: request.toJson());
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400: //bad request
+        case 401: //not authorized
+          throw AuthorizationException('Incorrect username or password');
+        case 403: //forbidden
+          throw AuthorizationException('Access Denied');
+        case 404: //not found
+          throw ServerException('Data not found');
+        case 500: //internal server error
+          throw ServerException('Server is unavailable');
+        default:
+          throw NetworkException('Check your Internet connection');
+      }
+    } catch (e) {
+      throw NetworkException('Check your Internet connection');
     }
 
     try {
-      return AuthResponseModel.fromJson(body);
+      return AuthResponseModel.fromJson(result.$2);
     } catch (e) {
       throw ParsingException(e.toString());
     }
@@ -33,17 +48,33 @@ class AuthDatasourceImpl implements AuthDatasource {
 
   @override
   Future<AuthResponseModel> fetchCurrentUser() async {
-    final (status, body) = await client.get(
-      '/auth/me',
-      headers: {AppRequestHeaders.authRequiresAccessToken: true},
-    );
+    (int? statusCode, JSON body) result;
 
-    if (status != 200 || body == null) {
-      throw ServerException('Server error: $status');
+    try {
+      result = await client.get<JSON>(
+        '/auth/me',
+        headers: {AppRequestHeaders.authRequiresAccessToken: true},
+      );
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400: //bad request
+        case 401: //not authorized
+          throw AuthorizationException('Token expired');
+        case 403: //forbidden
+          throw AuthorizationException('Access Denied');
+        case 404: //not found
+          throw ServerException('Data not found');
+        case 500: //internal server error
+          throw ServerException('Server is unavailable');
+        default:
+          throw NetworkException('Check your Internet connection');
+      }
+    } catch (e) {
+      throw NetworkException('Check your Internet connection');
     }
 
     try {
-      return AuthResponseModel.fromJson(body);
+      return AuthResponseModel.fromJson(result.$2);
     } catch (e) {
       throw ParsingException(e.toString());
     }
@@ -53,17 +84,33 @@ class AuthDatasourceImpl implements AuthDatasource {
   Future<AuthRefreshResponseModel> refreshToken(
     AuthRefreshRequestModel request,
   ) async {
-    final (status, body) = await refreshClient.post(
-      '/auth/refresh',
-      body: request.toJson(),
-    );
+    (int? statusCode, JSON body) result;
 
-    if (status != 200 || body == null) {
-      throw ServerException('Server error: $status');
+    try {
+      result = await refreshClient.post<JSON>(
+        '/auth/refresh',
+        body: request.toJson(),
+      );
+    } on DioException catch (e) {
+      switch (e.response?.statusCode) {
+        case 400: //bad request
+        case 401: //not authorized
+          throw AuthorizationException('Token expired');
+        case 403: //forbidden
+          throw AuthorizationException('Access Denied');
+        case 404: //not found
+          throw ServerException('Data not found');
+        case 500: //internal server error
+          throw ServerException('Server is unavailable');
+        default:
+          throw NetworkException('Check your Internet connection');
+      }
+    } catch (e) {
+      throw NetworkException('Check your Internet connection');
     }
 
     try {
-      return AuthRefreshResponseModel.fromJson(body);
+      return AuthRefreshResponseModel.fromJson(result.$2);
     } catch (e) {
       throw ParsingException(e.toString());
     }

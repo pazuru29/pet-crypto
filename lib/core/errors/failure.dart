@@ -11,6 +11,10 @@ class NetworkFailure extends Failure {
   const NetworkFailure(super.message);
 }
 
+class AuthorizationFailure extends Failure {
+  const AuthorizationFailure(super.message);
+}
+
 class RemoteFailure extends Failure {
   const RemoteFailure(super.message);
 }

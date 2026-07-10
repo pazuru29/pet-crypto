@@ -25,12 +25,14 @@ class DashboardCryptocurrencyRepositoryImpl
       final response = await remote.fetchCryptoCurrency(request: model);
 
       return Ok(response.toEntities());
-    } on ServerException {
-      return Err(RemoteFailure('Crypto data service unavailable'));
-    } on NetworkException {
-      return Err(NetworkFailure('Check your connection'));
-    } on ParsingException {
-      return Err(ParsingFailure('Failed to process cryptocurrency data'));
+    } on AuthorizationException catch (e) {
+      return Err(AuthorizationFailure(e.message));
+    } on ServerException catch (e) {
+      return Err(RemoteFailure(e.message));
+    } on NetworkException catch (e) {
+      return Err(NetworkFailure(e.message));
+    } on ParsingException catch (e) {
+      return Err(ParsingFailure(e.message));
     } catch (e) {
       return Err(UnexpectedFailure(e.toString()));
     }

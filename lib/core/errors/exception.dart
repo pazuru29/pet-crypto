@@ -11,6 +11,10 @@ class NetworkException extends AppException {
   const NetworkException(super.message);
 }
 
+class AuthorizationException extends AppException {
+  const AuthorizationException(super.message);
+}
+
 class ServerException extends AppException {
   const ServerException(super.message);
 }

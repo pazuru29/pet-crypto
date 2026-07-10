@@ -9,13 +9,13 @@ class DioClientImpl implements BaseHttpClient {
   DioClientImpl({required this.dio});
 
   @override
-  Future<(int?, JSON?)> get(
+  Future<(int?, T)> get<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
-    return _request(
+    return _request<T>(
       () => dio.get(
         path,
         data: body,
@@ -26,13 +26,13 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, JSON?)> post(
+  Future<(int?, T)> post<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
-    return _request(
+    return _request<T>(
       () => dio.post(
         path,
         data: body,
@@ -43,13 +43,13 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, JSON?)> put(
+  Future<(int?, T)> put<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
-    return _request(
+    return _request<T>(
       () => dio.put(
         path,
         data: body,
@@ -60,13 +60,13 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, JSON?)> patch(
+  Future<(int?, T)> patch<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
-    return _request(
+    return _request<T>(
       () => dio.patch(
         path,
         data: body,
@@ -77,13 +77,13 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, JSON?)> delete(
+  Future<(int?, T)> delete<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
     JSON? body,
   }) async {
-    return _request(
+    return _request<T>(
       () => dio.delete(
         path,
         data: body,
@@ -93,36 +93,16 @@ class DioClientImpl implements BaseHttpClient {
     );
   }
 
-  Future<(int?, JSON?)> _request(
+  Future<(int?, T)> _request<T>(
     Future<Response<dynamic>> Function() send,
   ) async {
+    final response = await send();
+    final data = response.data;
+
     try {
-      final response = await send();
-      final data = response.data;
-
-      if (data == null || data is JSON) {
-        return (response.statusCode, data as JSON?);
-      }
-
-      throw ParsingException('Response body is not a JSON object');
-    } on DioException catch (e) {
-      throw _mapDioException(e);
-    }
-  }
-
-  AppException _mapDioException(DioException e) {
-    switch (e.type) {
-      case .connectionTimeout:
-      case .sendTimeout:
-      case .receiveTimeout:
-      case .transformTimeout:
-      case .connectionError:
-      case .cancel:
-      case .unknown:
-        return NetworkException(e.message ?? 'Network error');
-      case .badCertificate:
-      case .badResponse:
-        return ServerException('Server error: ${e.response?.statusCode}');
+      return (response.statusCode, data as T);
+    } catch (_) {
+      throw ParsingException('Response body is not a $T object');
     }
   }
 }

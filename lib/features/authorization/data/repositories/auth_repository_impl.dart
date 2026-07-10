@@ -40,12 +40,14 @@ class AuthRepositoryImpl implements AuthRepository {
       await localUser.saveUserData(UserDataModel.fromEntity(userData));
 
       return Ok(session);
-    } on ServerException {
-      return Err(RemoteFailure('Authorization service unavailable'));
-    } on NetworkException {
-      return Err(NetworkFailure('Check your connection'));
-    } on ParsingException {
-      return Err(ParsingFailure('Failed to process authorization data'));
+    } on AuthorizationException catch (e) {
+      return Err(AuthorizationFailure(e.message));
+    } on ServerException catch (e) {
+      return Err(RemoteFailure(e.message));
+    } on NetworkException catch (e) {
+      return Err(NetworkFailure(e.message));
+    } on ParsingException catch (e) {
+      return Err(ParsingFailure(e.message));
     } on StorageException catch (e) {
       return Err(StorageFailure(e.message));
     } catch (e) {
@@ -63,12 +65,14 @@ class AuthRepositoryImpl implements AuthRepository {
       await localUser.saveUserData(UserDataModel.fromEntity(userData));
 
       return Ok(null);
-    } on ServerException {
-      return Err(RemoteFailure('Authorization service unavailable'));
-    } on NetworkException {
-      return Err(NetworkFailure('Check your connection'));
-    } on ParsingException {
-      return Err(ParsingFailure('Failed to process authorization data'));
+    } on AuthorizationException catch (e) {
+      return Err(AuthorizationFailure(e.message));
+    } on ServerException catch (e) {
+      return Err(RemoteFailure(e.message));
+    } on NetworkException catch (e) {
+      return Err(NetworkFailure(e.message));
+    } on ParsingException catch (e) {
+      return Err(ParsingFailure(e.message));
     } on StorageException catch (e) {
       return Err(StorageFailure(e.message));
     } catch (e) {
@@ -81,8 +85,10 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       String? token = await localTokens.fetchRefreshToken();
 
-      if (token == null) {
-        throw StorageException('RefreshToken is missing');
+      if (token == null || token.isEmpty) {
+        return Err(
+          AuthorizationFailure('Session has expired. Please log in again'),
+        );
       }
 
       AuthRefreshRequest request = AuthRefreshRequest(refreshToken: token);
@@ -101,14 +107,16 @@ class AuthRepositoryImpl implements AuthRepository {
       await localTokens.saveTokens(tokensModel);
 
       return Ok(null);
+    } on AuthorizationException catch (e) {
+      return Err(AuthorizationFailure(e.message));
+    } on ServerException catch (e) {
+      return Err(RemoteFailure(e.message));
+    } on NetworkException catch (e) {
+      return Err(NetworkFailure(e.message));
+    } on ParsingException catch (e) {
+      return Err(ParsingFailure(e.message));
     } on StorageException catch (e) {
       return Err(StorageFailure(e.message));
-    } on ServerException {
-      return Err(RemoteFailure('Authorization service unavailable'));
-    } on NetworkException {
-      return Err(NetworkFailure('Check your connection'));
-    } on ParsingException {
-      return Err(ParsingFailure('Failed to process authorization data'));
     } catch (e) {
       return Err(UnexpectedFailure(e.toString()));
     }
@@ -124,10 +132,12 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Ok(session.toEntity());
-    } on ParsingException {
-      return Err(ParsingFailure('Failed to process session data'));
+    } on ParsingException catch (e) {
+      return Err(ParsingFailure(e.message));
+    } on StorageException catch (e) {
+      return Err(StorageFailure(e.message));
     } catch (e) {
-      return Err(UnexpectedFailure('Failed to restore session'));
+      return Err(UnexpectedFailure(e.toString()));
     }
   }
 
@@ -137,8 +147,10 @@ class AuthRepositoryImpl implements AuthRepository {
       await localTokens.clearTokens();
       await localUser.clearUserData();
       return const Ok(null);
+    } on StorageException catch (e) {
+      return Err(StorageFailure(e.message));
     } catch (e) {
-      return Err(UnexpectedFailure('Failed to clear session'));
+      return Err(UnexpectedFailure(e.toString()));
     }
   }
 }

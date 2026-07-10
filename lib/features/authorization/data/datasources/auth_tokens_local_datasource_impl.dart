@@ -11,49 +11,69 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
 
   @override
   Future<AuthTokensModel?> fetchTokens() async {
-    final accessToken = await fetchAccessToken();
-    final refreshToken = await fetchRefreshToken();
+    try {
+      final accessToken = await fetchAccessToken();
+      final refreshToken = await fetchRefreshToken();
 
-    if (accessToken == null || refreshToken == null) {
-      return null;
+      if (accessToken == null || refreshToken == null) {
+        return null;
+      }
+
+      return AuthTokensModel(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+    } catch (_) {
+      throw StorageException('Something went wrong');
     }
-
-    return AuthTokensModel(
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    );
   }
 
   @override
   Future<String?> fetchAccessToken() async {
-    return await secureStorage.read(AppStorageKeys.accessTokenKey);
+    try {
+      return await secureStorage.read(AppStorageKeys.accessTokenKey);
+    } catch (_) {
+      throw StorageException('Something went wrong');
+    }
   }
 
   @override
   Future<String?> fetchRefreshToken() async {
-    return await secureStorage.read(AppStorageKeys.refreshTokenKey);
+    try {
+      return await secureStorage.read(AppStorageKeys.refreshTokenKey);
+    } catch (_) {
+      throw StorageException('Something went wrong');
+    }
   }
 
   @override
   Future<void> saveTokens(AuthTokensModel tokens) async {
-    final accessToken = tokens.accessToken;
-    final refreshToken = tokens.refreshToken;
+    try {
+      final accessToken = tokens.accessToken;
+      final refreshToken = tokens.refreshToken;
 
-    if (accessToken == null || accessToken.isEmpty) {
-      throw StorageException('Access token is missing');
+      if (accessToken == null || accessToken.isEmpty) {
+        throw StorageException('Access token is missing');
+      }
+
+      if (refreshToken == null || refreshToken.isEmpty) {
+        throw StorageException('Refresh token is missing');
+      }
+
+      await secureStorage.write(AppStorageKeys.accessTokenKey, accessToken);
+      await secureStorage.write(AppStorageKeys.refreshTokenKey, refreshToken);
+    } catch (_) {
+      throw StorageException('Something went wrong');
     }
-
-    if (refreshToken == null || refreshToken.isEmpty) {
-      throw StorageException('Refresh token is missing');
-    }
-
-    await secureStorage.write(AppStorageKeys.accessTokenKey, accessToken);
-    await secureStorage.write(AppStorageKeys.refreshTokenKey, refreshToken);
   }
 
   @override
   Future<void> clearTokens() async {
-    await secureStorage.delete(AppStorageKeys.accessTokenKey);
-    await secureStorage.delete(AppStorageKeys.refreshTokenKey);
+    try {
+      await secureStorage.delete(AppStorageKeys.accessTokenKey);
+      await secureStorage.delete(AppStorageKeys.refreshTokenKey);
+    } catch (_) {
+      throw StorageException('Something went wrong');
+    }
   }
 }

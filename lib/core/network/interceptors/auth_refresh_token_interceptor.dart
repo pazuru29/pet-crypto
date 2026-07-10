@@ -1,17 +1,19 @@
-import 'package:dio/dio.dart';
-
 import 'dart:async';
 import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:pet_crypto/core/network/result/refresh_token_result.dart';
 
 class AuthRefreshTokenInterceptor extends Interceptor {
   static const _retryKey = 'auth.refreshRetried';
 
   final Dio dio;
   final Future<String?> Function() fetchAccessToken;
-  final Future<bool> Function() refreshTokens;
-  final FutureOr<void> Function() onSessionExpired;
+  final Future<RefreshTokenResult> Function() refreshTokens;
+  final Future<void> Function() onSessionExpired;
 
-  Future<bool>? _refreshFuture;
+  Future<RefreshTokenResult>? _refreshFuture;
+  Future<void>? _sessionExpirationFuture;
 
   AuthRefreshTokenInterceptor({
     required this.dio,
@@ -37,18 +39,24 @@ class AuthRefreshTokenInterceptor extends Interceptor {
     }
 
     try {
-      final refreshed = await _refreshToken(authorization);
+      final refreshResult = await _refreshToken(authorization);
 
-      if (!refreshed) {
-        await onSessionExpired();
-        handler.next(err);
-        return;
+      switch (refreshResult) {
+        case .rejected:
+          await _expireSession();
+          handler.next(err);
+          return;
+        case .temporaryFailure:
+          handler.next(err);
+          return;
+        case .refreshed:
+          break;
       }
 
       final accessToken = await fetchAccessToken();
 
       if (accessToken == null || accessToken.isEmpty) {
-        await onSessionExpired();
+        await _expireSession();
         handler.next(err);
         return;
       }
@@ -61,20 +69,19 @@ class AuthRefreshTokenInterceptor extends Interceptor {
       handler.resolve(response);
     } on DioException catch (retryError) {
       if (retryError.response?.statusCode == HttpStatus.unauthorized) {
-        await onSessionExpired();
+        await _expireSession();
       }
       handler.next(retryError);
     } catch (_) {
-      await onSessionExpired();
       handler.next(err);
     }
   }
 
-  Future<bool> _refreshToken(String failedAuthorization) async {
+  Future<RefreshTokenResult> _refreshToken(String failedAuthorization) async {
     final currentToken = await fetchAccessToken();
 
     if (currentToken != null && failedAuthorization != 'Bearer $currentToken') {
-      return true;
+      return .refreshed;
     }
 
     final activeRefresh = _refreshFuture;
@@ -91,6 +98,25 @@ class AuthRefreshTokenInterceptor extends Interceptor {
     } finally {
       if (identical(_refreshFuture, refresh)) {
         _refreshFuture = null;
+      }
+    }
+  }
+
+  Future<void> _expireSession() async {
+    final activeExpiration = _sessionExpirationFuture;
+
+    if (activeExpiration != null) {
+      return await activeExpiration;
+    }
+
+    final expiration = onSessionExpired();
+    _sessionExpirationFuture = expiration;
+
+    try {
+      await expiration;
+    } finally {
+      if (identical(_sessionExpirationFuture, expiration)) {
+        _sessionExpirationFuture = null;
       }
     }
   }
