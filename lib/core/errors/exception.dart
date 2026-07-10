@@ -22,3 +22,7 @@ class ParsingException extends AppException {
 class StorageException extends AppException {
   StorageException(super.message);
 }
+
+class ConfigurationException extends AppException {
+  const ConfigurationException(super.message);
+}

@@ -7,25 +7,27 @@ class DashboardDioHelper extends BaseDioHelper {
 
   late final String _baseURL;
   late final String _apiKey;
-  late final BaseOptions? _options;
+  late final BaseOptions _options;
 
   @override
   String get baseUrl => _baseURL;
 
   @override
-  BaseOptions? get options => _options;
+  BaseOptions get options => _options;
 
   String get apiKey => _apiKey;
 
   @override
   Future<void> init() async {
-    try {
-      _baseURL = const String.fromEnvironment('API_URL');
-      _apiKey = const String.fromEnvironment('API_KEY');
-      Logger('DashboardDioHelper').fine("Base API URL: $_baseURL");
-      _options = baseOptions..baseUrl = _baseURL;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+    _baseURL = validateRequiredUrlEnvironment(
+      'API_URL',
+      const String.fromEnvironment('API_URL'),
+    );
+    _apiKey = validateRequiredEnvironment(
+      'API_KEY',
+      const String.fromEnvironment('API_KEY'),
+    );
+    Logger('DashboardDioHelper').fine("Base API URL: $_baseURL");
+    _options = baseOptions..baseUrl = _baseURL;
   }
 }

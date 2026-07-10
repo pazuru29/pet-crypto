@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/application/router/app_router.dart';
 import 'package:pet_crypto/application/theme/app_theme_provider.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/util/bloc/observers/app_bloc_observer.dart';
 import 'package:pet_crypto/core/util/log.dart';
 import 'package:pet_crypto/di/dependency_injector.dart';
@@ -49,7 +50,14 @@ void main() {
       );
     },
     (error, trace) {
-      Logger('APP').severe('ERROR', error, trace);
+      final Logger log = Logger('APP');
+
+      if (error is ConfigurationException) {
+        log.severe('Configuration error: ${error.message}', error, trace);
+        return;
+      }
+
+      log.severe('ERROR', error, trace);
     },
   );
 }

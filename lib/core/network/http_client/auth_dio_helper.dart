@@ -15,12 +15,11 @@ class AuthDioHelper extends BaseDioHelper {
 
   @override
   Future<void> init() async {
-    try {
-      _baseURL = const String.fromEnvironment('AUTH_URL');
-      Logger('AuthDioHelper').fine("Base URL: $_baseURL");
-      _options = baseOptions..baseUrl = _baseURL;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+    _baseURL = validateRequiredUrlEnvironment(
+      'AUTH_URL',
+      const String.fromEnvironment('AUTH_URL'),
+    );
+    Logger('AuthDioHelper').fine("Base URL: $_baseURL");
+    _options = baseOptions..baseUrl = _baseURL;
   }
 }

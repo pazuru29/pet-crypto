@@ -50,16 +50,68 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         );
     }
 
-    await _getCryptocurrency(emit);
+    const int start = 1;
+    const int limit = 20;
+
+    final response = await _getCryptocurrency(emit, start: start, limit: limit);
+
+    switch (response) {
+      case Ok(value: final listOfCrypto):
+        emit(
+          state.copyWith(
+            status: .loaded,
+            currentPaginationStart: start,
+            currentPaginationLimit: limit,
+            listOfCrypto: listOfCrypto,
+            hasNextPage: _checkForHasNextPage(listOfCrypto.length),
+          ),
+        );
+      case Err(failure: final failure):
+        emit(
+          state.copyWith(
+            status: .error,
+            errorMessage: failure.message,
+            currentPaginationLimit: limit,
+            currentPaginationStart: start,
+          ),
+        );
+    }
   }
 
   FutureOr<void> _dashboardRefreshDataEvent(
     DashboardRefreshDataEvent event,
     Emitter<DashboardState> emit,
   ) async {
-    await _getCryptocurrency(
-      emit,
-    ).whenComplete(() => event.completer.complete());
+    try {
+      const int start = 1;
+      const int limit = 20;
+
+      final response = await _getCryptocurrency(
+        emit,
+        start: start,
+        limit: limit,
+      );
+
+      switch (response) {
+        case Ok(value: final listOfCrypto):
+          emit(
+            state.copyWith(
+              currentPaginationStart: start,
+              currentPaginationLimit: limit,
+              listOfCrypto: listOfCrypto,
+              hasNextPage: _checkForHasNextPage(listOfCrypto.length),
+            ),
+          );
+        case Err(failure: final failure):
+          emit(
+            state.copyWith(
+              alertMessageToShow: BlocMessage.error(failure.message),
+            ),
+          );
+      }
+    } finally {
+      event.completer.complete();
+    }
   }
 
   bool _checkForHasNextPage(int length) {
@@ -109,34 +161,13 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     }
   }
 
-  Future<void> _getCryptocurrency(Emitter<DashboardState> emit) async {
-    const int start = 1;
-    const int limit = 20;
-
+  Future<Result<List<DashboardCryptocurrency>>> _getCryptocurrency(
+    Emitter<DashboardState> emit, {
+    required int start,
+    required int limit,
+  }) async {
     final request = DashboardCryptocurrencyRequest(start: start, limit: limit);
 
-    final response = await getCryptocurrency.call(request: request);
-
-    switch (response) {
-      case Ok(value: final listOfCrypto):
-        emit(
-          state.copyWith(
-            status: .loaded,
-            currentPaginationStart: start,
-            currentPaginationLimit: limit,
-            listOfCrypto: listOfCrypto,
-            hasNextPage: _checkForHasNextPage(listOfCrypto.length),
-          ),
-        );
-      case Err(failure: final failure):
-        emit(
-          state.copyWith(
-            status: .error,
-            errorMessage: failure.message,
-            currentPaginationLimit: limit,
-            currentPaginationStart: start,
-          ),
-        );
-    }
+    return await getCryptocurrency.call(request: request);
   }
 }
