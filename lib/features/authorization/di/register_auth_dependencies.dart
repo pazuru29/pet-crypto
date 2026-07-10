@@ -4,7 +4,9 @@ import 'package:pet_crypto/core/network/helper/auth_dio_helper.dart';
 import 'package:pet_crypto/core/network/http_client/base_http_client.dart';
 import 'package:pet_crypto/core/network/http_client/dio_client_impl.dart';
 import 'package:pet_crypto/core/network/interceptors/auth_api_interceptor.dart';
+import 'package:pet_crypto/core/network/interceptors/auth_refresh_token_interceptor.dart';
 import 'package:pet_crypto/core/network/interceptors/logging_interceptor.dart';
+import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource_impl.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_tokens_local_datasource.dart';
@@ -14,12 +16,12 @@ import 'package:pet_crypto/features/authorization/domain/repositories/auth_repos
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 
 class RegisterAuthDependencies {
   static Future<void> call(GetIt i) async {
     String dioClientName = 'AuthDioClientImpl';
+    String refreshDioClientName = 'AuthRefreshDioClientImpl';
 
     // Local Datasource
     i.registerLazySingleton<AuthTokensLocalDatasource>(
@@ -31,23 +33,52 @@ class RegisterAuthDependencies {
     await httpHelper.init();
 
     // Dio
-    Dio dio = Dio(httpHelper.options)
-      ..interceptors.addAll([
-        AuthApiInterceptor(
-          fetchAccessToken: () =>
-              i<AuthTokensLocalDatasource>().fetchAccessToken(),
-        ),
-        LoggingInterceptor(),
-      ]);
+    final Dio refreshDio = Dio(httpHelper.options);
 
     i.registerLazySingleton<BaseHttpClient>(
-      () => DioClientImpl(dio: dio),
+      () => DioClientImpl(dio: refreshDio),
+      instanceName: refreshDioClientName,
+    );
+
+    late final Dio authDio;
+
+    authDio = Dio(httpHelper.options);
+
+    authDio.interceptors.addAll([
+      AuthApiInterceptor(
+        fetchAccessToken: () =>
+            i<AuthTokensLocalDatasource>().fetchAccessToken(),
+      ),
+      AuthRefreshTokenInterceptor(
+        dio: authDio,
+        fetchAccessToken: () =>
+            i<AuthTokensLocalDatasource>().fetchAccessToken(),
+        refreshTokens: () async {
+          final result = await i<AuthRepository>().refreshToken();
+
+          return switch (result) {
+            Ok() => true,
+            Err() => false,
+          };
+        },
+        onSessionExpired: () {
+          i<AuthBloc>().add(AuthLogoutEvent());
+        },
+      ),
+      LoggingInterceptor(),
+    ]);
+
+    i.registerLazySingleton<BaseHttpClient>(
+      () => DioClientImpl(dio: authDio),
       instanceName: dioClientName,
     );
 
     // Remote DataSources
     i.registerLazySingleton<AuthDatasource>(
-      () => AuthDatasourceImpl(client: i.get(instanceName: dioClientName)),
+      () => AuthDatasourceImpl(
+        client: i.get(instanceName: dioClientName),
+        refreshClient: i.get(instanceName: refreshDioClientName),
+      ),
     );
 
     // Repositories
@@ -57,20 +88,12 @@ class RegisterAuthDependencies {
 
     // UseCases
     i.registerLazySingleton<AuthLoginUser>(() => AuthLoginUser(repo: i()));
-    i.registerLazySingleton<AuthRefreshToken>(
-      () => AuthRefreshToken(repo: i()),
-    );
     i.registerLazySingleton<AuthCheckStatus>(() => AuthCheckStatus(repo: i()));
     i.registerLazySingleton<AuthLogoutUser>(() => AuthLogoutUser(repo: i()));
 
     // Cubit
     i.registerLazySingleton<AuthBloc>(
-      () => AuthBloc(
-        authStatus: i(),
-        loginUser: i(),
-        logoutUser: i(),
-        refreshToken: i(),
-      ),
+      () => AuthBloc(authStatus: i(), loginUser: i(), logoutUser: i()),
     );
   }
 }

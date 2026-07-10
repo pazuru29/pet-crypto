@@ -9,8 +9,9 @@ import 'package:pet_crypto/features/authorization/data/models/auth_response_mode
 
 class AuthDatasourceImpl implements AuthDatasource {
   final BaseHttpClient client;
+  final BaseHttpClient refreshClient;
 
-  AuthDatasourceImpl({required this.client});
+  AuthDatasourceImpl({required this.client, required this.refreshClient});
 
   @override
   Future<AuthResponseModel> login(AuthRequestModel request) async {
@@ -52,7 +53,7 @@ class AuthDatasourceImpl implements AuthDatasource {
   Future<AuthRefreshResponseModel> refreshToken(
     AuthRefreshRequestModel request,
   ) async {
-    final (status, body) = await client.post(
+    final (status, body) = await refreshClient.post(
       '/auth/refresh',
       body: request.toJson(),
     );

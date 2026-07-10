@@ -11,7 +11,6 @@ import 'package:pet_crypto/features/authorization/domain/entities/auth_status.da
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_check_status.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_login_user.dart';
 import 'package:pet_crypto/features/authorization/domain/usecases/auth_logout_user.dart';
-import 'package:pet_crypto/features/authorization/domain/usecases/auth_refresh_token.dart';
 
 part 'auth_event.dart';
 
@@ -22,18 +21,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.authStatus,
     required this.loginUser,
     required this.logoutUser,
-    required this.refreshToken,
   }) : super(AuthState.initial()) {
     on<AuthCheckEvent>(_authCheckEvent);
     on<AuthLoginEvent>(_authLoginEvent, transformer: droppable());
     on<AuthLogoutEvent>(_authLogoutEvent, transformer: droppable());
-    on<AuthRefreshTokenEvent>(_authRefreshTokenEvent, transformer: droppable());
   }
 
   final AuthCheckStatus authStatus;
   final AuthLoginUser loginUser;
   final AuthLogoutUser logoutUser;
-  final AuthRefreshToken refreshToken;
 
   FutureOr<void> _authCheckEvent(
     AuthCheckEvent event,
@@ -84,24 +80,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     switch (response) {
       case Ok(value: final status):
         await _unauthorize(emit, authStatus: status);
-      case Err(failure: final error):
-        await _unauthorize(
-          emit,
-          alertMessage: BlocMessage.error(error.message),
-        );
-    }
-  }
-
-  FutureOr<void> _authRefreshTokenEvent(
-    AuthRefreshTokenEvent event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(state.copyWith(status: .loading));
-    final response = await refreshToken.call();
-
-    switch (response) {
-      case Ok(value: final status):
-        emit(state.copyWith(status: .loaded, authStatus: status));
       case Err(failure: final error):
         await _unauthorize(
           emit,

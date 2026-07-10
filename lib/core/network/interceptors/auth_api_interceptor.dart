@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:pet_crypto/core/network/helper/app_request_headers.dart';
 
@@ -16,7 +18,7 @@ class AuthApiInterceptor extends Interceptor {
         true;
 
     if (!requiresAuth) {
-      super.onRequest(options, handler);
+      handler.next(options);
       return;
     }
 
@@ -29,7 +31,7 @@ class AuthApiInterceptor extends Interceptor {
       return;
     }
 
-    options.headers['Authorization'] = 'Bearer $accessToken';
+    options.headers[HttpHeaders.authorizationHeader] = 'Bearer $accessToken';
 
     super.onRequest(options, handler);
   }
