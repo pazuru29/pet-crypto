@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/core/ui/alert_helper.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/crypto_details/crypto_details_bloc.dart';
-import 'package:pet_crypto/features/dashboard/presentation/screens/crypto_details/widgets/crypto_details_loading_view.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/crypto_details/widgets/crypto_info_view.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
 import 'package:pet_crypto/widgets/error_view.dart';
+import 'package:pet_crypto/widgets/loading_view.dart';
 
 class CryptoDetailsScreen extends StatefulWidget {
   final String? id;
@@ -43,7 +43,7 @@ class _CryptoDetailsScreenState extends State<CryptoDetailsScreen> {
                   }
                 },
                 builder: (context, state) => switch (state.status) {
-                  .initial || .loading => CryptoDetailsLoadingView(),
+                  .initial || .loading => LoadingView(),
                   .error => ErrorView(
                     message: state.errorMessage,
                     onTryAgain: () {

@@ -7,9 +7,9 @@ import 'package:pet_crypto/core/ui/alert_helper.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_cryptocurrency_list.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_empty_view.dart';
-import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_loading_view.dart';
 import 'package:pet_crypto/widgets/app_title_profile.dart';
 import 'package:pet_crypto/widgets/error_view.dart';
+import 'package:pet_crypto/widgets/loading_view.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -50,7 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       state.status == .loaded && state.userImage == null,
                 ),
                 if (state.status == .initial || state.status == .loading)
-                  Flexible(child: const DashboardLoadingView()),
+                  Flexible(child: const LoadingView()),
                 if (state.status == .error)
                   Flexible(
                     child: ErrorView(

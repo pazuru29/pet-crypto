@@ -34,7 +34,6 @@ dependencies:
     sdk: flutter
   intl: ^0.20.2
   # UI
-  shimmer_animation: ^2.2.2+1
   cached_network_image: ^3.4.1
   flutter_svg: ^2.3.0
 

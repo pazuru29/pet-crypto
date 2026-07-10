@@ -49,10 +49,26 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.dashboard.path,
         name: AppRoutes.dashboard.routeName,
-        builder: (context, state) => BlocProvider(
-          create: (context) => dependencies.createDashboardBloc(),
-          child: DashboardScreen(),
-        ),
+        pageBuilder: (context, state) {
+          return CustomTransitionPage<void>(
+            key: state.pageKey,
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+            child: BlocProvider(
+              create: (context) => dependencies.createDashboardBloc(),
+              child: DashboardScreen(),
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: CurveTween(
+                      curve: Curves.easeIn,
+                    ).animate(animation),
+                    child: child,
+                  );
+                },
+          );
+        },
         routes: [
           GoRoute(
             path: AppRoutes.dashboardCryptoDetails.path,

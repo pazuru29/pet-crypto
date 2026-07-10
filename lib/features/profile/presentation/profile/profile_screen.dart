@@ -4,12 +4,12 @@ import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 import 'package:pet_crypto/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_header_widget.dart';
-import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_loading_view.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_locale_widget.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_theme_widget.dart';
 import 'package:pet_crypto/widgets/app_button.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
 import 'package:pet_crypto/widgets/error_view.dart';
+import 'package:pet_crypto/widgets/loading_view.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? initUserImage;
@@ -43,17 +43,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             AppTitle(title: S.of(context).profileTitle, secondary: true),
             Flexible(
               child: BlocBuilder<ProfileBloc, ProfileState>(
-                builder: (context, state) {
-                  if (state.status == .error) {
-                    return ErrorView(
-                      message: state.errorMessage,
-                      onTryAgain: () {
-                        _profileBloc.add(ProfileInitEvent());
-                      },
-                    );
-                  }
-
-                  return CustomScrollView(
+                builder: (context, state) => switch (state.status) {
+                  .error => ErrorView(
+                    message: state.errorMessage,
+                    onTryAgain: () {
+                      _profileBloc.add(ProfileInitEvent());
+                    },
+                  ),
+                  .loading || .initial => LoadingView(),
+                  .loaded => CustomScrollView(
                     slivers: [
                       SliverToBoxAdapter(
                         child: ProfileHeaderWidget(
@@ -65,46 +63,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               state.status == .loaded,
                         ),
                       ),
-                      if (state.status == .initial || state.status == .loading)
-                        ProfileLoadingView(),
-                      if (state.status == .loaded) ...[
-                        SliverToBoxAdapter(
-                          child: ProfileThemeWidget(
-                            onButtonPressed: (index) {
-                              _profileBloc.add(
-                                ProfileChangeThemeModeEvent(themeIndex: index),
-                              );
+                      SliverToBoxAdapter(
+                        child: ProfileThemeWidget(
+                          onButtonPressed: (index) {
+                            _profileBloc.add(
+                              ProfileChangeThemeModeEvent(themeIndex: index),
+                            );
+                          },
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: ProfileLocaleWidget(
+                          onLanguageChoose: (languageCode) {
+                            _profileBloc.add(
+                              ProfileChangeLocaleEvent(
+                                languageCode: languageCode,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: .all(16),
+                          child: AppButton(
+                            text: S.of(context).profileLogout,
+                            suffixIcon: Icon(Icons.exit_to_app),
+                            backgroundColor: colorScheme.error,
+                            foregroundColor: colorScheme.errorContainer,
+                            onPressed: () {
+                              context.read<AuthBloc>().add(AuthLogoutEvent());
                             },
                           ),
                         ),
-                        SliverToBoxAdapter(
-                          child: ProfileLocaleWidget(
-                            onLanguageChoose: (languageCode) {
-                              _profileBloc.add(
-                                ProfileChangeLocaleEvent(
-                                  languageCode: languageCode,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: .all(16),
-                            child: AppButton(
-                              text: S.of(context).profileLogout,
-                              suffixIcon: Icon(Icons.exit_to_app),
-                              backgroundColor: colorScheme.error,
-                              foregroundColor: colorScheme.errorContainer,
-                              onPressed: () {
-                                context.read<AuthBloc>().add(AuthLogoutEvent());
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ],
-                  );
+                  ),
                 },
               ),
             ),

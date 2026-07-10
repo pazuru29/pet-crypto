@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AppCachedImage extends StatelessWidget {
   final double height;
@@ -26,6 +25,14 @@ class AppCachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget placeholder = _PlaceholderAppCachedImage(
+      height: height,
+      width: width,
+      color: backgroundColor,
+      icon: icon,
+      iconPlaceHolderColor: iconPlaceHolderColor,
+    );
+
     return Container(
       width: width,
       height: height,
@@ -35,49 +42,41 @@ class AppCachedImage extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: borderRadius ?? .circular(100),
-        child: needPlaceHolder
-            ? Icon(icon, color: iconPlaceHolderColor)
-            : imageUrl == null
-            ? _LoadingAppCachedImage(
-                height: height,
-                width: width,
-                color: backgroundColor,
-              )
+        child: needPlaceHolder || imageUrl == null
+            ? placeholder
             : CachedNetworkImage(
                 imageUrl: imageUrl!,
                 fit: .contain,
-                placeholder: (context, url) => _LoadingAppCachedImage(
-                  height: height,
-                  width: width,
-                  color: backgroundColor,
-                ),
-                errorWidget: (context, url, error) =>
-                    Icon(icon, color: iconPlaceHolderColor),
+                placeholder: (context, url) => placeholder,
+                errorWidget: (context, url, error) => placeholder,
               ),
       ),
     );
   }
 }
 
-class _LoadingAppCachedImage extends StatelessWidget {
+class _PlaceholderAppCachedImage extends StatelessWidget {
   final double height;
   final double width;
   final Color color;
+  final Color iconPlaceHolderColor;
+  final IconData icon;
 
-  const _LoadingAppCachedImage({
+  const _PlaceholderAppCachedImage({
     required this.height,
     required this.width,
     required this.color,
+    required this.iconPlaceHolderColor,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer(
-      child: Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(color: color),
-      ),
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(color: color),
+      child: Icon(icon, color: iconPlaceHolderColor),
     );
   }
 }

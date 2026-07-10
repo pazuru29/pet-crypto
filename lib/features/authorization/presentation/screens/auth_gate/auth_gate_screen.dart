@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 import 'package:pet_crypto/widgets/error_view.dart';
+import 'package:pet_crypto/widgets/loading_view.dart';
 
 class AuthGateScreen extends StatefulWidget {
   const AuthGateScreen({super.key});
@@ -30,9 +31,9 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
             _authCubit.add(AuthCheckEvent());
           },
         ),
-        .initial || .loading || .loaded => Scaffold(
-          body: SafeArea(child: Center(child: CircularProgressIndicator())),
-        ),
+        .initial ||
+        .loading ||
+        .loaded => Scaffold(body: SafeArea(child: LoadingView())),
       },
     );
   }
