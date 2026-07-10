@@ -10,6 +10,7 @@ class DashboardLoadingView extends StatelessWidget {
 
     return ListView.builder(
       itemCount: 15,
+      padding: .only(bottom: MediaQuery.paddingOf(context).bottom),
       itemBuilder: (context, index) => Shimmer(
         child: Card(
           color: colorScheme.primaryContainer,

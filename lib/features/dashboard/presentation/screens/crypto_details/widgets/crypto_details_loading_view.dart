@@ -9,6 +9,7 @@ class CryptoDetailsLoadingView extends StatelessWidget {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
+      padding: .only(bottom: MediaQuery.paddingOf(context).bottom),
       child: Column(
         children: [
           Shimmer(

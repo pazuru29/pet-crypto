@@ -39,6 +39,9 @@ class CryptoInfoView extends StatelessWidget {
               onLinkTap: onLinkTap,
             ),
           ),
+        SliverToBoxAdapter(
+          child: SizedBox(height: MediaQuery.paddingOf(context).bottom),
+        ),
       ],
     );
   }

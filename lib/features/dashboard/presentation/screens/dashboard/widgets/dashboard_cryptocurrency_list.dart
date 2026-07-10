@@ -92,11 +92,13 @@ class _DashboardCryptocurrencyListState
             itemCount: widget.listOfCrypto.length + 1,
             itemBuilder: (context, index) {
               if (index == widget.listOfCrypto.length) {
-                if (widget.paginationLoading) {
-                  return AppPaginationLoading();
-                } else {
-                  return SizedBox(height: 28);
-                }
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.paginationLoading) const AppPaginationLoading(),
+                    SizedBox(height: MediaQuery.paddingOf(context).bottom),
+                  ],
+                );
               }
 
               final item = widget.listOfCrypto[index];
