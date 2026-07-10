@@ -47,7 +47,6 @@ class CryptocurrencyDatasourceImpl implements CryptocurrencyDatasource {
     try {
       return CryptoInfoResponseModel.fromJson(body);
     } catch (e) {
-      print(e.toString());
       throw ParsingException(e.toString());
     }
   }

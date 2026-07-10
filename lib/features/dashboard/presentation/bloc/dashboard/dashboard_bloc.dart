@@ -50,41 +50,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         );
     }
 
-    const int start = 1;
-    const int limit = 20;
-
-    final request = DashboardCryptocurrencyRequest(start: start, limit: limit);
-
-    final response = await getCryptocurrency.call(request: request);
-
-    switch (response) {
-      case Ok(value: final listOfCrypto):
-        emit(
-          state.copyWith(
-            status: .loaded,
-            currentPaginationStart: start,
-            currentPaginationLimit: limit,
-            listOfCrypto: listOfCrypto,
-            hasNextPage: _checkForHasNextPage(listOfCrypto.length),
-          ),
-        );
-      case Err(failure: final failure):
-        emit(
-          state.copyWith(
-            status: .error,
-            errorMessage: failure.message,
-            currentPaginationLimit: limit,
-            currentPaginationStart: start,
-          ),
-        );
-    }
+    await _getCryptocurrency(emit);
   }
 
   FutureOr<void> _dashboardRefreshDataEvent(
     DashboardRefreshDataEvent event,
     Emitter<DashboardState> emit,
   ) async {
-    add(DashboardInitEvent());
+    await _getCryptocurrency(
+      emit,
+    ).whenComplete(() => event.completer.complete());
   }
 
   bool _checkForHasNextPage(int length) {
@@ -129,6 +104,37 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           state.copyWith(
             alertMessageToShow: BlocMessage.error(failure.message),
             paginationLoading: false,
+          ),
+        );
+    }
+  }
+
+  Future<void> _getCryptocurrency(Emitter<DashboardState> emit) async {
+    const int start = 1;
+    const int limit = 20;
+
+    final request = DashboardCryptocurrencyRequest(start: start, limit: limit);
+
+    final response = await getCryptocurrency.call(request: request);
+
+    switch (response) {
+      case Ok(value: final listOfCrypto):
+        emit(
+          state.copyWith(
+            status: .loaded,
+            currentPaginationStart: start,
+            currentPaginationLimit: limit,
+            listOfCrypto: listOfCrypto,
+            hasNextPage: _checkForHasNextPage(listOfCrypto.length),
+          ),
+        );
+      case Err(failure: final failure):
+        emit(
+          state.copyWith(
+            status: .error,
+            errorMessage: failure.message,
+            currentPaginationLimit: limit,
+            currentPaginationStart: start,
           ),
         );
     }

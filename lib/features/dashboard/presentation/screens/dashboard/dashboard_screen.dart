@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
@@ -65,8 +67,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: DashboardCryptocurrencyList(
                       listOfCrypto: state.listOfCrypto,
                       paginationLoading: state.paginationLoading,
-                      onRefresh: () async {
-                        _dashboardBloc.add(DashboardRefreshDataEvent());
+                      onRefresh: () {
+                        Completer<void> completer = Completer();
+                        _dashboardBloc.add(
+                          DashboardRefreshDataEvent(completer: completer),
+                        );
+                        return completer.future;
                       },
                       onScroll: () {
                         _dashboardBloc.add(DashboardNextPageEvent());
