@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_crypto/application/localization/l10n/app_localizations.dart';
+import 'package:pet_crypto/core/errors/failure.dart';
+import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class S extends ChangeNotifier {
@@ -43,16 +45,21 @@ class S extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setLocale(String lang) async {
+  Future<Result<bool>> setLocale(String lang) async {
     String lowerLeng = lang.toLowerCase();
     Locale nextLocale = Locale(lowerLeng);
 
     if (!supportedLocales.containsKey(lowerLeng) || nextLocale == _locale) {
-      return;
+      return Ok(false);
     }
 
     _locale = nextLocale;
     notifyListeners();
-    await storage.setString(_localeKey, lowerLeng);
+    try {
+      await storage.setString(_localeKey, lowerLeng);
+      return Ok(true);
+    } catch (_) {
+      return Err(StorageFailure('Error saving the locale'));
+    }
   }
 }

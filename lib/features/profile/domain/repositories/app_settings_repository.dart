@@ -1,5 +1,7 @@
-abstract interface class AppSettingsRepository {
-  Future<void> setThemeMode(int themeModeIndex);
+import 'package:pet_crypto/core/result/result.dart';
 
-  Future<void> setLocale(String languageCode);
+abstract interface class AppSettingsRepository {
+  Future<Result<bool>> setThemeMode(int themeModeIndex);
+
+  Future<Result<bool>> setLocale(String languageCode);
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pet_crypto/core/errors/failure.dart';
+import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class AppThemeProvider extends ChangeNotifier {
@@ -32,14 +34,19 @@ class AppThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setMode(int modeIndex) async {
+  Future<Result<bool>> setMode(int modeIndex) async {
     if (!(modeIndex >= 0 && modeIndex <= (ThemeMode.values.length - 1)) ||
         _mode.index == modeIndex) {
-      return;
+      return Ok(false);
     }
 
     _mode = ThemeMode.values[modeIndex];
     notifyListeners();
-    await storage.setInt('themeMode', mode.index);
+    try {
+      await storage.setInt('themeMode', mode.index);
+      return Ok(true);
+    } catch (_) {
+      return Err(StorageFailure('Error saving the theme mode'));
+    }
   }
 }
