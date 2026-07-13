@@ -20,7 +20,7 @@ void main() {
     resetMocktailState();
   });
 
-  group('Class S', () {
+  group('Class AppThemeProvider', () {
     group('method init', () {
       test('should set default initial theme mode', () {
         when(() => mockPreferencesStorage.getInt(any())).thenAnswer((_) => 3);

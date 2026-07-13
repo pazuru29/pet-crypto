@@ -1,4 +1,6 @@
-class CryptoInfo {
+import 'package:equatable/equatable.dart';
+
+class CryptoInfo extends Equatable {
   final String name;
   final String symbol;
   final String? logo;
@@ -8,7 +10,7 @@ class CryptoInfo {
   final List<String>? technicalDoc;
   final List<String>? sourceCode;
 
-  CryptoInfo({
+  const CryptoInfo({
     required this.name,
     required this.symbol,
     this.logo,
@@ -18,4 +20,16 @@ class CryptoInfo {
     this.technicalDoc,
     this.sourceCode,
   });
+
+  @override
+  List<Object?> get props => [
+    name,
+    symbol,
+    logo,
+    description,
+    tags,
+    website,
+    technicalDoc,
+    sourceCode,
+  ];
 }

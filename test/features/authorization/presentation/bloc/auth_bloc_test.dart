@@ -119,7 +119,7 @@ void main() {
       blocTest(
         'should finish with AuthStatus.authorized',
         build: () {
-          registerFallbackValue(AuthRequest(login: 'login', password: 'pass'));
+          registerFallbackValue(AuthRequest(login: '', password: ''));
           when(() => mockAuthLoginUser.call(any())).thenAnswer(
             (_) => Future(
               () => Ok(
@@ -144,7 +144,7 @@ void main() {
       blocTest(
         'should finish with AuthStatus.unauthorized',
         build: () {
-          registerFallbackValue(AuthRequest(login: 'login', password: 'pass'));
+          registerFallbackValue(AuthRequest(login: '', password: ''));
           when(() => mockAuthLoginUser.call(any())).thenAnswer(
             (_) =>
                 Future(() => Err(AuthorizationFailure('Something went wrong'))),

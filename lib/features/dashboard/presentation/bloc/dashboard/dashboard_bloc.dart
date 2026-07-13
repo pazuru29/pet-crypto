@@ -110,10 +110,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     }
   }
 
-  bool _checkForHasNextPage(int length) {
-    return length > 0 && length == state.currentPaginationLimit;
-  }
-
   FutureOr<void> _dashboardNextPageEvent(
     DashboardNextPageEvent event,
     Emitter<DashboardState> emit,
@@ -155,6 +151,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           ),
         );
     }
+  }
+
+  bool _checkForHasNextPage(int length) {
+    return length > 0 && length == state.currentPaginationLimit;
   }
 
   Future<Result<List<DashboardCryptocurrency>>> _getCryptocurrency({

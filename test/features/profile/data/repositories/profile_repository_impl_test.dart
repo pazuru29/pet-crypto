@@ -27,7 +27,7 @@ void main() {
     resetMocktailState();
   });
 
-  group('Class ProfileRepository', () {
+  group('Class ProfileRepositoryImpl', () {
     group('method getProfileData', () {
       test('should return Ok<UserData>', () {
         when(() => mockUserReaderLocalDatasource.fetchUserData()).thenAnswer(

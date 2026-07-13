@@ -54,10 +54,10 @@ void main() {
         authRequest = AuthRequest(login: 'login', password: 'pass');
         registerFallbackValue(AuthRequestModel.fromEntity(authRequest));
         registerFallbackValue(
-          UserDataModel(fullName: 'user', email: null, image: null),
+          UserDataModel(fullName: null, email: null, image: null),
         );
         registerFallbackValue(
-          AuthTokensModel(accessToken: 'access', refreshToken: 'refresh'),
+          AuthTokensModel(accessToken: null, refreshToken: null),
         );
 
         when(
@@ -150,7 +150,7 @@ void main() {
     group('method updateCurrentUser', () {
       setUp(() {
         registerFallbackValue(
-          UserDataModel(fullName: 'user', email: null, image: null),
+          UserDataModel(fullName: null, email: null, image: null),
         );
       });
 
@@ -208,7 +208,7 @@ void main() {
 
     group('method refreshToken', () {
       setUp(() {
-        registerFallbackValue(AuthRefreshRequestModel(refreshToken: 'refresh'));
+        registerFallbackValue(AuthRefreshRequestModel(refreshToken: ''));
       });
 
       test('should return Ok<null>', () async {

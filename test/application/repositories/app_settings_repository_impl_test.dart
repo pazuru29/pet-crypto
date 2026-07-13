@@ -29,7 +29,7 @@ void main() {
     resetMocktailState();
   });
 
-  group('Class AppSettingsRepository', () {
+  group('Class AppSettingsRepositoryImpl', () {
     group('method setLocale', () {
       test('should return Ok(true)', () async {
         when(

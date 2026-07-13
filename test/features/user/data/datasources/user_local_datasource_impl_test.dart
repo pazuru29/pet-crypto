@@ -24,7 +24,7 @@ void main() {
     resetMocktailState();
   });
 
-  group('Class UserLocalDatasource', () {
+  group('Class UserLocalDatasourceImpl', () {
     group('method fetchUserData', () {
       setUp(() {
         when(
