@@ -49,11 +49,9 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
   @override
   Future<void> clearUserData() async {
     try {
-      await _remove(AppStorageKeys.emailKey);
-      await _remove(AppStorageKeys.fullNameKey);
-      await _remove(AppStorageKeys.imageKey);
-    } on StorageException {
-      rethrow;
+      await preferencesStorage.remove(AppStorageKeys.emailKey);
+      await preferencesStorage.remove(AppStorageKeys.fullNameKey);
+      await preferencesStorage.remove(AppStorageKeys.imageKey);
     } catch (_) {
       throw StorageException('Something went wrong');
     }
@@ -61,20 +59,13 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
 
   Future<void> _optionalStringSave(String key, String? value) async {
     if (value == null || value.isEmpty) {
-      await _remove(key);
+      await preferencesStorage.remove(key);
       return;
     }
 
     final success = await preferencesStorage.setString(key, value);
     if (!success) {
       throw StorageException('Failed to save user data');
-    }
-  }
-
-  Future<void> _remove(String key) async {
-    final success = await preferencesStorage.remove(key);
-    if (!success) {
-      throw StorageException('Failed to remove user data');
     }
   }
 }
