@@ -43,8 +43,10 @@ class AppThemeProvider extends ChangeNotifier {
     _mode = ThemeMode.values[modeIndex];
     notifyListeners();
     try {
-      await storage.setInt('themeMode', mode.index);
-      return Ok(true);
+      bool success = await storage.setInt('themeMode', mode.index);
+      return success
+          ? Ok(true)
+          : Err(StorageFailure('Error saving the theme mode'));
     } catch (_) {
       return Err(StorageFailure('Error saving the theme mode'));
     }
