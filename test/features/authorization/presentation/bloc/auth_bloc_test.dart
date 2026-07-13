@@ -136,6 +136,9 @@ void main() {
           AuthState(status: .loading, authStatus: .unauthorized),
           AuthState(status: .loaded, authStatus: .authorized),
         ],
+        verify: (_) {
+          verify(() => mockAuthLoginUser.call(any())).called(1);
+        },
       );
 
       blocTest(
@@ -159,6 +162,9 @@ void main() {
             alertMessage: BlocMessage.error('Something went wrong'),
           ),
         ],
+        verify: (_) {
+          verify(() => mockAuthLoginUser.call(any())).called(1);
+        },
       );
     });
 
@@ -177,6 +183,9 @@ void main() {
           AuthState(status: .loading, authStatus: .authorized),
           AuthState(status: .loaded, authStatus: .unauthorized),
         ],
+        verify: (_) {
+          verify(() => mockAuthLogoutUser.call()).called(1);
+        },
       );
 
       blocTest(
@@ -197,6 +206,9 @@ void main() {
             alertMessage: BlocMessage.error('Something went wrong'),
           ),
         ],
+        verify: (_) {
+          verify(() => mockAuthLogoutUser.call()).called(1);
+        },
       );
     });
 
