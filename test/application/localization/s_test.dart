@@ -90,7 +90,7 @@ void main() {
 
         expect(actualResponse, isA<Err<bool>>());
         expect((actualResponse as Err).failure, isA<StorageFailure>());
-        expect(localeProvider.locale.languageCode, 'ru');
+        expect(localeProvider.locale.languageCode, 'en');
       });
     });
   });

@@ -53,13 +53,16 @@ class S extends ChangeNotifier {
       return Ok(false);
     }
 
-    _locale = nextLocale;
-    notifyListeners();
     try {
       bool success = await storage.setString(_localeKey, lowerLeng);
-      return success
-          ? Ok(true)
-          : Err(StorageFailure('Error saving the locale'));
+
+      if (success) {
+        _locale = nextLocale;
+        notifyListeners();
+        return Ok(true);
+      } else {
+        return Err(StorageFailure('Error saving the locale'));
+      }
     } catch (_) {
       return Err(StorageFailure('Error saving the locale'));
     }

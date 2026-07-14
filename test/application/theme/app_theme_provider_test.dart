@@ -84,7 +84,7 @@ void main() {
 
         expect(actualResponse, isA<Err<bool>>());
         expect((actualResponse as Err).failure, isA<StorageFailure>());
-        expect(themeProvider.mode.index, 1);
+        expect(themeProvider.mode.index, 0);
       });
     });
   });
