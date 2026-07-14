@@ -28,6 +28,7 @@ void main() {
         themeProvider.init();
 
         expect(themeProvider.mode.index, 0);
+        verify(() => mockPreferencesStorage.getInt(any())).called(1);
       });
 
       test('should set initial theme mode', () {
@@ -36,6 +37,7 @@ void main() {
         themeProvider.init();
 
         expect(themeProvider.mode.index, 1);
+        verify(() => mockPreferencesStorage.getInt(any())).called(1);
       });
     });
 
@@ -57,6 +59,7 @@ void main() {
         expect(actualResponse, isA<Ok<bool>>());
         expect((actualResponse as Ok<bool>).value, isTrue);
         expect(themeProvider.mode.index, 1);
+        verify(() => mockPreferencesStorage.setInt(any(), any())).called(1);
       });
 
       test('should return Ok(false)', () async {
@@ -71,6 +74,7 @@ void main() {
         expect(actualResponse, isA<Ok<bool>>());
         expect((actualResponse as Ok<bool>).value, isFalse);
         expect(themeProvider.mode.index, 0);
+        verifyNever(() => mockPreferencesStorage.setInt(any(), any()));
       });
 
       test('should return Err', () async {
@@ -85,6 +89,7 @@ void main() {
         expect(actualResponse, isA<Err<bool>>());
         expect((actualResponse as Err).failure, isA<StorageFailure>());
         expect(themeProvider.mode.index, 0);
+        verify(() => mockPreferencesStorage.setInt(any(), any())).called(1);
       });
     });
   });
