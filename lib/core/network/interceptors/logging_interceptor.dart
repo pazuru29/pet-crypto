@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/network/helper/app_request_headers.dart';
-import 'package:pet_crypto/core/util/typedef.dart';
 
 class LoggingInterceptor extends Interceptor {
   final Logger _log = Logger('LoggingInterceptor');
@@ -31,11 +29,6 @@ class LoggingInterceptor extends Interceptor {
       buffer.writeln('$k: $v');
     });
 
-    if (options.data != null && options.data is JSON) {
-      buffer.writeln('Body:');
-      buffer.writeln(jsonEncode(options.data as JSON));
-    }
-
     _log.fine(buffer);
     super.onRequest(options, handler);
   }
@@ -45,16 +38,7 @@ class LoggingInterceptor extends Interceptor {
     Response<dynamic> response,
     ResponseInterceptorHandler handler,
   ) {
-    StringBuffer buffer = StringBuffer();
-
-    buffer.writeln('RESPONSE ${response.statusCode}');
-
-    if (response.data != null && response.data is JSON) {
-      buffer.writeln('Body:');
-      buffer.write(jsonEncode(response.data as JSON));
-    }
-
-    _log.fine(buffer);
+    _log.fine('RESPONSE ${response.statusCode}');
     super.onResponse(response, handler);
   }
 

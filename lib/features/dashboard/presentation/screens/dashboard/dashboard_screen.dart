@@ -20,6 +20,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late DashboardBloc _dashboardBloc;
+  Completer<void>? _refreshCompleter;
 
   @override
   void initState() {
@@ -68,11 +69,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       listOfCrypto: state.listOfCrypto,
                       paginationLoading: state.paginationLoading,
                       onRefresh: () {
-                        Completer<void> completer = Completer();
+                        _refreshCompleter ??= Completer();
                         _dashboardBloc.add(
-                          DashboardRefreshDataEvent(completer: completer),
+                          DashboardRefreshDataEvent(
+                            completer: _refreshCompleter!,
+                          ),
                         );
-                        return completer.future;
+                        return _refreshCompleter!.future.whenComplete(
+                          () => _refreshCompleter = null,
+                        );
                       },
                       onScroll: () {
                         _dashboardBloc.add(DashboardNextPageEvent());

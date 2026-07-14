@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
 
@@ -38,17 +37,18 @@ class AppText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (url != null) {
-      return RichText(
-        maxLines: maxLines,
-        textAlign: textAlign ?? .start,
-        text: TextSpan(
-          text: text.isEmpty ? url : text,
+      return GestureDetector(
+        onTap: onTap,
+        behavior: .opaque,
+        child: Text(
+          text.isEmpty ? url! : text,
           style: textStyle.style.copyWith(
             color: textColor,
-            decoration: TextDecoration.underline,
             overflow: textOverflow,
+            decoration: .underline,
           ),
-          recognizer: TapGestureRecognizer()..onTap = onTap,
+          maxLines: maxLines,
+          textAlign: textAlign,
         ),
       );
     }

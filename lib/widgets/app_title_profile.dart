@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_crypto/application/router/app_routes.dart';
-import 'package:pet_crypto/core/util/app_hero_tags.dart';
 import 'package:pet_crypto/widgets/app_cached_image.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
 
@@ -32,17 +31,14 @@ class AppTitleProfile extends StatelessWidget {
           AppRoutes.profile.name,
           queryParameters: {'initUserImage': imageUrl},
         ),
-        child: Hero(
-          tag: AppHeroTags.profileImageTag,
-          child: AppCachedImage(
-            height: 40,
-            width: 40,
-            backgroundColor: colorScheme.primaryContainer,
-            needPlaceHolder: placeHolder,
-            iconPlaceHolderColor: colorScheme.primary,
-            imageUrl: imageUrl,
-            icon: Icons.person,
-          ),
+        child: AppCachedImage(
+          height: 40,
+          width: 40,
+          backgroundColor: colorScheme.primaryContainer,
+          needPlaceHolder: placeHolder,
+          iconPlaceHolderColor: colorScheme.primary,
+          imageUrl: imageUrl,
+          icon: Icons.person,
         ),
       ),
     );
