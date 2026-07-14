@@ -41,7 +41,7 @@ class AppThemeProvider extends ChangeNotifier {
     }
 
     try {
-      bool success = await storage.setInt('themeMode', mode.index);
+      bool success = await storage.setInt('themeMode', modeIndex);
 
       if (success) {
         _mode = ThemeMode.values[modeIndex];

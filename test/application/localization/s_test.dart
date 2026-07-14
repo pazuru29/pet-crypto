@@ -65,7 +65,9 @@ void main() {
         expect(actualResponse, isA<Ok<bool>>());
         expect((actualResponse as Ok<bool>).value, isTrue);
         expect(localeProvider.locale.languageCode, 'ru');
-        verify(() => mockPreferencesStorage.setString(any(), any())).called(1);
+        verify(
+          () => mockPreferencesStorage.setString('locale', 'ru'),
+        ).called(1);
       });
 
       test('should return Ok(false)', () async {
@@ -95,7 +97,9 @@ void main() {
         expect(actualResponse, isA<Err<bool>>());
         expect((actualResponse as Err).failure, isA<StorageFailure>());
         expect(localeProvider.locale.languageCode, 'en');
-        verify(() => mockPreferencesStorage.setString(any(), any())).called(1);
+        verify(
+          () => mockPreferencesStorage.setString('locale', 'ru'),
+        ).called(1);
       });
     });
   });
