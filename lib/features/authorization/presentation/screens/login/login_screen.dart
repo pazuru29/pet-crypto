@@ -11,7 +11,7 @@ import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.da
 import 'package:pet_crypto/widgets/app_button.dart';
 import 'package:pet_crypto/widgets/app_icon_button.dart';
 import 'package:pet_crypto/widgets/app_text.dart';
-import 'package:pet_crypto/widgets/app_text_form_filed.dart';
+import 'package:pet_crypto/widgets/app_text_form_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    final userField = AppTextFormFiled(
+    final userField = AppTextFormField(
       controller: _usernameController,
       textInputAction: TextInputAction.next,
       validator: (text) => LoginValidator.validateUsername(context, text),
@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       prefixIcon: Icon(Icons.person, size: 20, color: colorScheme.secondary),
     );
 
-    final passwordField = AppTextFormFiled(
+    final passwordField = AppTextFormField(
       controller: _passwordController,
       textInputAction: TextInputAction.done,
       onFieldSubmitted: (_) => _login(),

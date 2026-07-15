@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 
@@ -11,8 +9,8 @@ abstract class BaseDioHelper {
     connectTimeout: Duration(seconds: connectTimeout),
     receiveTimeout: Duration(seconds: receiveTimeout),
     headers: {
-      HttpHeaders.acceptHeader: 'application/json',
-      HttpHeaders.contentTypeHeader: 'application/json',
+      Headers.acceptHeader: Headers.jsonContentType,
+      Headers.contentTypeHeader: Headers.jsonContentType,
     },
   );
 
