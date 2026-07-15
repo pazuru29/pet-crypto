@@ -15,19 +15,26 @@ class LoggingInterceptor extends Interceptor {
       'REQUEST ${options.method.toUpperCase()} ${options.baseUrl.toString() + options.path}',
     );
 
-    buffer.writeln('Headers:');
-    options.headers.forEach((k, v) {
-      if (k == AppRequestHeaders.dashboardApiKeyHeader ||
-          k == HttpHeaders.authorizationHeader) {
-        v = '***';
-      }
-      buffer.writeln('$k: $v');
-    });
+    if (options.headers.isNotEmpty) {
+      buffer.writeln('Headers:');
+      options.headers.forEach((k, v) {
+        final normalizedKey = k.toLowerCase();
 
-    buffer.writeln('QueryParams:');
-    options.queryParameters.forEach((k, v) {
-      buffer.writeln('$k: $v');
-    });
+        if (normalizedKey ==
+                AppRequestHeaders.dashboardApiKeyHeader.toLowerCase() ||
+            normalizedKey == HttpHeaders.authorizationHeader.toLowerCase()) {
+          v = '***';
+        }
+        buffer.writeln('$k: $v');
+      });
+    }
+
+    if (options.queryParameters.isNotEmpty) {
+      buffer.writeln('QueryParams:');
+      options.queryParameters.forEach((k, v) {
+        buffer.writeln('$k: $v');
+      });
+    }
 
     _log.fine(buffer);
     super.onRequest(options, handler);
