@@ -21,7 +21,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     required this.profileChangeLocale,
     required this.profileChangeThemeMode,
   }) : super(ProfileState.initial()) {
-    on<ProfileInitEvent>(_profileInitEvent);
+    on<ProfileInitEvent>(_profileInitEvent, transformer: droppable());
     on<ProfileChangeThemeModeEvent>(
       _profileChangeThemeModeEvent,
       transformer: sequential(),

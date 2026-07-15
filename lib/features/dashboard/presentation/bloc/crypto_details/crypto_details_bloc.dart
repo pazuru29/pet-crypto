@@ -17,7 +17,10 @@ part 'crypto_details_state.dart';
 class CryptoDetailsBloc extends Bloc<CryptoDetailsEvent, CryptoDetailsState> {
   CryptoDetailsBloc({required this.getInfo})
     : super(CryptoDetailsState.initial()) {
-    on<CryptoDetailsInitEvent>(_cryptoDetailsInitEvent);
+    on<CryptoDetailsInitEvent>(
+      _cryptoDetailsInitEvent,
+      transformer: restartable(),
+    );
     on<CryptoDetailsOpenLinkEvent>(
       _cryptoDetailsOpenLinkEvent,
       transformer: droppable(),

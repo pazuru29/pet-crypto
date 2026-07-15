@@ -23,7 +23,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.loginUser,
     required this.logoutUser,
   }) : super(AuthState.initial()) {
-    on<AuthCheckEvent>(_authCheckEvent);
+    on<AuthCheckEvent>(_authCheckEvent, transformer: droppable());
     on<AuthLoginEvent>(_authLoginEvent, transformer: droppable());
     on<AuthLogoutEvent>(_authLogoutEvent, transformer: droppable());
     on<AuthSessionExpiredEvent>(

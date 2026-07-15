@@ -18,7 +18,7 @@ part 'dashboard_state.dart';
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   DashboardBloc({required this.getCryptocurrency, required this.getUserImage})
     : super(DashboardState.initial()) {
-    on<DashboardInitEvent>(_dashboardInitEvent);
+    on<DashboardInitEvent>(_dashboardInitEvent, transformer: droppable());
     on<DashboardRefreshDataEvent>(
       _dashboardRefreshDataEvent,
       transformer: droppable(),

@@ -42,8 +42,8 @@ void main() {
       runApp(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (context) => localizationProvider),
-            ChangeNotifierProvider(create: (context) => themeProvider),
+            ChangeNotifierProvider.value(value: localizationProvider),
+            ChangeNotifierProvider.value(value: themeProvider),
           ],
           child: const MyApp(),
         ),

@@ -59,7 +59,7 @@ class CryptocurrencyDatasourceImpl implements CryptocurrencyDatasource {
   }
 
   @override
-  Future<CryptoInfoResponseModel> fetchCryptoInfo(int? id) async {
+  Future<CryptoInfoResponseModel> fetchCryptoInfo(int id) async {
     (int? statusCode, JSON body) result;
 
     try {
