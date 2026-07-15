@@ -451,10 +451,10 @@ void main() {
         },
       );
 
-      final tokenCases = <String, String?>{'null': null, 'empty': ''};
-      for (final tokenCase in tokenCases.entries) {
+      const List<String?> tokenCases = [null, ''];
+      for (final tokenCase in tokenCases) {
         test(
-          'refreshed token is ${tokenCase.key}, expires session and returns error',
+          'refreshed token is "$tokenCase", expires session and returns error',
           () async {
             var initialCallCount = 0;
 
@@ -468,7 +468,7 @@ void main() {
                 return 'old-token';
               }
 
-              return tokenCase.value;
+              return tokenCase;
             });
 
             final call = dio.get(
