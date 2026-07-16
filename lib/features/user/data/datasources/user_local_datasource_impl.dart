@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/util/app_storage_keys.dart';
@@ -5,6 +6,8 @@ import 'package:pet_crypto/features/user/data/datasources/user_local_datasource.
 import 'package:pet_crypto/features/user/data/models/user_data_model.dart';
 
 class UserLocalDatasourceImpl implements UserLocalDatasource {
+  static final Logger _log = Logger('UserLocalDatasourceImpl');
+
   final PreferencesStorage preferencesStorage;
 
   const UserLocalDatasourceImpl({required this.preferencesStorage});
@@ -48,13 +51,39 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
 
   @override
   Future<void> clearUserData() async {
-    try {
-      await preferencesStorage.remove(AppStorageKeys.emailKey);
-      await preferencesStorage.remove(AppStorageKeys.fullNameKey);
-      await preferencesStorage.remove(AppStorageKeys.imageKey);
-    } catch (_) {
-      throw StorageException('Something went wrong');
+    ({Object error, StackTrace stackTrace})? firstError;
+
+    for (final key in [
+      AppStorageKeys.emailKey,
+      AppStorageKeys.fullNameKey,
+      AppStorageKeys.imageKey,
+    ]) {
+      try {
+        final removed = await preferencesStorage.remove(key);
+
+        if (!removed) {
+          throw StorageException('Failed to clear user data');
+        }
+      } catch (error, stackTrace) {
+        firstError ??= (error: error, stackTrace: stackTrace);
+        _log.warning('Failed to delete user data', error, stackTrace);
+      }
     }
+
+    if (firstError == null) {
+      return;
+    }
+
+    final (:error, :stackTrace) = firstError;
+
+    if (error is StorageException) {
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+
+    Error.throwWithStackTrace(
+      StorageException('Failed to clear user data'),
+      stackTrace,
+    );
   }
 
   Future<void> _optionalStringSave(String key, String? value) async {

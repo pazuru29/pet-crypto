@@ -203,10 +203,35 @@ void main() {
         verify(() => mockPreferencesStorage.remove(any())).called(3);
       });
 
-      test('should throw StorageException', () async {
+      test(
+        'first remove error should not stop the remaining removals',
+        () async {
+          when(
+            () => mockPreferencesStorage.remove(AppStorageKeys.emailKey),
+          ).thenThrow(Exception('Some Exception'));
+          when(
+            () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
+          ).thenAnswer((_) => Future(() => true));
+          when(
+            () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
+          ).thenAnswer((_) => Future(() => true));
+
+          await expectLater(
+            userLocalDatasource.clearUserData(),
+            throwsA(isA<StorageException>()),
+          );
+          verifyInOrder([
+            () => mockPreferencesStorage.remove(AppStorageKeys.emailKey),
+            () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
+            () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
+          ]);
+        },
+      );
+
+      test('remove false should be treated as a storage error', () async {
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.emailKey),
-        ).thenThrow(Exception('Some Exception'));
+        ).thenAnswer((_) => Future(() => false));
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
         ).thenAnswer((_) => Future(() => true));
@@ -214,18 +239,45 @@ void main() {
           () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
         ).thenAnswer((_) => Future(() => true));
 
-        Future<void> Function() call = userLocalDatasource.clearUserData;
+        await expectLater(
+          userLocalDatasource.clearUserData(),
+          throwsA(
+            isA<StorageException>().having(
+              (exception) => exception.message,
+              'message',
+              'Failed to clear user data',
+            ),
+          ),
+        );
+        verify(() => mockPreferencesStorage.remove(any())).called(3);
+      });
 
-        expect(call, throwsA(isA<StorageException>()));
-        verify(
+      test('multiple remove errors should throw the first error', () async {
+        when(
           () => mockPreferencesStorage.remove(AppStorageKeys.emailKey),
-        ).called(1);
-        verifyNever(
+        ).thenThrow(StorageException('Email delete failed'));
+        when(
           () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
-        );
-        verifyNever(
+        ).thenThrow(StorageException('Full name delete failed'));
+        when(
           () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
+        ).thenAnswer((_) => Future(() => true));
+
+        await expectLater(
+          userLocalDatasource.clearUserData(),
+          throwsA(
+            isA<StorageException>().having(
+              (exception) => exception.message,
+              'message',
+              'Email delete failed',
+            ),
+          ),
         );
+        verifyInOrder([
+          () => mockPreferencesStorage.remove(AppStorageKeys.emailKey),
+          () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
+          () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
+        ]);
       });
     });
   });

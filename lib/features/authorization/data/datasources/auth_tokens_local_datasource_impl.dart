@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/secure_storage.dart';
 import 'package:pet_crypto/core/util/app_storage_keys.dart';
@@ -5,6 +6,8 @@ import 'package:pet_crypto/features/authorization/data/datasources/auth_tokens_l
 import 'package:pet_crypto/features/authorization/data/models/auth_tokens_model.dart';
 
 class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
+  static final Logger _log = Logger('AuthTokensLocalDatasourceImpl');
+
   final SecureStorage secureStorage;
 
   AuthTokensLocalDatasourceImpl({required this.secureStorage});
@@ -77,13 +80,33 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
 
   @override
   Future<void> clearTokens() async {
-    try {
-      await secureStorage.delete(AppStorageKeys.accessTokenKey);
-      await secureStorage.delete(AppStorageKeys.refreshTokenKey);
-    } on StorageException {
-      rethrow;
-    } catch (_) {
-      throw StorageException('Something went wrong');
+    ({Object error, StackTrace stackTrace})? firstError;
+
+    for (final key in [
+      AppStorageKeys.accessTokenKey,
+      AppStorageKeys.refreshTokenKey,
+    ]) {
+      try {
+        await secureStorage.delete(key);
+      } catch (error, stackTrace) {
+        firstError ??= (error: error, stackTrace: stackTrace);
+        _log.warning('Failed to delete auth token', error, stackTrace);
+      }
     }
+
+    if (firstError == null) {
+      return;
+    }
+
+    final (:error, :stackTrace) = firstError;
+
+    if (error is StorageException) {
+      Error.throwWithStackTrace(error, stackTrace);
+    }
+
+    Error.throwWithStackTrace(
+      StorageException('Failed to clear auth tokens'),
+      stackTrace,
+    );
   }
 }

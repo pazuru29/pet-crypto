@@ -140,8 +140,75 @@ void main() {
         expect((actualResponse as Err).failure, isA<StorageFailure>());
         verifyInOrder([
           () => mockUserWriterLocalDatasource.saveUserData(any()),
-          () => mockUserWriterLocalDatasource.clearUserData(),
           () => mockAuthTokensLocalDatasource.clearTokens(),
+          () => mockUserWriterLocalDatasource.clearUserData(),
+        ]);
+        verifyNever(() => mockAuthTokensLocalDatasource.saveTokens(any()));
+      });
+
+      test('should rollback session when saveTokens throws', () async {
+        when(() => mockAuthDatasource.login(any())).thenAnswer(
+          (_) => Future(
+            () => AuthResponseModel(
+              username: 'user',
+              accessToken: 'access',
+              refreshToken: 'refresh',
+            ),
+          ),
+        );
+        when(
+          () => mockUserWriterLocalDatasource.saveUserData(any()),
+        ).thenAnswer((_) => Future(() {}));
+        when(
+          () => mockAuthTokensLocalDatasource.saveTokens(any()),
+        ).thenThrow(StorageException('Primary save failure'));
+
+        final actualResponse = await authRepository.login(authRequest);
+
+        expect(actualResponse, isA<Err<AuthTokens>>());
+        expect(
+          (actualResponse as Err<AuthTokens>).failure.message,
+          'Primary save failure',
+        );
+        verifyInOrder([
+          () => mockUserWriterLocalDatasource.saveUserData(any()),
+          () => mockAuthTokensLocalDatasource.saveTokens(any()),
+          () => mockAuthTokensLocalDatasource.clearTokens(),
+          () => mockUserWriterLocalDatasource.clearUserData(),
+        ]);
+      });
+
+      test('rollback errors should not replace the save error', () async {
+        when(() => mockAuthDatasource.login(any())).thenAnswer(
+          (_) => Future(
+            () => AuthResponseModel(
+              username: 'user',
+              accessToken: 'access',
+              refreshToken: 'refresh',
+            ),
+          ),
+        );
+        when(
+          () => mockUserWriterLocalDatasource.saveUserData(any()),
+        ).thenThrow(StorageException('Primary save failure'));
+        when(
+          () => mockAuthTokensLocalDatasource.clearTokens(),
+        ).thenThrow(StorageException('Token rollback failure'));
+        when(
+          () => mockUserWriterLocalDatasource.clearUserData(),
+        ).thenThrow(StorageException('User rollback failure'));
+
+        final actualResponse = await authRepository.login(authRequest);
+
+        expect(actualResponse, isA<Err<AuthTokens>>());
+        expect(
+          (actualResponse as Err<AuthTokens>).failure.message,
+          'Primary save failure',
+        );
+        verifyInOrder([
+          () => mockUserWriterLocalDatasource.saveUserData(any()),
+          () => mockAuthTokensLocalDatasource.clearTokens(),
+          () => mockUserWriterLocalDatasource.clearUserData(),
         ]);
         verifyNever(() => mockAuthTokensLocalDatasource.saveTokens(any()));
       });
@@ -371,15 +438,14 @@ void main() {
     group('method clearSession', () {
       setUp(() {
         when(
+          () => mockAuthTokensLocalDatasource.clearTokens(),
+        ).thenAnswer((_) => Future(() {}));
+        when(
           () => mockUserWriterLocalDatasource.clearUserData(),
         ).thenAnswer((_) => Future(() {}));
       });
 
       test('should return Ok<null>', () async {
-        when(
-          () => mockAuthTokensLocalDatasource.clearTokens(),
-        ).thenAnswer((_) => Future(() {}));
-
         Result<void> actualResponse = await authRepository.clearSession();
 
         expect(actualResponse, isA<Ok<void>>());
@@ -389,18 +455,102 @@ void main() {
         ]);
       });
 
-      test('should return Err<StorageFailure>', () async {
-        when(
-          () => mockAuthTokensLocalDatasource.clearTokens(),
-        ).thenThrow(StorageException('Something went wrong'));
+      test(
+        'token cleanup error should still clear user data and return Err',
+        () async {
+          when(
+            () => mockAuthTokensLocalDatasource.clearTokens(),
+          ).thenThrow(StorageException('Token cleanup failed'));
 
-        Result<void> actualResponse = await authRepository.clearSession();
+          final actualResponse = await authRepository.clearSession();
+
+          expect(actualResponse, isA<Err<void>>());
+          expect(
+            (actualResponse as Err<void>).failure,
+            isA<StorageFailure>().having(
+              (failure) => failure.message,
+              'message',
+              'Token cleanup failed',
+            ),
+          );
+          verifyInOrder([
+            () => mockAuthTokensLocalDatasource.clearTokens(),
+            () => mockUserWriterLocalDatasource.clearUserData(),
+          ]);
+        },
+      );
+
+      test('user cleanup error should return Err', () async {
+        when(
+          () => mockUserWriterLocalDatasource.clearUserData(),
+        ).thenThrow(StorageException('User cleanup failed'));
+
+        final actualResponse = await authRepository.clearSession();
 
         expect(actualResponse, isA<Err<void>>());
-        expect((actualResponse as Err).failure, isA<StorageFailure>());
-        verify(() => mockAuthTokensLocalDatasource.clearTokens()).called(1);
-        verifyNever(() => mockUserWriterLocalDatasource.clearUserData());
+        expect(
+          (actualResponse as Err<void>).failure,
+          isA<StorageFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'User cleanup failed',
+          ),
+        );
+        verifyInOrder([
+          () => mockAuthTokensLocalDatasource.clearTokens(),
+          () => mockUserWriterLocalDatasource.clearUserData(),
+        ]);
       });
+
+      test('both cleanup errors should return the first error', () async {
+        when(
+          () => mockAuthTokensLocalDatasource.clearTokens(),
+        ).thenThrow(StorageException('Token cleanup failed'));
+        when(
+          () => mockUserWriterLocalDatasource.clearUserData(),
+        ).thenThrow(StorageException('User cleanup failed'));
+
+        final actualResponse = await authRepository.clearSession();
+
+        expect(actualResponse, isA<Err<void>>());
+        expect(
+          (actualResponse as Err<void>).failure,
+          isA<StorageFailure>().having(
+            (failure) => failure.message,
+            'message',
+            'Token cleanup failed',
+          ),
+        );
+        verifyInOrder([
+          () => mockAuthTokensLocalDatasource.clearTokens(),
+          () => mockUserWriterLocalDatasource.clearUserData(),
+        ]);
+      });
+
+      test(
+        'unexpected cleanup error should still clear user data and return Err',
+        () async {
+          when(
+            () => mockAuthTokensLocalDatasource.clearTokens(),
+          ).thenThrow(StateError('Unexpected token cleanup failure'));
+
+          final actualResponse = await authRepository.clearSession();
+
+          expect(actualResponse, isA<Err<void>>());
+          expect(
+            (actualResponse as Err<void>).failure,
+            isA<UnexpectedFailure>().having(
+              (failure) => failure.message,
+              'message',
+              contains('Unexpected token cleanup failure'),
+            ),
+          );
+          verifyInOrder([
+            () => mockAuthTokensLocalDatasource.clearTokens(),
+            () => mockUserWriterLocalDatasource.clearUserData(),
+          ]);
+        },
+      );
     });
   });
 }

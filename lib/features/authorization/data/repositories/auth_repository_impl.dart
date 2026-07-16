@@ -1,3 +1,4 @@
+import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
@@ -16,6 +17,8 @@ import 'package:pet_crypto/features/user/data/models/user_data_model.dart';
 import 'package:pet_crypto/features/user/domain/entities/user_data.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
+  static final Logger _log = Logger('AuthRepositoryImpl');
+
   final AuthDatasource remote;
   final AuthTokensLocalDatasource localTokens;
   final UserWriterLocalDatasource localUser;
@@ -38,13 +41,7 @@ class AuthRepositoryImpl implements AuthRepository {
         await localUser.saveUserData(UserDataModel.fromEntity(userData));
         await localTokens.saveTokens(AuthTokensModel.fromEntity(session));
       } catch (error, stackTrace) {
-        try {
-          await localUser.clearUserData();
-        } catch (_) {}
-
-        try {
-          await localTokens.clearTokens();
-        } catch (_) {}
+        await _clearLocalSession();
 
         Error.throwWithStackTrace(error, stackTrace);
       }
@@ -154,13 +151,37 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<void>> clearSession() async {
     try {
-      await localTokens.clearTokens();
-      await localUser.clearUserData();
+      final cleanupError = await _clearLocalSession();
+
+      if (cleanupError != null) {
+        Error.throwWithStackTrace(cleanupError.error, cleanupError.stackTrace);
+      }
+
       return const Ok(null);
     } on StorageException catch (e) {
       return Err(StorageFailure(e.message));
     } catch (e) {
       return Err(UnexpectedFailure(e.toString()));
     }
+  }
+
+  Future<({Object error, StackTrace stackTrace})?> _clearLocalSession() async {
+    ({Object error, StackTrace stackTrace})? firstError;
+
+    try {
+      await localTokens.clearTokens();
+    } catch (error, stackTrace) {
+      firstError = (error: error, stackTrace: stackTrace);
+      _log.warning('Failed to clear auth tokens', error, stackTrace);
+    }
+
+    try {
+      await localUser.clearUserData();
+    } catch (error, stackTrace) {
+      firstError ??= (error: error, stackTrace: stackTrace);
+      _log.warning('Failed to clear user data', error, stackTrace);
+    }
+
+    return firstError;
   }
 }

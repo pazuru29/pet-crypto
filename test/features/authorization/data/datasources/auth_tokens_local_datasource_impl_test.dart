@@ -217,15 +217,55 @@ void main() {
         ]);
       });
 
-      test('should throw StorageException', () async {
+      test(
+        'access token delete error should still delete refresh token',
+        () async {
+          when(
+            () => mockSecureStorage.delete(AppStorageKeys.accessTokenKey),
+          ).thenThrow(StorageException('Access token delete failed'));
+          when(
+            () => mockSecureStorage.delete(AppStorageKeys.refreshTokenKey),
+          ).thenAnswer((_) => Future(() {}));
+
+          await expectLater(
+            authTokensLocalDatasource.clearTokens(),
+            throwsA(
+              isA<StorageException>().having(
+                (exception) => exception.message,
+                'message',
+                'Access token delete failed',
+              ),
+            ),
+          );
+          verifyInOrder([
+            () => mockSecureStorage.delete(AppStorageKeys.accessTokenKey),
+            () => mockSecureStorage.delete(AppStorageKeys.refreshTokenKey),
+          ]);
+        },
+      );
+
+      test('both delete errors should throw the first error', () async {
         when(
-          () => mockSecureStorage.delete(any()),
-        ).thenThrow(StorageException('Delete exception'));
+          () => mockSecureStorage.delete(AppStorageKeys.accessTokenKey),
+        ).thenThrow(StorageException('Access token delete failed'));
+        when(
+          () => mockSecureStorage.delete(AppStorageKeys.refreshTokenKey),
+        ).thenThrow(StorageException('Refresh token delete failed'));
 
-        Future<void> Function() call = authTokensLocalDatasource.clearTokens;
-
-        expect(call(), throwsA(isA<StorageException>()));
-        verify(() => mockSecureStorage.delete(any())).called(1);
+        await expectLater(
+          authTokensLocalDatasource.clearTokens(),
+          throwsA(
+            isA<StorageException>().having(
+              (exception) => exception.message,
+              'message',
+              'Access token delete failed',
+            ),
+          ),
+        );
+        verifyInOrder([
+          () => mockSecureStorage.delete(AppStorageKeys.accessTokenKey),
+          () => mockSecureStorage.delete(AppStorageKeys.refreshTokenKey),
+        ]);
       });
     });
   });
