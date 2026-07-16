@@ -33,11 +33,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final DashboardGetCryptocurrency getCryptocurrency;
   final DashboardGetUserImage getUserImage;
 
+  int _dataRevision = 0;
+  bool _refreshInProgress = false;
+
   FutureOr<void> _dashboardInitEvent(
     DashboardInitEvent event,
     Emitter<DashboardState> emit,
   ) async {
-    emit(state.copyWith(status: .loading));
+    final revision = ++_dataRevision;
+
+    emit(state.copyWith(status: .loading, paginationLoading: false));
 
     final userImageResponse = getUserImage.call();
 
@@ -55,6 +60,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
     final response = await _getCryptocurrency(start: start, limit: limit);
 
+    if (revision != _dataRevision) return;
+
     switch (response) {
       case Ok(value: final listOfCrypto):
         emit(
@@ -63,7 +70,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             currentPaginationStart: start,
             currentPaginationLimit: limit,
             listOfCrypto: listOfCrypto,
-            hasNextPage: _checkForHasNextPage(listOfCrypto.length),
+            hasNextPage: _checkForHasNextPage(listOfCrypto.length, limit),
           ),
         );
       case Err(failure: final failure):
@@ -82,11 +89,23 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     DashboardRefreshDataEvent event,
     Emitter<DashboardState> emit,
   ) async {
+    if (state.status != .loaded) {
+      _completeRefresh(event);
+      return;
+    }
+
+    final revision = ++_dataRevision;
+    _refreshInProgress = true;
+
+    emit(state.copyWith(paginationLoading: false));
+
     try {
       const int start = 1;
       const int limit = 20;
 
       final response = await _getCryptocurrency(start: start, limit: limit);
+
+      if (revision != _dataRevision) return;
 
       switch (response) {
         case Ok(value: final listOfCrypto):
@@ -95,7 +114,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
               currentPaginationStart: start,
               currentPaginationLimit: limit,
               listOfCrypto: listOfCrypto,
-              hasNextPage: _checkForHasNextPage(listOfCrypto.length),
+              hasNextPage: _checkForHasNextPage(listOfCrypto.length, limit),
             ),
           );
         case Err(failure: final failure):
@@ -106,7 +125,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           );
       }
     } finally {
-      event.completer.complete();
+      _refreshInProgress = false;
+      _completeRefresh(event);
     }
   }
 
@@ -116,21 +136,25 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   ) async {
     if (state.status != .loaded ||
         !state.hasNextPage ||
-        state.paginationLoading) {
+        state.paginationLoading ||
+        _refreshInProgress) {
       return;
     }
 
-    emit(state.copyWith(paginationLoading: true));
+    final revision = _dataRevision;
+    final paginationLimit = state.currentPaginationLimit;
+    final paginationStart = state.currentPaginationStart + paginationLimit;
 
-    int paginationStart =
-        state.currentPaginationStart + state.currentPaginationLimit;
+    emit(state.copyWith(paginationLoading: true));
 
     final request = DashboardCryptocurrencyRequest(
       start: paginationStart,
-      limit: state.currentPaginationLimit,
+      limit: paginationLimit,
     );
 
     final response = await getCryptocurrency.call(request: request);
+
+    if (revision != _dataRevision) return;
 
     switch (response) {
       case Ok(value: final listOfCrypto):
@@ -138,7 +162,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         emit(
           state.copyWith(
             listOfCrypto: list,
-            hasNextPage: _checkForHasNextPage(listOfCrypto.length),
+            hasNextPage: _checkForHasNextPage(
+              listOfCrypto.length,
+              paginationLimit,
+            ),
             currentPaginationStart: paginationStart,
             paginationLoading: false,
           ),
@@ -153,8 +180,14 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     }
   }
 
-  bool _checkForHasNextPage(int length) {
-    return length > 0 && length == state.currentPaginationLimit;
+  bool _checkForHasNextPage(int length, int limit) {
+    return length > 0 && length == limit;
+  }
+
+  void _completeRefresh(DashboardRefreshDataEvent event) {
+    if (!event.completer.isCompleted) {
+      event.completer.complete();
+    }
   }
 
   Future<Result<List<DashboardCryptocurrency>>> _getCryptocurrency({

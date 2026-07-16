@@ -17,6 +17,13 @@ class MockDashboardGetCryptocurrency extends Mock
 
 class MockDashboardGetUserImage extends Mock implements DashboardGetUserImage {}
 
+DashboardCryptocurrency cryptocurrency(int id) => DashboardCryptocurrency(
+  id: id,
+  name: 'Crypto $id',
+  symbol: 'C$id',
+  prices: const [],
+);
+
 void main() {
   late DashboardGetCryptocurrency mockDashboardGetCryptocurrency;
   late DashboardGetUserImage mockDashboardGetUserImage;
@@ -168,23 +175,14 @@ void main() {
               request: any(named: 'request'),
             ),
           ).thenAnswer(
-            (_) => Future(
-              () => Ok([
-                DashboardCryptocurrency(
-                  id: 1,
-                  name: 'Bitcoin',
-                  symbol: 'BTC',
-                  prices: [],
-                ),
-              ]),
-            ),
+            (_) => Future(() => Ok(List.generate(20, cryptocurrency))),
           );
 
           return dashboardBloc;
         },
         seed: () => DashboardState(
           status: .loaded,
-          listOfCrypto: [],
+          listOfCrypto: List.generate(40, cryptocurrency),
           currentPaginationStart: 21,
           currentPaginationLimit: 20,
         ),
@@ -193,17 +191,10 @@ void main() {
         expect: () => [
           DashboardState(
             status: .loaded,
-            listOfCrypto: [
-              DashboardCryptocurrency(
-                id: 1,
-                name: 'Bitcoin',
-                symbol: 'BTC',
-                prices: [],
-              ),
-            ],
+            listOfCrypto: List.generate(20, cryptocurrency),
             currentPaginationStart: 1,
             currentPaginationLimit: 20,
-            hasNextPage: false,
+            hasNextPage: true,
           ),
         ],
         verify: (_) {
@@ -257,22 +248,13 @@ void main() {
               request: any(named: 'request'),
             ),
           ).thenAnswer(
-            (_) => Future(
-              () => Ok([
-                DashboardCryptocurrency(
-                  id: 1,
-                  name: 'Bitcoin',
-                  symbol: 'BTC',
-                  prices: [],
-                ),
-              ]),
-            ),
+            (_) => Future(() => Ok(List.generate(20, cryptocurrency))),
           );
           return dashboardBloc;
         },
         seed: () => DashboardState(
           status: .loaded,
-          listOfCrypto: [],
+          listOfCrypto: List.generate(20, cryptocurrency),
           currentPaginationStart: 1,
           currentPaginationLimit: 20,
           hasNextPage: true,
@@ -281,24 +263,20 @@ void main() {
         expect: () => [
           DashboardState(
             status: .loaded,
-            listOfCrypto: [],
-            paginationLoading: true,
-            hasNextPage: true,
+            listOfCrypto: List.generate(20, cryptocurrency),
             currentPaginationStart: 1,
             currentPaginationLimit: 20,
+            hasNextPage: true,
+            paginationLoading: true,
           ),
           DashboardState(
             status: .loaded,
-            listOfCrypto: [
-              DashboardCryptocurrency(
-                id: 1,
-                name: 'Bitcoin',
-                symbol: 'BTC',
-                prices: [],
-              ),
-            ],
+            listOfCrypto: List.generate(
+              40,
+              (index) => cryptocurrency(index % 20),
+            ),
             paginationLoading: false,
-            hasNextPage: false,
+            hasNextPage: true,
             currentPaginationStart: 21,
             currentPaginationLimit: 20,
           ),
@@ -361,6 +339,240 @@ void main() {
             currentPaginationLimit: 20,
           ),
         ],
+      );
+    });
+
+    group('concurrent events priority', () {
+      blocTest(
+        'init blocks refresh and completes its completer',
+        build: () {
+          when(
+            () => mockDashboardGetUserImage.call(),
+          ).thenAnswer((_) => const Ok(null));
+          return dashboardBloc;
+        },
+        act: (bloc) async {
+          final initStarted = Completer<void>();
+          final initResult = Completer<Result<List<DashboardCryptocurrency>>>();
+          final refreshCompleter = Completer<void>();
+
+          when(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).thenAnswer((_) {
+            initStarted.complete();
+            return initResult.future;
+          });
+
+          bloc.add(DashboardInitEvent());
+          await initStarted.future;
+
+          bloc.add(DashboardRefreshDataEvent(completer: refreshCompleter));
+          await refreshCompleter.future;
+
+          initResult.complete(const Ok([]));
+        },
+        expect: () => [
+          DashboardState(status: .loading),
+          DashboardState(status: .loaded),
+        ],
+        verify: (_) {
+          verify(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).called(1);
+        },
+      );
+
+      blocTest(
+        'init invalidates an active refresh result',
+        build: () {
+          when(
+            () => mockDashboardGetUserImage.call(),
+          ).thenAnswer((_) => const Ok(null));
+          return dashboardBloc;
+        },
+        seed: () => DashboardState(
+          status: .loaded,
+          listOfCrypto: [cryptocurrency(0)],
+          currentPaginationStart: 21,
+          currentPaginationLimit: 20,
+        ),
+        act: (bloc) async {
+          final refreshStarted = Completer<void>();
+          final initStarted = Completer<void>();
+          final refreshResult =
+              Completer<Result<List<DashboardCryptocurrency>>>();
+          final initResult = Completer<Result<List<DashboardCryptocurrency>>>();
+          final refreshCompleter = Completer<void>();
+          var callCount = 0;
+
+          when(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).thenAnswer((_) {
+            callCount++;
+
+            if (callCount == 1) {
+              refreshStarted.complete();
+              return refreshResult.future;
+            }
+
+            initStarted.complete();
+            return initResult.future;
+          });
+
+          bloc.add(DashboardRefreshDataEvent(completer: refreshCompleter));
+          await refreshStarted.future;
+
+          bloc.add(DashboardInitEvent());
+          await initStarted.future;
+
+          initResult.complete(Ok([cryptocurrency(1)]));
+          refreshResult.complete(Ok([cryptocurrency(2)]));
+          await refreshCompleter.future;
+        },
+        expect: () => [
+          DashboardState(
+            status: .loading,
+            listOfCrypto: [cryptocurrency(0)],
+            currentPaginationStart: 21,
+            currentPaginationLimit: 20,
+          ),
+          DashboardState(
+            status: .loaded,
+            listOfCrypto: [cryptocurrency(1)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+          ),
+        ],
+      );
+
+      blocTest(
+        'refresh invalidates an active pagination result',
+        build: () => dashboardBloc,
+        seed: () => DashboardState(
+          status: .loaded,
+          listOfCrypto: [cryptocurrency(0)],
+          currentPaginationStart: 1,
+          currentPaginationLimit: 20,
+          hasNextPage: true,
+        ),
+        act: (bloc) async {
+          final paginationStarted = Completer<void>();
+          final refreshStarted = Completer<void>();
+          final paginationResult =
+              Completer<Result<List<DashboardCryptocurrency>>>();
+          final refreshResult =
+              Completer<Result<List<DashboardCryptocurrency>>>();
+          final refreshCompleter = Completer<void>();
+
+          when(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).thenAnswer((invocation) {
+            final request =
+                invocation.namedArguments[#request]
+                    as DashboardCryptocurrencyRequest;
+
+            if (request.start == 21) {
+              paginationStarted.complete();
+              return paginationResult.future;
+            }
+
+            refreshStarted.complete();
+            return refreshResult.future;
+          });
+
+          bloc.add(DashboardNextPageEvent());
+          await paginationStarted.future;
+
+          bloc.add(DashboardRefreshDataEvent(completer: refreshCompleter));
+          await refreshStarted.future;
+
+          refreshResult.complete(Ok([cryptocurrency(1)]));
+          await refreshCompleter.future;
+
+          paginationResult.complete(Ok([cryptocurrency(2)]));
+        },
+        expect: () => [
+          DashboardState(
+            status: .loaded,
+            listOfCrypto: [cryptocurrency(0)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+            hasNextPage: true,
+            paginationLoading: true,
+          ),
+          DashboardState(
+            status: .loaded,
+            listOfCrypto: [cryptocurrency(0)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+            hasNextPage: true,
+          ),
+          DashboardState(
+            status: .loaded,
+            listOfCrypto: [cryptocurrency(1)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+          ),
+        ],
+      );
+
+      blocTest(
+        'pagination does not start during refresh',
+        build: () => dashboardBloc,
+        seed: () => DashboardState(
+          status: .loaded,
+          listOfCrypto: [cryptocurrency(0)],
+          currentPaginationStart: 1,
+          currentPaginationLimit: 20,
+          hasNextPage: true,
+        ),
+        act: (bloc) async {
+          final refreshStarted = Completer<void>();
+          final refreshResult =
+              Completer<Result<List<DashboardCryptocurrency>>>();
+          final refreshCompleter = Completer<void>();
+
+          when(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).thenAnswer((_) {
+            refreshStarted.complete();
+            return refreshResult.future;
+          });
+
+          bloc.add(DashboardRefreshDataEvent(completer: refreshCompleter));
+          await refreshStarted.future;
+
+          bloc.add(DashboardNextPageEvent());
+          await Future.delayed(.zero);
+
+          refreshResult.complete(Ok([cryptocurrency(1)]));
+          await refreshCompleter.future;
+        },
+        expect: () => [
+          DashboardState(
+            status: .loaded,
+            listOfCrypto: [cryptocurrency(1)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).called(1);
+        },
       );
     });
   });
