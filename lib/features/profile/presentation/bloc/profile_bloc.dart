@@ -54,6 +54,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileChangeThemeModeEvent event,
     Emitter<ProfileState> emit,
   ) async {
+    if (state.status != .loaded) return;
     final result = await profileChangeThemeMode.call(event.themeIndex);
     if (result case Err()) {
       emit(
@@ -66,6 +67,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileChangeLocaleEvent event,
     Emitter<ProfileState> emit,
   ) async {
+    if (state.status != .loaded) return;
     if (event.languageCode == null) return;
     final result = await profileChangeLocale.call(event.languageCode!);
     if (result case Err()) {

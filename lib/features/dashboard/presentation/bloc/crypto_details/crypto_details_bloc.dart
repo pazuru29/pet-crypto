@@ -49,6 +49,10 @@ class CryptoDetailsBloc extends Bloc<CryptoDetailsEvent, CryptoDetailsState> {
     CryptoDetailsOpenLinkEvent event,
     Emitter<CryptoDetailsState> emit,
   ) async {
+    if (state.status != .loaded) {
+      return;
+    }
+
     final uri = Uri.tryParse(event.link);
 
     if (uri == null) {
