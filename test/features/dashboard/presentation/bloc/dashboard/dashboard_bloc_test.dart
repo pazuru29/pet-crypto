@@ -574,6 +574,101 @@ void main() {
           ).called(1);
         },
       );
+
+      blocTest(
+        'active init invalidates pagination',
+        build: () {
+          when(
+            () => mockDashboardGetUserImage.call(),
+          ).thenAnswer((_) => const Ok(null));
+          return dashboardBloc;
+        },
+        seed: () => DashboardState(
+          status: .loaded,
+          listOfCrypto: [cryptocurrency(0)],
+          currentPaginationStart: 1,
+          currentPaginationLimit: 20,
+          hasNextPage: true,
+        ),
+        act: (bloc) async {
+          final paginationStarted = Completer<void>();
+          final initStarted = Completer<void>();
+
+          final paginationResult =
+              Completer<Result<List<DashboardCryptocurrency>>>();
+          final initResult = Completer<Result<List<DashboardCryptocurrency>>>();
+
+          when(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).thenAnswer((invocation) {
+            final request =
+                invocation.namedArguments[#request]
+                    as DashboardCryptocurrencyRequest;
+
+            if (request.start == 21) {
+              paginationStarted.complete();
+              return paginationResult.future;
+            }
+
+            initStarted.complete();
+            return initResult.future;
+          });
+
+          bloc.add(DashboardNextPageEvent());
+          await paginationStarted.future;
+
+          bloc.add(DashboardInitEvent());
+          await initStarted.future;
+
+          final initApplied = bloc.stream.firstWhere(
+            (state) =>
+                state.status == .loaded &&
+                state.listOfCrypto.length == 1 &&
+                state.listOfCrypto.first.id == 1,
+          );
+
+          initResult.complete(Ok([cryptocurrency(1)]));
+          await initApplied;
+
+          paginationResult.complete(Ok([cryptocurrency(2)]));
+          await Future.delayed(.zero);
+        },
+        expect: () => [
+          DashboardState(
+            status: .loaded,
+            listOfCrypto: [cryptocurrency(0)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+            hasNextPage: true,
+            paginationLoading: true,
+          ),
+          DashboardState(
+            status: .loading,
+            listOfCrypto: [cryptocurrency(0)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+            hasNextPage: true,
+            paginationLoading: false,
+          ),
+          DashboardState(
+            status: .loaded,
+            listOfCrypto: [cryptocurrency(1)],
+            currentPaginationStart: 1,
+            currentPaginationLimit: 20,
+            hasNextPage: false,
+            paginationLoading: false,
+          ),
+        ],
+        verify: (_) {
+          verify(
+            () => mockDashboardGetCryptocurrency.call(
+              request: any(named: 'request'),
+            ),
+          ).called(2);
+        },
+      );
     });
   });
 }

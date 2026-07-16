@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -15,6 +17,8 @@ class MockCryptoDetailsGetInfo extends Mock implements CryptoDetailsGetInfo {}
 class MockUrlLauncherPlatform extends Mock
     with MockPlatformInterfaceMixin
     implements UrlLauncherPlatform {}
+
+CryptoInfo cryptoInfo(int id) => CryptoInfo(name: 'Crypto $id', symbol: 'C$id');
 
 void main() {
   late CryptoDetailsGetInfo mockCryptoDetailsGetInfo;
@@ -37,18 +41,13 @@ void main() {
           when(
             () =>
                 mockCryptoDetailsGetInfo.call(idString: any(named: 'idString')),
-          ).thenAnswer(
-            (_) => Future(() => Ok(CryptoInfo(name: 'Bitcoin', symbol: 'BTC'))),
-          );
+          ).thenAnswer((_) => Future(() => Ok(cryptoInfo(1))));
           return cryptoDetailsBloc;
         },
         act: (bloc) => bloc.add(CryptoDetailsInitEvent(id: '1')),
         expect: () => [
           CryptoDetailsState(status: .loading),
-          CryptoDetailsState(
-            status: .loaded,
-            info: CryptoInfo(name: 'Bitcoin', symbol: 'BTC'),
-          ),
+          CryptoDetailsState(status: .loaded, info: cryptoInfo(1)),
         ],
         verify: (_) {
           verify(
@@ -242,5 +241,58 @@ void main() {
         },
       );
     });
+  });
+
+  group('concurrent init events restartable', () {
+    blocTest(
+      'active second init invalidates previous init',
+      build: () {
+        return cryptoDetailsBloc;
+      },
+      act: (bloc) async {
+        final firstStartedInitCompleter = Completer<void>();
+        final firstResultInitCompleter = Completer<Result<CryptoInfo>>();
+        final secondStartedInitCompleter = Completer<void>();
+        final secondResultInitCompleter = Completer<Result<CryptoInfo>>();
+        var callCount = 0;
+
+        when(
+          () => mockCryptoDetailsGetInfo.call(idString: any(named: 'idString')),
+        ).thenAnswer((_) async {
+          callCount++;
+          if (callCount == 1) {
+            firstStartedInitCompleter.complete();
+            return await firstResultInitCompleter.future;
+          }
+
+          secondStartedInitCompleter.complete();
+          return await secondResultInitCompleter.future;
+        });
+
+        bloc.add(CryptoDetailsInitEvent(id: '1'));
+        await firstStartedInitCompleter.future;
+
+        bloc.add(CryptoDetailsInitEvent(id: '2'));
+        await secondStartedInitCompleter.future;
+
+        final secondResultApplied = bloc.stream.firstWhere(
+          (state) => state.status == .loaded && state.info?.symbol == 'C2',
+        );
+
+        secondResultInitCompleter.complete(Ok(cryptoInfo(2)));
+        await secondResultApplied;
+
+        firstResultInitCompleter.complete(Ok(cryptoInfo(1)));
+        await Future.delayed(.zero);
+      },
+      expect: () => [
+        CryptoDetailsState(status: .loading),
+        CryptoDetailsState(status: .loaded, info: cryptoInfo(2)),
+      ],
+      verify: (_) {
+        verify(() => mockCryptoDetailsGetInfo.call(idString: '1')).called(1);
+        verify(() => mockCryptoDetailsGetInfo.call(idString: '2')).called(1);
+      },
+    );
   });
 }
