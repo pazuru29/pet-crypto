@@ -92,13 +92,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: .all(16),
-                          child: AppButton(
-                            text: S.of(context).profileLogout,
-                            suffixIcon: Icon(Icons.exit_to_app),
-                            backgroundColor: colorScheme.error,
-                            foregroundColor: colorScheme.errorContainer,
-                            onPressed: () {
-                              context.read<AuthBloc>().add(AuthLogoutEvent());
+                          child: BlocBuilder<AuthBloc, AuthState>(
+                            buildWhen: (previous, current) =>
+                                previous.status != current.status ||
+                                previous.authStatus != current.authStatus,
+                            builder: (context, state) {
+                              final isLoggingOut =
+                                  state.status == .loading &&
+                                  state.authStatus == .authorized;
+
+                              return AppButton(
+                                text: S.of(context).profileLogout,
+                                suffixIcon: Icon(Icons.exit_to_app),
+                                prefixIcon: isLoggingOut
+                                    ? SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 1,
+                                        ),
+                                      )
+                                    : null,
+                                backgroundColor: colorScheme.error,
+                                foregroundColor: colorScheme.errorContainer,
+                                onPressed: isLoggingOut
+                                    ? null
+                                    : () {
+                                        context.read<AuthBloc>().add(
+                                          AuthLogoutEvent(),
+                                        );
+                                      },
+                              );
                             },
                           ),
                         ),

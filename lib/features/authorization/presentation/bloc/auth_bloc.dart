@@ -36,23 +36,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthLoginUser loginUser;
   final AuthLogoutUser logoutUser;
 
+  int _authRevision = 0;
+
   FutureOr<void> _authCheckEvent(
     AuthCheckEvent event,
     Emitter<AuthState> emit,
   ) async {
+    if (state.authStatus != .unknown) return;
+
+    final revision = ++_authRevision;
+
     emit(state.copyWith(status: .loading));
 
     final response = await authStatus.call();
+
+    if (revision != _authRevision) return;
+
     switch (response) {
       case Ok(value: final hasSession):
         if (!hasSession) {
-          await _unauthorize(emit);
+          _unauthorize(emit);
           return;
         }
-        await _authorize(emit);
+        _authorize(emit);
       case Err(failure: final error):
         if (error case AuthorizationFailure()) {
-          await _unauthorize(emit);
+          _unauthorize(emit);
         } else {
           emit(state.copyWith(status: .error, errorMessage: error.message));
         }
@@ -63,19 +72,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginEvent event,
     Emitter<AuthState> emit,
   ) async {
+    if (state.authStatus != .unauthorized || state.status == .loading) {
+      return;
+    }
+
+    final revision = ++_authRevision;
+
     emit(state.copyWith(status: .loading));
+
     final response = await loginUser.call(
       AuthRequest(login: event.username, password: event.password),
     );
 
+    if (revision != _authRevision) return;
+
     switch (response) {
       case Ok():
-        await _authorize(emit);
+        _authorize(emit);
       case Err(failure: final error):
-        await _unauthorize(
-          emit,
-          alertMessage: BlocMessage.error(error.message),
-        );
+        _unauthorize(emit, alertMessage: BlocMessage.error(error.message));
     }
   }
 
@@ -83,36 +98,50 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutEvent event,
     Emitter<AuthState> emit,
   ) async {
+    if (state.authStatus != .authorized) {
+      return;
+    }
+
+    final revision = ++_authRevision;
+
     emit(state.copyWith(status: .loading));
+
     final response = await logoutUser.call();
+
+    if (revision != _authRevision) {
+      return;
+    }
 
     switch (response) {
       case Ok(value: final status):
-        await _unauthorize(emit, authStatus: status);
+        _unauthorize(emit, authStatus: status);
       case Err(failure: final error):
-        await _unauthorize(
-          emit,
-          alertMessage: BlocMessage.error(error.message),
-        );
+        _unauthorize(emit, alertMessage: BlocMessage.error(error.message));
     }
   }
 
-  FutureOr<void> _authSessionExpiredEvent(
+  void _authSessionExpiredEvent(
     AuthSessionExpiredEvent event,
     Emitter<AuthState> emit,
-  ) async {
-    await _unauthorize(emit);
+  ) {
+    _authRevision++;
+
+    if (state.authStatus == .unauthorized && state.status == .loaded) {
+      return;
+    }
+
+    _unauthorize(emit);
   }
 
-  Future<void> _authorize(Emitter<AuthState> emit) async {
+  void _authorize(Emitter<AuthState> emit) {
     emit(state.copyWith(status: .loaded, authStatus: .authorized));
   }
 
-  Future<void> _unauthorize(
+  void _unauthorize(
     Emitter<AuthState> emit, {
     AuthStatus authStatus = AuthStatus.unauthorized,
     BlocMessage? alertMessage,
-  }) async {
+  }) {
     emit(
       state.copyWith(
         status: .loaded,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
@@ -219,6 +221,140 @@ void main() {
         seed: () => AuthState(status: .loaded, authStatus: .authorized),
         act: (bloc) => bloc.add(AuthSessionExpiredEvent()),
         expect: () => [AuthState(status: .loaded, authStatus: .unauthorized)],
+      );
+    });
+
+    group('concurrent events priority', () {
+      setUpAll(() {
+        registerFallbackValue(AuthRequest(login: '', password: ''));
+      });
+
+      blocTest(
+        'active check prevents login',
+        build: () => authBloc,
+        act: (bloc) async {
+          final startedCheckCompleter = Completer<void>();
+          final resultCheckCompleter = Completer<Result<bool>>();
+
+          when(mockAuthCheckStatus.call).thenAnswer((_) async {
+            startedCheckCompleter.complete();
+            return await resultCheckCompleter.future;
+          });
+
+          bloc.add(AuthCheckEvent());
+          await startedCheckCompleter.future;
+
+          bloc.add(AuthLoginEvent(username: 'username', password: 'password'));
+          await Future.delayed(.zero);
+
+          resultCheckCompleter.complete(Ok(false));
+        },
+        expect: () => [
+          AuthState(status: .loading),
+          AuthState(status: .loaded, authStatus: .unauthorized),
+        ],
+        verify: (_) {
+          verifyNever(() => mockAuthLoginUser.call(any()));
+        },
+      );
+
+      blocTest(
+        'session expired invalidates an active check result',
+        build: () => authBloc,
+        act: (bloc) async {
+          final startedCheckCompleter = Completer<void>();
+          final resultCheckCompleter = Completer<Result<bool>>();
+
+          when(mockAuthCheckStatus.call).thenAnswer((_) async {
+            startedCheckCompleter.complete();
+            return await resultCheckCompleter.future;
+          });
+
+          bloc.add(AuthCheckEvent());
+          await startedCheckCompleter.future;
+
+          final sessionExpiredHandled = bloc.stream.firstWhere(
+            (state) =>
+                state.status == .loaded && state.authStatus == .unauthorized,
+          );
+
+          bloc.add(AuthSessionExpiredEvent());
+          await sessionExpiredHandled;
+
+          resultCheckCompleter.complete(Ok(true));
+        },
+        expect: () => [
+          AuthState(status: .loading),
+          AuthState(status: .loaded, authStatus: .unauthorized),
+        ],
+      );
+
+      blocTest(
+        'session expired invalidates an active login result',
+        build: () => authBloc,
+        seed: () => AuthState(status: .loaded, authStatus: .unauthorized),
+        act: (bloc) async {
+          final startedLoginCompleter = Completer<void>();
+          final resultLoginCompleter = Completer<Result<AuthTokens>>();
+
+          when(() => mockAuthLoginUser.call(any())).thenAnswer((_) async {
+            startedLoginCompleter.complete();
+            return await resultLoginCompleter.future;
+          });
+
+          bloc.add(AuthLoginEvent(username: 'username', password: 'password'));
+          await startedLoginCompleter.future;
+
+          final sessionExpiredHandled = bloc.stream.firstWhere(
+            (state) =>
+                state.status == .loaded && state.authStatus == .unauthorized,
+          );
+
+          bloc.add(AuthSessionExpiredEvent());
+          await sessionExpiredHandled;
+
+          resultLoginCompleter.complete(
+            Ok(AuthTokens(accessToken: 'access', refreshToken: 'refresh')),
+          );
+        },
+        expect: () => [
+          AuthState(status: .loading, authStatus: .unauthorized),
+          AuthState(status: .loaded, authStatus: .unauthorized),
+        ],
+      );
+
+      blocTest(
+        'session expired invalidates an active logout result',
+        build: () => authBloc,
+        seed: () => AuthState(status: .loaded, authStatus: .authorized),
+        act: (bloc) async {
+          final startedLogoutCompleter = Completer<void>();
+          final resultLogoutCompleter = Completer<Result<AuthStatus>>();
+
+          when(mockAuthLogoutUser.call).thenAnswer((_) async {
+            startedLogoutCompleter.complete();
+            return await resultLogoutCompleter.future;
+          });
+
+          bloc.add(AuthLogoutEvent());
+          await startedLogoutCompleter.future;
+
+          final sessionExpiredHandled = bloc.stream.firstWhere(
+            (state) =>
+                state.status == .loaded && state.authStatus == .unauthorized,
+          );
+
+          bloc.add(AuthSessionExpiredEvent());
+          await sessionExpiredHandled;
+
+          resultLogoutCompleter.complete(
+            Err(StorageFailure('Something went wrong')),
+          );
+        },
+        expect: () => [
+          AuthState(status: .loading, authStatus: .authorized),
+          AuthState(status: .loaded, authStatus: .unauthorized),
+        ],
       );
     });
   });
