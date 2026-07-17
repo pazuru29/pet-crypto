@@ -20,5 +20,19 @@
   "cryptoDetailsCoinName": "{name} ({symbol})",
   "cryptoDetailsWebsite": "Веб-сайт",
   "cryptoDetailsTechnicalDoc": "Техническая документация",
-  "cryptoDetailsSourceCode": "Исходный код"
+  "cryptoDetailsSourceCode": "Исходный код",
+  "appErrorInvalidCredentials": "Неверное имя пользователя или пароль.",
+  "appErrorSessionExpired": "Сессия истекла. Войдите снова.",
+  "appErrorAccessDenied": "Доступ запрещён.",
+  "appErrorInvalidRequest": "Некорректный запрос.",
+  "appErrorNotFound": "Запрошенные данные не найдены.",
+  "appErrorServerUnavailable": "Сервер временно недоступен. Попробуйте позже.",
+  "appErrorNetworkUnavailable": "Проверьте подключение к интернету и попробуйте снова.",
+  "appErrorInvalidResponse": "Сервер вернул некорректный ответ.",
+  "appErrorStorageFailure": "Не удалось сохранить или загрузить локальные данные.",
+  "appErrorConfiguration": "Ошибка конфигурации приложения.",
+  "appErrorUnexpected": "Что-то пошло не так. Попробуйте снова.",
+  "appErrorInvalidLink": "Некорректная ссылка.",
+  "appErrorUnsupportedLink": "Этот тип ссылок не поддерживается.",
+  "appErrorOpenLinkFailed": "Не удалось открыть ссылку."
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
@@ -50,9 +51,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       case Ok(value: final image):
         emit(state.copyWith(userImage: image));
       case Err(failure: final error):
-        emit(
-          state.copyWith(alertMessageToShow: BlocMessage.error(error.message)),
-        );
+        emit(state.copyWith(alertMessageToShow: BlocMessage.error(error.code)));
     }
 
     const int start = 1;
@@ -77,7 +76,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         emit(
           state.copyWith(
             status: .error,
-            errorMessage: failure.message,
+            errorCode: failure.code,
             currentPaginationLimit: limit,
             currentPaginationStart: start,
           ),
@@ -119,9 +118,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           );
         case Err(failure: final failure):
           emit(
-            state.copyWith(
-              alertMessageToShow: BlocMessage.error(failure.message),
-            ),
+            state.copyWith(alertMessageToShow: BlocMessage.error(failure.code)),
           );
       }
     } finally {
@@ -173,7 +170,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       case Err(failure: final failure):
         emit(
           state.copyWith(
-            alertMessageToShow: BlocMessage.error(failure.message),
+            alertMessageToShow: BlocMessage.error(failure.code),
             paginationLoading: false,
           ),
         );

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/core/ui/alert_helper.dart';
+import 'package:pet_crypto/application/ui/alert_helper.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_cryptocurrency_list.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/dashboard/widgets/dashboard_empty_view.dart';
@@ -55,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 if (state.status == .error)
                   Flexible(
                     child: ErrorView(
-                      message: state.errorMessage,
+                      code: state.errorCode,
                       onTryAgain: () {
                         _dashboardBloc.add(DashboardInitEvent());
                       },

@@ -1,0 +1,16 @@
+enum AppErrorCode {
+  invalidCredentials,
+  sessionExpired,
+  accessDenied,
+  invalidRequest,
+  notFound,
+  serverUnavailable,
+  networkUnavailable,
+  invalidResponse,
+  storageFailure,
+  configuration,
+  unexpected,
+  invalidLink,
+  unsupportedLink,
+  openLinkFailed,
+}

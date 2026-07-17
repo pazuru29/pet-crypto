@@ -71,7 +71,7 @@ class RegisterAuthDependencies {
           if (result case Err(failure: final failure)) {
             Logger(
               'AuthSession',
-            ).severe('Failed to clear expired session: ${failure.message}');
+            ).severe('Failed to clear expired session', failure);
           }
 
           i<AuthBloc>().add(AuthSessionExpiredEvent());

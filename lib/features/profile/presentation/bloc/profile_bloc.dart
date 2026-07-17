@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
@@ -46,7 +47,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       case Ok(value: final profileData):
         emit(state.copyWith(status: .loaded, profileData: profileData));
       case Err(failure: final error):
-        emit(state.copyWith(status: .error, errorMessage: error.message));
+        emit(state.copyWith(status: .error, errorCode: error.code));
     }
   }
 
@@ -57,9 +58,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (state.status != .loaded) return;
     final result = await profileChangeThemeMode.call(event.themeIndex);
     if (result case Err()) {
-      emit(
-        state.copyWith(alertToShow: BlocMessage.error(result.failure.message)),
-      );
+      emit(state.copyWith(alertToShow: BlocMessage.error(result.failure.code)));
     }
   }
 
@@ -71,9 +70,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     if (event.languageCode == null) return;
     final result = await profileChangeLocale.call(event.languageCode!);
     if (result case Err()) {
-      emit(
-        state.copyWith(alertToShow: BlocMessage.error(result.failure.message)),
-      );
+      emit(state.copyWith(alertToShow: BlocMessage.error(result.failure.code)));
     }
   }
 }

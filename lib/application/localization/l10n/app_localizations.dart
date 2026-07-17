@@ -229,6 +229,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source code'**
   String get cryptoDetailsSourceCode;
+
+  /// User-facing message shown when invalid credentials
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect username or password.'**
+  String get appErrorInvalidCredentials;
+
+  /// User-facing message shown when session expired
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again.'**
+  String get appErrorSessionExpired;
+
+  /// User-facing message shown when access denied
+  ///
+  /// In en, this message translates to:
+  /// **'Access denied.'**
+  String get appErrorAccessDenied;
+
+  /// User-facing message shown when invalid request
+  ///
+  /// In en, this message translates to:
+  /// **'The request is invalid.'**
+  String get appErrorInvalidRequest;
+
+  /// User-facing message shown when not found
+  ///
+  /// In en, this message translates to:
+  /// **'The requested data was not found.'**
+  String get appErrorNotFound;
+
+  /// User-facing message shown when server unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'The server is temporarily unavailable. Please try again later.'**
+  String get appErrorServerUnavailable;
+
+  /// User-facing message shown when network unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get appErrorNetworkUnavailable;
+
+  /// User-facing message shown when invalid response
+  ///
+  /// In en, this message translates to:
+  /// **'The server returned an invalid response.'**
+  String get appErrorInvalidResponse;
+
+  /// User-facing message shown when storage failure
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save or load local data.'**
+  String get appErrorStorageFailure;
+
+  /// User-facing message shown when configuration failed
+  ///
+  /// In en, this message translates to:
+  /// **'The application configuration is invalid.'**
+  String get appErrorConfiguration;
+
+  /// User-facing message shown when unexpected failed
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get appErrorUnexpected;
+
+  /// User-facing message shown when invalid link
+  ///
+  /// In en, this message translates to:
+  /// **'The link is invalid.'**
+  String get appErrorInvalidLink;
+
+  /// User-facing message shown when unsupported link
+  ///
+  /// In en, this message translates to:
+  /// **'This link type is not supported.'**
+  String get appErrorUnsupportedLink;
+
+  /// User-facing message shown when open link failed
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the link.'**
+  String get appErrorOpenLinkFailed;
 }
 
 class _AppLocalizationsDelegate

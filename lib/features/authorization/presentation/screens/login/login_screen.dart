@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/core/ui/alert_helper.dart';
+import 'package:pet_crypto/application/ui/alert_helper.dart';
 import 'package:pet_crypto/core/util/app_icons.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
 import 'package:pet_crypto/core/util/login_validator.dart';

@@ -81,4 +81,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cryptoDetailsSourceCode => 'Source code';
+
+  @override
+  String get appErrorInvalidCredentials => 'Incorrect username or password.';
+
+  @override
+  String get appErrorSessionExpired =>
+      'Your session has expired. Please sign in again.';
+
+  @override
+  String get appErrorAccessDenied => 'Access denied.';
+
+  @override
+  String get appErrorInvalidRequest => 'The request is invalid.';
+
+  @override
+  String get appErrorNotFound => 'The requested data was not found.';
+
+  @override
+  String get appErrorServerUnavailable =>
+      'The server is temporarily unavailable. Please try again later.';
+
+  @override
+  String get appErrorNetworkUnavailable =>
+      'Check your internet connection and try again.';
+
+  @override
+  String get appErrorInvalidResponse =>
+      'The server returned an invalid response.';
+
+  @override
+  String get appErrorStorageFailure => 'Could not save or load local data.';
+
+  @override
+  String get appErrorConfiguration =>
+      'The application configuration is invalid.';
+
+  @override
+  String get appErrorUnexpected => 'Something went wrong. Please try again.';
+
+  @override
+  String get appErrorInvalidLink => 'The link is invalid.';
+
+  @override
+  String get appErrorUnsupportedLink => 'This link type is not supported.';
+
+  @override
+  String get appErrorOpenLinkFailed => 'Could not open the link.';
 }

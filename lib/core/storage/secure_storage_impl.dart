@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/secure_storage.dart';
 
 class SecureStorageImpl implements SecureStorage {
@@ -8,21 +9,61 @@ class SecureStorageImpl implements SecureStorage {
 
   @override
   Future<String?> read(String key) async {
-    return await storage.read(key: key);
+    try {
+      return await storage.read(key: key);
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        StorageException(
+          technicalMessage: 'Failed to read secure storage value',
+          cause: error,
+        ),
+        stackTrace,
+      );
+    }
   }
 
   @override
   Future<void> write(String key, String value) async {
-    await storage.write(key: key, value: value);
+    try {
+      await storage.write(key: key, value: value);
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        StorageException(
+          technicalMessage: 'Failed to write secure storage value',
+          cause: error,
+        ),
+        stackTrace,
+      );
+    }
   }
 
   @override
   Future<void> delete(String key) async {
-    await storage.delete(key: key);
+    try {
+      await storage.delete(key: key);
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        StorageException(
+          technicalMessage: 'Failed to delete secure storage value',
+          cause: error,
+        ),
+        stackTrace,
+      );
+    }
   }
 
   @override
   Future<void> deleteAll() async {
-    await storage.deleteAll();
+    try {
+      await storage.deleteAll();
+    } catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        StorageException(
+          technicalMessage: 'Failed to delete all secure storage values',
+          cause: error,
+        ),
+        stackTrace,
+      );
+    }
   }
 }

@@ -24,7 +24,9 @@ class DashboardCryptocurrencyResponseModel {
     final data = this.data;
 
     if (data == null) {
-      throw ServerException(status?.errorMessage ?? 'Something went wrong');
+      throw ParsingException(
+        technicalMessage: status?.errorMessage ?? 'Something went wrong',
+      );
     }
 
     return data.map((e) => e.toEntity()).toList();

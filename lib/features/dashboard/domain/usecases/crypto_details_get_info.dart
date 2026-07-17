@@ -10,13 +10,23 @@ class CryptoDetailsGetInfo {
 
   Future<Result<CryptoInfo>> call({String? idString}) async {
     if (idString == null) {
-      return Err(RequestFailure('Missing required parameter "id"'));
+      return Err(
+        RequestFailure(
+          .invalidRequest,
+          technicalMessage: 'Missing required parameter "id"',
+        ),
+      );
     }
 
     int? id = int.tryParse(idString);
 
-    if (id == null) {
-      return Err(RequestFailure('Parameter "id" must be integer'));
+    if (id == null || id <= 0) {
+      return Err(
+        RequestFailure(
+          .invalidRequest,
+          technicalMessage: 'Parameter "id" must be an integer greater than 0',
+        ),
+      );
     }
 
     return await repo.fetchCryptoInfo(id);

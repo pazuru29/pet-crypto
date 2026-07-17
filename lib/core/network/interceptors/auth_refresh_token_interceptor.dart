@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/network/result/refresh_token_result.dart';
 
 class AuthRefreshTokenInterceptor extends Interceptor {
@@ -72,8 +73,26 @@ class AuthRefreshTokenInterceptor extends Interceptor {
         await _expireSession();
       }
       handler.next(retryError);
-    } catch (_) {
-      handler.next(err);
+    } catch (error, stackTrace) {
+      final AppException nestedError;
+
+      if (error is AppException) {
+        nestedError = error;
+      } else {
+        nestedError = UnexpectedException(
+          technicalMessage: 'Unexpected error during token refresh',
+          cause: error,
+        );
+      }
+
+      handler.next(
+        err.copyWith(
+          type: DioExceptionType.unknown,
+          error: nestedError,
+          stackTrace: stackTrace,
+          message: 'Unexpected error during token refresh',
+        ),
+      );
     }
   }
 

@@ -29,7 +29,10 @@ class AuthApiInterceptor extends Interceptor {
       handler.reject(
         DioException(
           requestOptions: options,
-          error: const AuthorizationException('Access token is missing'),
+          error: const AuthorizationException(
+            .sessionExpired,
+            technicalMessage: 'Access token is missing',
+          ),
         ),
       );
       return;

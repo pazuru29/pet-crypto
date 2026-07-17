@@ -53,7 +53,7 @@ void main() {
       final Logger log = Logger('APP');
 
       if (error is ConfigurationException) {
-        log.severe('Configuration error: ${error.message}', error, trace);
+        log.severe('Configuration error', error, trace);
         return;
       }
 

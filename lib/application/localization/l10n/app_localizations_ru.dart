@@ -82,4 +82,50 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get cryptoDetailsSourceCode => 'Исходный код';
+
+  @override
+  String get appErrorInvalidCredentials =>
+      'Неверное имя пользователя или пароль.';
+
+  @override
+  String get appErrorSessionExpired => 'Сессия истекла. Войдите снова.';
+
+  @override
+  String get appErrorAccessDenied => 'Доступ запрещён.';
+
+  @override
+  String get appErrorInvalidRequest => 'Некорректный запрос.';
+
+  @override
+  String get appErrorNotFound => 'Запрошенные данные не найдены.';
+
+  @override
+  String get appErrorServerUnavailable =>
+      'Сервер временно недоступен. Попробуйте позже.';
+
+  @override
+  String get appErrorNetworkUnavailable =>
+      'Проверьте подключение к интернету и попробуйте снова.';
+
+  @override
+  String get appErrorInvalidResponse => 'Сервер вернул некорректный ответ.';
+
+  @override
+  String get appErrorStorageFailure =>
+      'Не удалось сохранить или загрузить локальные данные.';
+
+  @override
+  String get appErrorConfiguration => 'Ошибка конфигурации приложения.';
+
+  @override
+  String get appErrorUnexpected => 'Что-то пошло не так. Попробуйте снова.';
+
+  @override
+  String get appErrorInvalidLink => 'Некорректная ссылка.';
+
+  @override
+  String get appErrorUnsupportedLink => 'Этот тип ссылок не поддерживается.';
+
+  @override
+  String get appErrorOpenLinkFailed => 'Не удалось открыть ссылку.';
 }

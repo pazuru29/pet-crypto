@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/core/ui/alert_helper.dart';
+import 'package:pet_crypto/application/ui/alert_helper.dart';
 import 'package:pet_crypto/features/dashboard/presentation/bloc/crypto_details/crypto_details_bloc.dart';
 import 'package:pet_crypto/features/dashboard/presentation/screens/crypto_details/widgets/crypto_info_view.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
@@ -45,7 +45,7 @@ class _CryptoDetailsScreenState extends State<CryptoDetailsScreen> {
                 builder: (context, state) => switch (state.status) {
                   .initial || .loading => LoadingView(),
                   .error => ErrorView(
-                    message: state.errorMessage,
+                    code: state.errorCode,
                     onTryAgain: () {
                       _cryptoDetailsBloc.add(
                         CryptoDetailsInitEvent(id: widget.id),

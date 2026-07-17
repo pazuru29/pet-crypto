@@ -122,5 +122,61 @@
   "cryptoDetailsSourceCode": "Source code",
   "@cryptoDetailsSourceCode": {
     "description": "Title of source code links"
+  },
+  "appErrorInvalidCredentials": "Incorrect username or password.",
+  "@appErrorInvalidCredentials": {
+    "description": "User-facing message shown when invalid credentials"
+  },
+  "appErrorSessionExpired": "Your session has expired. Please sign in again.",
+  "@appErrorSessionExpired": {
+    "description": "User-facing message shown when session expired"
+  },
+  "appErrorAccessDenied": "Access denied.",
+  "@appErrorAccessDenied": {
+    "description": "User-facing message shown when access denied"
+  },
+  "appErrorInvalidRequest": "The request is invalid.",
+  "@appErrorInvalidRequest": {
+    "description": "User-facing message shown when invalid request"
+  },
+  "appErrorNotFound": "The requested data was not found.",
+  "@appErrorNotFound": {
+    "description": "User-facing message shown when not found"
+  },
+  "appErrorServerUnavailable": "The server is temporarily unavailable. Please try again later.",
+  "@appErrorServerUnavailable": {
+    "description": "User-facing message shown when server unavailable"
+  },
+  "appErrorNetworkUnavailable": "Check your internet connection and try again.",
+  "@appErrorNetworkUnavailable": {
+    "description": "User-facing message shown when network unavailable"
+  },
+  "appErrorInvalidResponse": "The server returned an invalid response.",
+  "@appErrorInvalidResponse": {
+    "description": "User-facing message shown when invalid response"
+  },
+  "appErrorStorageFailure": "Could not save or load local data.",
+  "@appErrorStorageFailure": {
+    "description": "User-facing message shown when storage failure"
+  },
+  "appErrorConfiguration": "The application configuration is invalid.",
+  "@appErrorConfiguration": {
+    "description": "User-facing message shown when configuration failed"
+  },
+  "appErrorUnexpected": "Something went wrong. Please try again.",
+  "@appErrorUnexpected": {
+    "description": "User-facing message shown when unexpected failed"
+  },
+  "appErrorInvalidLink": "The link is invalid.",
+  "@appErrorInvalidLink": {
+    "description": "User-facing message shown when invalid link"
+  },
+  "appErrorUnsupportedLink": "This link type is not supported.",
+  "@appErrorUnsupportedLink": {
+    "description": "User-facing message shown when unsupported link"
+  },
+  "appErrorOpenLinkFailed": "Could not open the link.",
+  "@appErrorOpenLinkFailed": {
+    "description": "User-facing message shown when open link failed"
   }
 }

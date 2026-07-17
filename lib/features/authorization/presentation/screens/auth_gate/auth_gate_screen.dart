@@ -26,7 +26,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) => switch (state.status) {
         .error => ErrorView(
-          message: state.errorMessage,
+          code: state.errorCode,
           onTryAgain: () {
             _authCubit.add(AuthCheckEvent());
           },

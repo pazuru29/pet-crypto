@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/core/ui/alert_helper.dart';
+import 'package:pet_crypto/application/ui/alert_helper.dart';
 import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 import 'package:pet_crypto/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_header_widget.dart';
@@ -51,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 builder: (context, state) => switch (state.status) {
                   .error => ErrorView(
-                    message: state.errorMessage,
+                    code: state.errorCode,
                     onTryAgain: () {
                       _profileBloc.add(ProfileInitEvent());
                     },

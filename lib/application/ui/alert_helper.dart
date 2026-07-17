@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pet_crypto/core/ui/bloc_message_colors.dart';
+import 'package:pet_crypto/application/localization/app_error_code_localization_extension.dart';
+import 'package:pet_crypto/application/localization/s.dart';
+import 'package:pet_crypto/application/ui/bloc_message_colors.dart';
 import 'package:pet_crypto/core/util/app_text_style.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/widgets/app_icon_button.dart';
@@ -12,6 +14,7 @@ class AlertHelper {
     Color foregroundColor = message.type.foregroundColor(context);
     Color backgroundColor = message.type.backgroundColor(context);
     Duration duration = const Duration(seconds: 3);
+    final text = message.code.localizedMessage(S.of(context));
 
     SnackBar snackBar = SnackBar(
       duration: duration,
@@ -20,7 +23,7 @@ class AlertHelper {
       showCloseIcon: true,
       closeIconColor: foregroundColor,
       content: AppText(
-        text: message.text,
+        text: text,
         textStyle: AppTextStyle.bodySemibold,
         textColor: foregroundColor,
       ),
@@ -35,6 +38,7 @@ class AlertHelper {
     final messenger = ScaffoldMessenger.of(context);
     final foregroundColor = message.type.foregroundColor(context);
     final backgroundColor = message.type.backgroundColor(context);
+    final text = message.code.localizedMessage(S.of(context));
 
     Timer? timer;
 
@@ -47,7 +51,7 @@ class AlertHelper {
     final banner = MaterialBanner(
       leading: Icon(Icons.info_outline, color: foregroundColor, size: 20),
       content: AppText(
-        text: message.text,
+        text: text,
         textStyle: AppTextStyle.bodySemibold,
         textColor: foregroundColor,
       ),

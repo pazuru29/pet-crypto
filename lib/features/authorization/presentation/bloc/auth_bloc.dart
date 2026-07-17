@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
@@ -63,7 +64,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (error case AuthorizationFailure()) {
           _unauthorize(emit);
         } else {
-          emit(state.copyWith(status: .error, errorMessage: error.message));
+          emit(state.copyWith(status: .error, errorCode: error.code));
         }
     }
   }
@@ -90,7 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       case Ok():
         _authorize(emit);
       case Err(failure: final error):
-        _unauthorize(emit, alertMessage: BlocMessage.error(error.message));
+        _unauthorize(emit, alertMessage: BlocMessage.error(error.code));
     }
   }
 
@@ -116,7 +117,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       case Ok(value: final status):
         _unauthorize(emit, authStatus: status);
       case Err(failure: final error):
-        _unauthorize(emit, alertMessage: BlocMessage.error(error.message));
+        _unauthorize(emit, alertMessage: BlocMessage.error(error.code));
     }
   }
 

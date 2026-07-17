@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:logging/logging.dart';
 import 'package:pet_crypto/application/localization/l10n/app_localizations.dart';
-import 'package:pet_crypto/core/errors/failure.dart';
-import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class S extends ChangeNotifier {
+  final Logger _log = Logger('S');
+
   final String _localeKey = 'locale';
 
   static const Map<String, Locale> supportedLocales = {
@@ -34,37 +35,46 @@ class S extends ChangeNotifier {
   Locale get locale => _locale;
 
   void init() {
-    final currentLang =
-        storage.getString(_localeKey) ??
-        Platform.localeName.split(RegExp('[-_]')).first;
-    if (supportedLocales.containsKey(currentLang)) {
+    final defaultLocale = supportedLocales.values.first;
+    String? platformLocale;
+    String? storageLocale;
+
+    try {
+      storageLocale = storage.getString(_localeKey);
+    } catch (e, s) {
+      _log.warning('Error during read locale', e, s);
+    }
+
+    try {
+      platformLocale = Platform.localeName.split(RegExp('[-_]')).first;
+    } catch (e, s) {
+      _log.warning('Error during fetch platform locale', e, s);
+    }
+
+    String? currentLang = storageLocale ?? platformLocale;
+
+    if (currentLang != null && supportedLocales.containsKey(currentLang)) {
       _locale = Locale(currentLang);
     } else {
-      _locale = Locale('en');
+      _locale = defaultLocale;
     }
+
     notifyListeners();
   }
 
-  Future<Result<bool>> setLocale(String lang) async {
+  Future<bool> setLocale(String lang) async {
     String lowerLeng = lang.toLowerCase();
     Locale nextLocale = Locale(lowerLeng);
 
     if (!supportedLocales.containsKey(lowerLeng) || nextLocale == _locale) {
-      return Ok(false);
+      return false;
     }
 
-    try {
-      bool success = await storage.setString(_localeKey, lowerLeng);
+    await storage.setString(_localeKey, lowerLeng);
 
-      if (success) {
-        _locale = nextLocale;
-        notifyListeners();
-        return Ok(true);
-      } else {
-        return Err(StorageFailure('Error saving the locale'));
-      }
-    } catch (_) {
-      return Err(StorageFailure('Error saving the locale'));
-    }
+    _locale = nextLocale;
+    notifyListeners();
+
+    return true;
   }
 }

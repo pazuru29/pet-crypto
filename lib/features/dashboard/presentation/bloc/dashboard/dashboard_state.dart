@@ -2,8 +2,8 @@ part of 'dashboard_bloc.dart';
 
 class DashboardState extends Equatable {
   final BlocStatus status;
+  final AppErrorCode? errorCode;
   final BlocMessage? alertMessage;
-  final String? errorMessage;
   final int currentPaginationStart;
   final int currentPaginationLimit;
   final bool hasNextPage;
@@ -14,7 +14,7 @@ class DashboardState extends Equatable {
   const DashboardState({
     required this.status,
     this.alertMessage,
-    this.errorMessage,
+    this.errorCode,
     this.currentPaginationStart = 1,
     this.currentPaginationLimit = 20,
     this.hasNextPage = false,
@@ -28,7 +28,7 @@ class DashboardState extends Equatable {
   DashboardState copyWith({
     BlocStatus? status,
     BlocMessage? alertMessageToShow,
-    String? errorMessage,
+    AppErrorCode? errorCode,
     int? currentPaginationStart,
     int? currentPaginationLimit,
     bool? hasNextPage,
@@ -38,7 +38,7 @@ class DashboardState extends Equatable {
   }) => DashboardState(
     status: status ?? this.status,
     alertMessage: alertMessageToShow,
-    errorMessage: errorMessage,
+    errorCode: errorCode,
     currentPaginationStart:
         currentPaginationStart ?? this.currentPaginationStart,
     currentPaginationLimit:
@@ -52,8 +52,8 @@ class DashboardState extends Equatable {
   @override
   List<Object?> get props => [
     status,
+    errorCode,
     alertMessage,
-    errorMessage,
     currentPaginationStart,
     currentPaginationLimit,
     hasNextPage,

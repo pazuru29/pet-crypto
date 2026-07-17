@@ -9,7 +9,7 @@ class DioClientImpl implements BaseHttpClient {
   DioClientImpl({required this.dio});
 
   @override
-  Future<(int?, T)> get<T>(
+  Future<T> get<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
@@ -26,7 +26,7 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, T)> post<T>(
+  Future<T> post<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
@@ -43,7 +43,7 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, T)> put<T>(
+  Future<T> put<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
@@ -60,7 +60,7 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, T)> patch<T>(
+  Future<T> patch<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
@@ -77,7 +77,7 @@ class DioClientImpl implements BaseHttpClient {
   }
 
   @override
-  Future<(int?, T)> delete<T>(
+  Future<T> delete<T>(
     String path, {
     Map<String, Object?>? headers,
     Map<String, String>? queryParameters,
@@ -93,16 +93,20 @@ class DioClientImpl implements BaseHttpClient {
     );
   }
 
-  Future<(int?, T)> _request<T>(
-    Future<Response<dynamic>> Function() send,
-  ) async {
+  Future<T> _request<T>(Future<Response<dynamic>> Function() send) async {
     final response = await send();
     final data = response.data;
 
     try {
-      return (response.statusCode, data as T);
-    } catch (_) {
-      throw ParsingException('Response body is not a $T object');
+      return data as T;
+    } catch (e, s) {
+      Error.throwWithStackTrace(
+        ParsingException(
+          technicalMessage: 'Response body is not a $T object',
+          cause: e,
+        ),
+        s,
+      );
     }
   }
 }

@@ -3,9 +3,9 @@ abstract interface class PreferencesStorage {
 
   int? getInt(String key);
 
-  Future<bool> setString(String key, String value);
+  Future<void> setString(String key, String value);
 
-  Future<bool> setInt(String key, int value);
+  Future<void> setInt(String key, int value);
 
-  Future<bool> remove(String key);
+  Future<void> remove(String key);
 }

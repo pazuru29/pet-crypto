@@ -24,7 +24,9 @@ abstract class BaseDioHelper {
     final trimmedValue = value.trim();
 
     if (trimmedValue.isEmpty) {
-      throw ConfigurationException('$name must be provided via --dart-define');
+      throw ConfigurationException(
+        technicalMessage: '$name must be provided via --dart-define',
+      );
     }
 
     return trimmedValue;
@@ -35,7 +37,9 @@ abstract class BaseDioHelper {
     final uri = Uri.tryParse(trimmedValue);
 
     if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
-      throw ConfigurationException('$name must be a valid absolute URL');
+      throw ConfigurationException(
+        technicalMessage: '$name must be a valid absolute URL',
+      );
     }
 
     return trimmedValue;

@@ -26,7 +26,9 @@ class CryptoInfoResponseModel {
     final data = this.data;
 
     if (data == null || data.isEmpty) {
-      throw ServerException(status?.errorMessage ?? 'Something went wrong');
+      throw ParsingException(
+        technicalMessage: status?.errorMessage ?? 'Something went wrong',
+      );
     }
 
     return data.values.first.toEntity();

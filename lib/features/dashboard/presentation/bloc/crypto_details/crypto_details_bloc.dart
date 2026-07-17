@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_message.dart';
 import 'package:pet_crypto/core/util/bloc/bloc_status.dart';
@@ -41,7 +42,7 @@ class CryptoDetailsBloc extends Bloc<CryptoDetailsEvent, CryptoDetailsState> {
       case Ok(value: final info):
         emit(state.copyWith(status: .loaded, info: info));
       case Err(failure: final error):
-        emit(state.copyWith(status: .error, errorMessage: error.message));
+        emit(state.copyWith(status: .error, errorCode: error.code));
     }
   }
 
@@ -55,19 +56,20 @@ class CryptoDetailsBloc extends Bloc<CryptoDetailsEvent, CryptoDetailsState> {
 
     final uri = Uri.tryParse(event.link);
 
-    if (uri == null) {
-      emit(state.copyWith(alertToShow: BlocMessage.error('Invalid link')));
+    if (uri == null || !uri.hasScheme) {
+      emit(state.copyWith(alertToShow: BlocMessage.error(.invalidLink)));
       return;
     }
 
-    final isAllowedScheme = uri.scheme == 'https' || uri.scheme == 'http';
+    final isAllowedScheme = (uri.scheme == 'https' || uri.scheme == 'http');
 
     if (!isAllowedScheme) {
-      emit(
-        state.copyWith(
-          alertToShow: BlocMessage.error('This link type is not supported'),
-        ),
-      );
+      emit(state.copyWith(alertToShow: BlocMessage.error(.unsupportedLink)));
+      return;
+    }
+
+    if (uri.host.isEmpty) {
+      emit(state.copyWith(alertToShow: BlocMessage.error(.invalidLink)));
       return;
     }
 
@@ -76,16 +78,12 @@ class CryptoDetailsBloc extends Bloc<CryptoDetailsEvent, CryptoDetailsState> {
     try {
       opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
-      emit(
-        state.copyWith(alertToShow: BlocMessage.error('Could not open link')),
-      );
+      emit(state.copyWith(alertToShow: BlocMessage.error(.openLinkFailed)));
       return;
     }
 
     if (!opened) {
-      emit(
-        state.copyWith(alertToShow: BlocMessage.error('Could not open link')),
-      );
+      emit(state.copyWith(alertToShow: BlocMessage.error(.openLinkFailed)));
     }
   }
 }

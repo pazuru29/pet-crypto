@@ -14,38 +14,38 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
 
   @override
   UserDataModel fetchUserData() {
-    try {
-      String? email = preferencesStorage.getString(AppStorageKeys.emailKey);
-      String? fullName = preferencesStorage.getString(
-        AppStorageKeys.fullNameKey,
-      );
-      String? image = preferencesStorage.getString(AppStorageKeys.imageKey);
+    String? email = preferencesStorage.getString(AppStorageKeys.emailKey);
+    String? fullName = preferencesStorage.getString(AppStorageKeys.fullNameKey);
+    String? image = preferencesStorage.getString(AppStorageKeys.imageKey);
 
-      return UserDataModel(fullName: fullName, email: email, image: image);
-    } catch (_) {
-      throw StorageException('Something went wrong');
-    }
+    return UserDataModel(fullName: fullName, email: email, image: image);
   }
 
   @override
   String? fetchUserImage() {
-    try {
-      return preferencesStorage.getString(AppStorageKeys.imageKey);
-    } catch (_) {
-      throw StorageException('Something went wrong');
-    }
+    return preferencesStorage.getString(AppStorageKeys.imageKey);
   }
 
   @override
   Future<void> saveUserData(UserDataModel model) async {
+    final oldEmail = preferencesStorage.getString(AppStorageKeys.emailKey);
+    final oldFullName = preferencesStorage.getString(
+      AppStorageKeys.fullNameKey,
+    );
+    final oldImage = preferencesStorage.getString(AppStorageKeys.imageKey);
+
     try {
       await _optionalStringSave(AppStorageKeys.emailKey, model.email);
       await _optionalStringSave(AppStorageKeys.fullNameKey, model.fullName);
       await _optionalStringSave(AppStorageKeys.imageKey, model.image);
-    } on StorageException {
-      rethrow;
-    } catch (_) {
-      throw StorageException('Something went wrong');
+    } catch (e, s) {
+      await _userDataRollback({
+        AppStorageKeys.emailKey: oldEmail,
+        AppStorageKeys.fullNameKey: oldFullName,
+        AppStorageKeys.imageKey: oldImage,
+      });
+
+      Error.throwWithStackTrace(e, s);
     }
   }
 
@@ -59,11 +59,7 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
       AppStorageKeys.imageKey,
     ]) {
       try {
-        final removed = await preferencesStorage.remove(key);
-
-        if (!removed) {
-          throw StorageException('Failed to clear user data');
-        }
+        await preferencesStorage.remove(key);
       } catch (error, stackTrace) {
         firstError ??= (error: error, stackTrace: stackTrace);
         _log.warning('Failed to delete user data', error, stackTrace);
@@ -81,7 +77,10 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
     }
 
     Error.throwWithStackTrace(
-      StorageException('Failed to clear user data'),
+      StorageException(
+        technicalMessage: 'Failed to clear user data',
+        cause: error,
+      ),
       stackTrace,
     );
   }
@@ -92,9 +91,24 @@ class UserLocalDatasourceImpl implements UserLocalDatasource {
       return;
     }
 
-    final success = await preferencesStorage.setString(key, value);
-    if (!success) {
-      throw StorageException('Failed to save user data');
+    await preferencesStorage.setString(key, value);
+  }
+
+  Future<void> _userDataRollback(Map<String, String?> snapshot) async {
+    for (final entry in snapshot.entries) {
+      try {
+        if (entry.value == null) {
+          await preferencesStorage.remove(entry.key);
+        } else {
+          await preferencesStorage.setString(entry.key, entry.value!);
+        }
+      } catch (rollbackError, rollbackStackTrace) {
+        _log.warning(
+          'Failed to restore user data snapshot',
+          rollbackError,
+          rollbackStackTrace,
+        );
+      }
     }
   }
 }

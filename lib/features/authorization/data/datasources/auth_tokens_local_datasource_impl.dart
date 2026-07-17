@@ -14,67 +14,58 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
 
   @override
   Future<AuthTokensModel?> fetchTokens() async {
-    try {
-      final accessToken = await fetchAccessToken();
-      final refreshToken = await fetchRefreshToken();
+    final accessToken = await fetchAccessToken();
+    final refreshToken = await fetchRefreshToken();
 
-      if (accessToken == null || refreshToken == null) {
-        return null;
-      }
-
-      return AuthTokensModel(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-      );
-    } on StorageException {
-      rethrow;
-    } catch (_) {
-      throw StorageException('Something went wrong');
+    if (accessToken == null || refreshToken == null) {
+      return null;
     }
+
+    return AuthTokensModel(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    );
   }
 
   @override
   Future<String?> fetchAccessToken() async {
-    try {
-      return await secureStorage.read(AppStorageKeys.accessTokenKey);
-    } on StorageException {
-      rethrow;
-    } catch (_) {
-      throw StorageException('Something went wrong');
-    }
+    return await secureStorage.read(AppStorageKeys.accessTokenKey);
   }
 
   @override
   Future<String?> fetchRefreshToken() async {
-    try {
-      return await secureStorage.read(AppStorageKeys.refreshTokenKey);
-    } on StorageException {
-      rethrow;
-    } catch (_) {
-      throw StorageException('Something went wrong');
-    }
+    return await secureStorage.read(AppStorageKeys.refreshTokenKey);
   }
 
   @override
   Future<void> saveTokens(AuthTokensModel tokens) async {
+    final accessToken = tokens.accessToken;
+    final refreshToken = tokens.refreshToken;
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw StorageException(technicalMessage: 'Access token is missing');
+    }
+
+    if (refreshToken == null || refreshToken.isEmpty) {
+      throw StorageException(technicalMessage: 'Refresh token is missing');
+    }
+
+    final oldAccessToken = await secureStorage.read(
+      AppStorageKeys.accessTokenKey,
+    );
+    final oldRefreshToken = await secureStorage.read(
+      AppStorageKeys.refreshTokenKey,
+    );
+
     try {
-      final accessToken = tokens.accessToken;
-      final refreshToken = tokens.refreshToken;
-
-      if (accessToken == null || accessToken.isEmpty) {
-        throw StorageException('Access token is missing');
-      }
-
-      if (refreshToken == null || refreshToken.isEmpty) {
-        throw StorageException('Refresh token is missing');
-      }
-
       await secureStorage.write(AppStorageKeys.accessTokenKey, accessToken);
       await secureStorage.write(AppStorageKeys.refreshTokenKey, refreshToken);
-    } on StorageException {
-      rethrow;
-    } catch (_) {
-      throw StorageException('Something went wrong');
+    } catch (e, s) {
+      await _tokensRollback({
+        AppStorageKeys.accessTokenKey: oldAccessToken,
+        AppStorageKeys.refreshTokenKey: oldRefreshToken,
+      });
+      Error.throwWithStackTrace(e, s);
     }
   }
 
@@ -105,8 +96,29 @@ class AuthTokensLocalDatasourceImpl implements AuthTokensLocalDatasource {
     }
 
     Error.throwWithStackTrace(
-      StorageException('Failed to clear auth tokens'),
+      StorageException(
+        technicalMessage: 'Failed to clear auth tokens',
+        cause: error,
+      ),
       stackTrace,
     );
+  }
+
+  Future<void> _tokensRollback(Map<String, String?> snapshot) async {
+    for (final entry in snapshot.entries) {
+      try {
+        if (entry.value == null) {
+          await secureStorage.delete(entry.key);
+        } else {
+          await secureStorage.write(entry.key, entry.value!);
+        }
+      } catch (rollbackError, rollbackStackTrace) {
+        _log.warning(
+          'Failed to restore auth token snapshot',
+          rollbackError,
+          rollbackStackTrace,
+        );
+      }
+    }
   }
 }

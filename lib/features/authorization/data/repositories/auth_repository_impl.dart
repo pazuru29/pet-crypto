@@ -1,7 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
-import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
+import 'package:pet_crypto/core/util/app_executors.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/datasources/auth_tokens_local_datasource.dart';
 import 'package:pet_crypto/features/authorization/data/models/auth_refresh_request_model.dart';
@@ -31,10 +31,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Result<AuthTokens>> login(AuthRequest request) async {
-    try {
+    return executeRepository(_log, () async {
       final response = await remote.login(AuthRequestModel.fromEntity(request));
 
       AuthTokens session = response.toAuthTokensEntity();
+
       UserData userData = response.toUserDataEntity();
 
       try {
@@ -45,56 +46,32 @@ class AuthRepositoryImpl implements AuthRepository {
 
         Error.throwWithStackTrace(error, stackTrace);
       }
-
-      return Ok(session);
-    } on AuthorizationException catch (e) {
-      return Err(AuthorizationFailure(e.message));
-    } on ServerException catch (e) {
-      return Err(RemoteFailure(e.message));
-    } on NetworkException catch (e) {
-      return Err(NetworkFailure(e.message));
-    } on ParsingException catch (e) {
-      return Err(ParsingFailure(e.message));
-    } on StorageException catch (e) {
-      return Err(StorageFailure(e.message));
-    } catch (e) {
-      return Err(UnexpectedFailure(e.toString()));
-    }
+      return session;
+    });
   }
 
   @override
   Future<Result<void>> updateCurrentUser() async {
-    try {
+    return executeRepository(_log, () async {
       final response = await remote.fetchCurrentUser();
 
       UserData userData = response.toUserDataEntity();
 
       await localUser.saveUserData(UserDataModel.fromEntity(userData));
 
-      return Ok(null);
-    } on AuthorizationException catch (e) {
-      return Err(AuthorizationFailure(e.message));
-    } on ServerException catch (e) {
-      return Err(RemoteFailure(e.message));
-    } on NetworkException catch (e) {
-      return Err(NetworkFailure(e.message));
-    } on ParsingException catch (e) {
-      return Err(ParsingFailure(e.message));
-    } on StorageException catch (e) {
-      return Err(StorageFailure(e.message));
-    } catch (e) {
-      return Err(UnexpectedFailure(e.toString()));
-    }
+      return;
+    });
   }
 
   @override
   Future<Result<void>> refreshToken() async {
-    try {
+    return executeRepository(_log, () async {
       String? token = await localTokens.fetchRefreshToken();
 
       if (token == null || token.isEmpty) {
-        return Err(
-          AuthorizationFailure('Session has expired. Please log in again'),
+        throw AuthorizationException(
+          .sessionExpired,
+          technicalMessage: 'Session has expired. Please log in again',
         );
       }
 
@@ -113,56 +90,34 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await localTokens.saveTokens(tokensModel);
 
-      return Ok(null);
-    } on AuthorizationException catch (e) {
-      return Err(AuthorizationFailure(e.message));
-    } on ServerException catch (e) {
-      return Err(RemoteFailure(e.message));
-    } on NetworkException catch (e) {
-      return Err(NetworkFailure(e.message));
-    } on ParsingException catch (e) {
-      return Err(ParsingFailure(e.message));
-    } on StorageException catch (e) {
-      return Err(StorageFailure(e.message));
-    } catch (e) {
-      return Err(UnexpectedFailure(e.toString()));
-    }
+      return;
+    });
   }
 
   @override
   Future<Result<AuthTokens?>> restoreSession() async {
-    try {
+    return executeRepository(_log, () async {
       final session = await localTokens.fetchTokens();
 
       if (session == null) {
-        return const Ok(null);
+        return null;
       }
 
-      return Ok(session.toEntity());
-    } on ParsingException catch (e) {
-      return Err(ParsingFailure(e.message));
-    } on StorageException catch (e) {
-      return Err(StorageFailure(e.message));
-    } catch (e) {
-      return Err(UnexpectedFailure(e.toString()));
-    }
+      return session.toEntity();
+    });
   }
 
   @override
   Future<Result<void>> clearSession() async {
-    try {
+    return executeRepository(_log, () async {
       final cleanupError = await _clearLocalSession();
 
       if (cleanupError != null) {
         Error.throwWithStackTrace(cleanupError.error, cleanupError.stackTrace);
       }
 
-      return const Ok(null);
-    } on StorageException catch (e) {
-      return Err(StorageFailure(e.message));
-    } catch (e) {
-      return Err(UnexpectedFailure(e.toString()));
-    }
+      return;
+    });
   }
 
   Future<({Object error, StackTrace stackTrace})?> _clearLocalSession() async {
