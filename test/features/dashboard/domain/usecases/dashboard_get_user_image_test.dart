@@ -51,9 +51,14 @@ void main() {
       });
 
       test('should return Err', () {
-        when(
-          () => mockDashboardLocalRepository.getUserImage(),
-        ).thenAnswer((_) => Err(StorageFailure('Something went wrong')));
+        when(() => mockDashboardLocalRepository.getUserImage()).thenAnswer(
+          (_) => Err(
+            StorageFailure(
+              .storageFailure,
+              technicalMessage: 'Something went wrong',
+            ),
+          ),
+        );
 
         Result<String?> actualResponse = dashboardGetUserImage.call();
 

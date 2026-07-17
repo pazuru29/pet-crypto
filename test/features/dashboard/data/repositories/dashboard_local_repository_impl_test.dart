@@ -57,7 +57,7 @@ void main() {
       test('should return Err', () {
         when(
           () => mockUserReaderLocalDatasource.fetchUserImage(),
-        ).thenThrow(StorageException('Something went wrong'));
+        ).thenThrow(StorageException(technicalMessage: 'Something went wrong'));
 
         Result<String?> actualResponse = dashboardLocalRepository
             .getUserImage();

@@ -48,7 +48,14 @@ void main() {
 
       test('should return Err', () async {
         when(() => mockAppSettingsRepository.setLocale(any())).thenAnswer(
-          (_) => Future(() => Err(StorageFailure('Something went wrong'))),
+          (_) => Future(
+            () => Err(
+              StorageFailure(
+                .storageFailure,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          ),
         );
 
         Result<bool> actualResponse = await profileChangeLocale.call('en');

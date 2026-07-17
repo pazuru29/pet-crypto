@@ -56,7 +56,12 @@ void main() {
       test('should return Err', () async {
         when(
           () => mockCryptoDetailsDatasource.fetchCryptoInfo(any()),
-        ).thenThrow(AuthorizationException('Something went wrong'));
+        ).thenThrow(
+          AuthorizationException(
+            .accessDenied,
+            technicalMessage: 'Something went wrong',
+          ),
+        );
 
         Result<CryptoInfo> actualResponse = await cryptocurrencyRepository
             .fetchCryptoInfo(1);

@@ -41,7 +41,7 @@ void main() {
             any(),
             queryParameters: any(named: 'queryParameters'),
           ),
-        ).thenAnswer((_) => Future(() => (200, shouldReturn)));
+        ).thenAnswer((_) => Future(() => shouldReturn));
 
         DashboardCryptocurrencyResponseModel actualResponse =
             await cryptocurrencyDatasource.fetchCryptoCurrency();
@@ -99,7 +99,7 @@ void main() {
             any(),
             queryParameters: any(named: 'queryParameters'),
           ),
-        ).thenAnswer((_) => Future(() => (200, shouldReturn)));
+        ).thenAnswer((_) => Future(() => shouldReturn));
 
         Future<DashboardCryptocurrencyResponseModel> Function({
           DashboardCryptocurrencyRequestModel? request,
@@ -129,7 +129,7 @@ void main() {
             any(),
             queryParameters: any(named: 'queryParameters'),
           ),
-        ).thenAnswer((_) => Future(() => (200, shouldReturn)));
+        ).thenAnswer((_) => Future(() => shouldReturn));
 
         CryptoInfoResponseModel actualResponse = await cryptocurrencyDatasource
             .fetchCryptoInfo(1);
@@ -185,7 +185,7 @@ void main() {
             any(),
             queryParameters: any(named: 'queryParameters'),
           ),
-        ).thenAnswer((_) => Future(() => (200, shouldReturn)));
+        ).thenAnswer((_) => Future(() => shouldReturn));
 
         Future<CryptoInfoResponseModel> Function(int) call =
             cryptocurrencyDatasource.fetchCryptoInfo;

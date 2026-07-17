@@ -58,24 +58,27 @@ void main() {
       );
 
       blocTest(
-        'should finish with status error and errorMessage',
+        'should finish with status error and errorCode',
         build: () {
           when(
             () =>
                 mockCryptoDetailsGetInfo.call(idString: any(named: 'idString')),
           ).thenAnswer(
-            (_) =>
-                Future(() => Err(AuthorizationFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                AuthorizationFailure(
+                  .accessDenied,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return cryptoDetailsBloc;
         },
         act: (bloc) => bloc.add(CryptoDetailsInitEvent(id: '1')),
         expect: () => [
           CryptoDetailsState(status: .loading),
-          CryptoDetailsState(
-            status: .error,
-            errorMessage: 'Something went wrong',
-          ),
+          CryptoDetailsState(status: .error, errorCode: .accessDenied),
         ],
         verify: (_) {
           verify(
@@ -131,7 +134,7 @@ void main() {
       );
 
       blocTest(
-        'should add alertToShow (Could not open link)',
+        'should add openLinkFailed alert when launcher returns false',
         build: () {
           when(
             () => mockUrlLauncher.launchUrl(any(), any()),
@@ -145,7 +148,7 @@ void main() {
         expect: () => [
           CryptoDetailsState(
             status: .loaded,
-            alertMessage: BlocMessage.error('Could not open link'),
+            alertMessage: BlocMessage.error(.openLinkFailed),
           ),
         ],
         verify: (_) {
@@ -162,7 +165,7 @@ void main() {
       );
 
       blocTest(
-        'should throw Exception and add alertToShow (Could not open link)',
+        'should add openLinkFailed alert when launcher throws',
         build: () {
           when(
             () => mockUrlLauncher.launchUrl(any(), any()),
@@ -176,7 +179,7 @@ void main() {
         expect: () => [
           CryptoDetailsState(
             status: .loaded,
-            alertMessage: BlocMessage.error('Could not open link'),
+            alertMessage: BlocMessage.error(.openLinkFailed),
           ),
         ],
         verify: (_) {
@@ -193,7 +196,7 @@ void main() {
       );
 
       blocTest(
-        'should add alertToShow (Invalid link)',
+        'should add invalidLink alert',
         build: () {
           when(
             () => mockUrlLauncher.launchUrl(any(), any()),
@@ -206,7 +209,7 @@ void main() {
         expect: () => [
           CryptoDetailsState(
             status: .loaded,
-            alertMessage: BlocMessage.error('Invalid link'),
+            alertMessage: BlocMessage.error(.invalidLink),
           ),
         ],
         verify: (_) {
@@ -217,7 +220,7 @@ void main() {
       );
 
       blocTest(
-        'should add alertToShow (This link type is not supported)',
+        'should add unsupportedLink alert',
         build: () {
           when(
             () => mockUrlLauncher.launchUrl(any(), any()),
@@ -227,11 +230,11 @@ void main() {
         },
         seed: () => CryptoDetailsState(status: .loaded),
         act: (bloc) =>
-            bloc.add(CryptoDetailsOpenLinkEvent(link: 'bitcoin.org')),
+            bloc.add(CryptoDetailsOpenLinkEvent(link: 'ftp://bitcoin.org')),
         expect: () => [
           CryptoDetailsState(
             status: .loaded,
-            alertMessage: BlocMessage.error('This link type is not supported'),
+            alertMessage: BlocMessage.error(.unsupportedLink),
           ),
         ],
         verify: (_) {

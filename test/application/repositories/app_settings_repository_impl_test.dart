@@ -3,6 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/application/repositories/app_settings_repository_impl.dart';
 import 'package:pet_crypto/application/theme/app_theme_provider.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/errors/failure.dart';
 import 'package:pet_crypto/core/result/result.dart';
 import 'package:pet_crypto/features/profile/domain/repositories/app_settings_repository.dart';
@@ -34,7 +35,7 @@ void main() {
       test('should return Ok(true)', () async {
         when(
           () => mockS.setLocale(any()),
-        ).thenAnswer((_) => Future(() => Ok(true)));
+        ).thenAnswer((_) => Future(() => true));
 
         Result<bool> actualResponse = await appSettingsRepository.setLocale(
           'en',
@@ -48,7 +49,7 @@ void main() {
       test('should return Ok(false)', () async {
         when(
           () => mockS.setLocale(any()),
-        ).thenAnswer((_) => Future(() => Ok(false)));
+        ).thenAnswer((_) => Future(() => false));
 
         Result<bool> actualResponse = await appSettingsRepository.setLocale(
           'en',
@@ -60,9 +61,7 @@ void main() {
       });
 
       test('should return Err', () async {
-        when(() => mockS.setLocale(any())).thenAnswer(
-          (_) => Future(() => Err(StorageFailure('Something went wrong'))),
-        );
+        when(() => mockS.setLocale(any())).thenThrow(StorageException());
 
         Result<bool> actualResponse = await appSettingsRepository.setLocale(
           'en',
@@ -78,7 +77,7 @@ void main() {
       test('should return Ok(true)', () async {
         when(
           () => mockAppThemeProvider.setMode(any()),
-        ).thenAnswer((_) => Future(() => Ok(true)));
+        ).thenAnswer((_) async => true);
 
         Result<bool> actualResponse = await appSettingsRepository.setThemeMode(
           0,
@@ -92,7 +91,7 @@ void main() {
       test('should return Ok(false)', () async {
         when(
           () => mockAppThemeProvider.setMode(any()),
-        ).thenAnswer((_) => Future(() => Ok(false)));
+        ).thenAnswer((_) => Future(() => false));
 
         Result<bool> actualResponse = await appSettingsRepository.setThemeMode(
           0,
@@ -104,9 +103,9 @@ void main() {
       });
 
       test('should return Err', () async {
-        when(() => mockAppThemeProvider.setMode(any())).thenAnswer(
-          (_) => Future(() => Err(StorageFailure('Something went wrong'))),
-        );
+        when(
+          () => mockAppThemeProvider.setMode(any()),
+        ).thenThrow(StorageException());
 
         Result<bool> actualResponse = await appSettingsRepository.setThemeMode(
           0,

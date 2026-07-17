@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pet_crypto/application/theme/app_theme_provider.dart';
-import 'package:pet_crypto/core/errors/failure.dart';
-import 'package:pet_crypto/core/result/result.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class MockPreferencesStorage extends Mock implements PreferencesStorage {}
@@ -47,47 +47,55 @@ void main() {
         themeProvider.init();
       });
 
-      test('should return Ok(true)', () async {
+      test('should return true', () async {
         expect(themeProvider.mode.index, 0);
 
         when(
           () => mockPreferencesStorage.setInt(any(), any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
-        Result<bool> actualResponse = await themeProvider.setMode(1);
+        bool actualResponse = await themeProvider.setMode(1);
 
-        expect(actualResponse, isA<Ok<bool>>());
-        expect((actualResponse as Ok<bool>).value, isTrue);
+        expect(actualResponse, isA<bool>());
+        expect(actualResponse, isTrue);
         expect(themeProvider.mode.index, 1);
         verify(() => mockPreferencesStorage.setInt('themeMode', 1)).called(1);
       });
 
-      test('should return Ok(false)', () async {
+      test('should return false', () async {
         expect(themeProvider.mode.index, 0);
 
         when(
           () => mockPreferencesStorage.setInt(any(), any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
-        Result<bool> actualResponse = await themeProvider.setMode(0);
+        bool actualResponse = await themeProvider.setMode(0);
 
-        expect(actualResponse, isA<Ok<bool>>());
-        expect((actualResponse as Ok<bool>).value, isFalse);
+        expect(actualResponse, isA<bool>());
+        expect(actualResponse, isFalse);
         expect(themeProvider.mode.index, 0);
         verifyNever(() => mockPreferencesStorage.setInt(any(), any()));
       });
 
-      test('should return Err', () async {
+      test('should throw StorageException', () async {
         expect(themeProvider.mode.index, 0);
 
         when(
           () => mockPreferencesStorage.setInt(any(), any()),
-        ).thenAnswer((_) => Future(() => false));
+        ).thenThrow(StorageException());
 
-        Result<bool> actualResponse = await themeProvider.setMode(1);
+        Future<bool> call = themeProvider.setMode(1);
 
-        expect(actualResponse, isA<Err<bool>>());
-        expect((actualResponse as Err).failure, isA<StorageFailure>());
+        await expectLater(
+          call,
+          throwsA(
+            isA<StorageException>().having(
+              (error) => error.code,
+              'app error code',
+              AppErrorCode.storageFailure,
+            ),
+          ),
+        );
         expect(themeProvider.mode.index, 0);
         verify(() => mockPreferencesStorage.setInt('themeMode', 1)).called(1);
       });

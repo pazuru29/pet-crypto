@@ -54,8 +54,14 @@ void main() {
           () =>
               mockCryptoDetailsCryptocurrencyRepository.fetchCryptoInfo(any()),
         ).thenAnswer(
-          (_) =>
-              Future(() => Err(AuthorizationFailure('Something went wrong'))),
+          (_) => Future(
+            () => Err(
+              AuthorizationFailure(
+                .accessDenied,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          ),
         );
 
         Result<CryptoInfo> actualResponse = await cryptoDetailsGetInfo.call(

@@ -45,7 +45,7 @@ void main() {
 
         when(
           () => mockDioClient.post<JSON>(any(), body: any(named: 'body')),
-        ).thenAnswer((_) => Future(() => (200, shouldReturn.toJson())));
+        ).thenAnswer((_) => Future(() => shouldReturn.toJson()));
 
         AuthRequestModel request = AuthRequestModel(
           username: 'username',
@@ -87,7 +87,7 @@ void main() {
       test('should throw ParsingException', () async {
         when(
           () => mockDioClient.post<JSON>(any(), body: any(named: 'body')),
-        ).thenAnswer((_) => Future(() => (200, {'username': 1})));
+        ).thenAnswer((_) => Future(() => {'username': 1}));
 
         AuthRequestModel request = AuthRequestModel(
           username: 'username',
@@ -111,7 +111,7 @@ void main() {
 
         when(
           () => mockDioClient.get<JSON>(any(), headers: any(named: 'headers')),
-        ).thenAnswer((_) => Future(() => (200, shouldReturn.toJson())));
+        ).thenAnswer((_) => Future(() => shouldReturn.toJson()));
 
         AuthResponseModel actualResponse = await authDatasource
             .fetchCurrentUser();
@@ -144,7 +144,7 @@ void main() {
       test('should throw ParsingException', () async {
         when(
           () => mockDioClient.get<JSON>(any(), headers: any(named: 'headers')),
-        ).thenAnswer((_) => Future(() => (200, {'username': 1})));
+        ).thenAnswer((_) => Future(() => {'username': 1}));
 
         Future<AuthResponseModel> Function() call =
             authDatasource.fetchCurrentUser;
@@ -163,7 +163,7 @@ void main() {
         when(
           () =>
               mockDioRefreshClient.post<JSON>(any(), body: any(named: 'body')),
-        ).thenAnswer((_) => Future(() => (200, shouldReturn.toJson())));
+        ).thenAnswer((_) => Future(() => shouldReturn.toJson()));
 
         AuthRefreshRequestModel request = AuthRefreshRequestModel(
           refreshToken: 'refresh',
@@ -205,7 +205,7 @@ void main() {
         when(
           () =>
               mockDioRefreshClient.post<JSON>(any(), body: any(named: 'body')),
-        ).thenAnswer((_) => Future(() => (200, {'accessToken': 1})));
+        ).thenAnswer((_) => Future(() => {'accessToken': 1}));
 
         AuthRefreshRequestModel request = AuthRefreshRequestModel(
           refreshToken: 'refresh',

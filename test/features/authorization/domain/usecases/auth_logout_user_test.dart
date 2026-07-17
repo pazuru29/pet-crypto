@@ -37,7 +37,14 @@ void main() {
 
       test('should return Err', () async {
         when(() => mockAuthRepository.clearSession()).thenAnswer(
-          (_) => Future(() => Err(StorageFailure('Something went wrong'))),
+          (_) => Future(
+            () => Err(
+              StorageFailure(
+                .storageFailure,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          ),
         );
 
         Result<AuthStatus> actualResponse = await authLogoutUser.call();

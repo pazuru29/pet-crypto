@@ -46,7 +46,7 @@ void main() {
       test('should return Err', () {
         when(
           () => mockUserReaderLocalDatasource.fetchUserData(),
-        ).thenThrow(StorageException('Something went wrong'));
+        ).thenThrow(StorageException(technicalMessage: 'Something went wrong'));
 
         Result<UserData> actualResponse = profileRepository.getProfileData();
 

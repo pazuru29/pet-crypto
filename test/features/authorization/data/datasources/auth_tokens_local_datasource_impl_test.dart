@@ -54,7 +54,9 @@ void main() {
       test('should throw StorageException', () async {
         when(
           () => mockSecureStorage.read(AppStorageKeys.accessTokenKey),
-        ).thenThrow(StorageException('Fetch access token exception'));
+        ).thenThrow(
+          StorageException(technicalMessage: 'Fetch access token exception'),
+        );
 
         Future<String?> Function() actualResponse =
             authTokensLocalDatasource.fetchAccessToken;
@@ -92,7 +94,9 @@ void main() {
       test('should throw StorageException', () async {
         when(
           () => mockSecureStorage.read(AppStorageKeys.refreshTokenKey),
-        ).thenThrow(StorageException('Fetch refresh token exception'));
+        ).thenThrow(
+          StorageException(technicalMessage: 'Fetch refresh token exception'),
+        );
 
         Future<String?> Function() actualResponse =
             authTokensLocalDatasource.fetchRefreshToken;
@@ -142,7 +146,9 @@ void main() {
         ).thenAnswer((_) => Future(() => 'access'));
         when(
           () => mockSecureStorage.read(AppStorageKeys.refreshTokenKey),
-        ).thenThrow(StorageException('Fetch refresh token exception'));
+        ).thenThrow(
+          StorageException(technicalMessage: 'Fetch refresh token exception'),
+        );
 
         Future<AuthTokensModel?> Function() actualResponse =
             authTokensLocalDatasource.fetchTokens;
@@ -158,18 +164,19 @@ void main() {
           refreshToken: 'refresh',
         );
 
+        when(() => mockSecureStorage.read(any())).thenAnswer((_) async => null);
         when(
           () => mockSecureStorage.write(
             AppStorageKeys.accessTokenKey,
             request.accessToken!,
           ),
-        ).thenAnswer((_) => Future(() => {}));
+        ).thenAnswer((_) async {});
         when(
           () => mockSecureStorage.write(
             AppStorageKeys.refreshTokenKey,
             request.refreshToken!,
           ),
-        ).thenAnswer((_) => Future(() => {}));
+        ).thenAnswer((_) async {});
 
         await authTokensLocalDatasource.saveTokens(request);
 
@@ -193,7 +200,7 @@ void main() {
 
         when(
           () => mockSecureStorage.write(any(), any()),
-        ).thenAnswer((_) => Future(() => {}));
+        ).thenAnswer((_) async {});
 
         Future<void> Function(AuthTokensModel) call =
             authTokensLocalDatasource.saveTokens;
@@ -205,9 +212,7 @@ void main() {
 
     group('method clearTokens', () {
       test('should call delete for access token and refresh token', () async {
-        when(
-          () => mockSecureStorage.delete(any()),
-        ).thenAnswer((_) => Future(() => {}));
+        when(() => mockSecureStorage.delete(any())).thenAnswer((_) async {});
 
         await authTokensLocalDatasource.clearTokens();
 
@@ -222,7 +227,9 @@ void main() {
         () async {
           when(
             () => mockSecureStorage.delete(AppStorageKeys.accessTokenKey),
-          ).thenThrow(StorageException('Access token delete failed'));
+          ).thenThrow(
+            StorageException(technicalMessage: 'Access token delete failed'),
+          );
           when(
             () => mockSecureStorage.delete(AppStorageKeys.refreshTokenKey),
           ).thenAnswer((_) => Future(() {}));
@@ -231,7 +238,7 @@ void main() {
             authTokensLocalDatasource.clearTokens(),
             throwsA(
               isA<StorageException>().having(
-                (exception) => exception.message,
+                (exception) => exception.technicalMessage,
                 'message',
                 'Access token delete failed',
               ),
@@ -247,16 +254,20 @@ void main() {
       test('both delete errors should throw the first error', () async {
         when(
           () => mockSecureStorage.delete(AppStorageKeys.accessTokenKey),
-        ).thenThrow(StorageException('Access token delete failed'));
+        ).thenThrow(
+          StorageException(technicalMessage: 'Access token delete failed'),
+        );
         when(
           () => mockSecureStorage.delete(AppStorageKeys.refreshTokenKey),
-        ).thenThrow(StorageException('Refresh token delete failed'));
+        ).thenThrow(
+          StorageException(technicalMessage: 'Refresh token delete failed'),
+        );
 
         await expectLater(
           authTokensLocalDatasource.clearTokens(),
           throwsA(
             isA<StorageException>().having(
-              (exception) => exception.message,
+              (exception) => exception.technicalMessage,
               'message',
               'Access token delete failed',
             ),

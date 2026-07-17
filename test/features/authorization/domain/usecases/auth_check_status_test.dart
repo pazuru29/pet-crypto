@@ -62,7 +62,14 @@ void main() {
 
       test('should return Err when called restoreSession', () async {
         when(() => mockAuthRepository.restoreSession()).thenAnswer(
-          (_) => Future(() => Err(StorageFailure('Something went wrong'))),
+          (_) => Future(
+            () => Err(
+              StorageFailure(
+                .storageFailure,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          ),
         );
         when(
           () => mockAuthRepository.updateCurrentUser(),
@@ -84,7 +91,14 @@ void main() {
           ),
         );
         when(() => mockAuthRepository.updateCurrentUser()).thenAnswer(
-          (_) => Future(() => Err(StorageFailure('Something went wrong'))),
+          (_) => Future(
+            () => Err(
+              StorageFailure(
+                .storageFailure,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          ),
         );
 
         Result<bool> actualResponse = await authCheckStatus.call();

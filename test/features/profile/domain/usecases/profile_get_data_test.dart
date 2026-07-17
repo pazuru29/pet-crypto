@@ -47,9 +47,14 @@ void main() {
       });
 
       test('should return Err', () {
-        when(
-          () => mockProfileRepository.getProfileData(),
-        ).thenAnswer((_) => Err(StorageFailure('Something went wrong')));
+        when(() => mockProfileRepository.getProfileData()).thenAnswer(
+          (_) => Err(
+            StorageFailure(
+              .storageFailure,
+              technicalMessage: 'Something went wrong',
+            ),
+          ),
+        );
 
         Result<UserData> actualResponse = profileGetData.call();
 

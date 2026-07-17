@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pet_crypto/application/localization/s.dart';
-import 'package:pet_crypto/core/errors/failure.dart';
-import 'package:pet_crypto/core/result/result.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
+import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 
 class MockPreferencesStorage extends Mock implements PreferencesStorage {}
@@ -53,49 +53,59 @@ void main() {
         localeProvider.init();
       });
 
-      test('should return Ok(true)', () async {
+      test('should return true', () async {
         expect(localeProvider.locale.languageCode, 'en');
 
         when(
           () => mockPreferencesStorage.setString(any(), any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
-        Result<bool> actualResponse = await localeProvider.setLocale('ru');
+        bool actualResponse = await localeProvider.setLocale('ru');
 
-        expect(actualResponse, isA<Ok<bool>>());
-        expect((actualResponse as Ok<bool>).value, isTrue);
+        expect(actualResponse, isA<bool>());
+        expect(actualResponse, isTrue);
         expect(localeProvider.locale.languageCode, 'ru');
         verify(
           () => mockPreferencesStorage.setString('locale', 'ru'),
         ).called(1);
       });
 
-      test('should return Ok(false)', () async {
+      test('should return false', () async {
         expect(localeProvider.locale.languageCode, 'en');
 
         when(
           () => mockPreferencesStorage.setString(any(), any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
-        Result<bool> actualResponse = await localeProvider.setLocale('en');
+        bool actualResponse = await localeProvider.setLocale('en');
 
-        expect(actualResponse, isA<Ok<bool>>());
-        expect((actualResponse as Ok<bool>).value, isFalse);
+        expect(actualResponse, isA<bool>());
+        expect(actualResponse, isFalse);
         expect(localeProvider.locale.languageCode, 'en');
         verifyNever(() => mockPreferencesStorage.setString(any(), any()));
       });
 
-      test('should return Err', () async {
+      test('should throw StorageException', () async {
         expect(localeProvider.locale.languageCode, 'en');
 
-        when(
-          () => mockPreferencesStorage.setString(any(), any()),
-        ).thenAnswer((_) => Future(() => false));
+        when(() => mockPreferencesStorage.setString(any(), any())).thenThrow(
+          StorageException(
+            technicalMessage: 'SharedPreferences.setString returned false',
+          ),
+        );
 
-        Result<bool> actualResponse = await localeProvider.setLocale('ru');
+        Future<bool> call = localeProvider.setLocale('ru');
 
-        expect(actualResponse, isA<Err<bool>>());
-        expect((actualResponse as Err).failure, isA<StorageFailure>());
+        await expectLater(
+          call,
+          throwsA(
+            isA<StorageException>().having(
+              (error) => error.code,
+              'app error code',
+              AppErrorCode.storageFailure,
+            ),
+          ),
+        );
         expect(localeProvider.locale.languageCode, 'en');
         verify(
           () => mockPreferencesStorage.setString('locale', 'ru'),

@@ -83,8 +83,14 @@ void main() {
         'should finish with AuthStatus.unauthorized when return Err(AuthorizationFailure)',
         build: () {
           when(() => mockAuthCheckStatus.call()).thenAnswer(
-            (_) =>
-                Future(() => Err(AuthorizationFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                AuthorizationFailure(
+                  .sessionExpired,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return authBloc;
         },
@@ -102,14 +108,21 @@ void main() {
         'should finish with error status when return Err(NetworkFailure)',
         build: () {
           when(() => mockAuthCheckStatus.call()).thenAnswer(
-            (_) => Future(() => Err(NetworkFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                NetworkFailure(
+                  .networkUnavailable,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return authBloc;
         },
         act: (bloc) => bloc.add(AuthCheckEvent()),
         expect: () => [
           AuthState(status: .loading),
-          AuthState(status: .error, errorMessage: 'Something went wrong'),
+          AuthState(status: .error, errorCode: .networkUnavailable),
         ],
         verify: (_) {
           verify(() => mockAuthCheckStatus.call()).called(1);
@@ -148,8 +161,14 @@ void main() {
         build: () {
           registerFallbackValue(AuthRequest(login: '', password: ''));
           when(() => mockAuthLoginUser.call(any())).thenAnswer(
-            (_) =>
-                Future(() => Err(AuthorizationFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                AuthorizationFailure(
+                  .invalidCredentials,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return authBloc;
         },
@@ -161,7 +180,7 @@ void main() {
           AuthState(
             status: .loaded,
             authStatus: .unauthorized,
-            alertMessage: BlocMessage.error('Something went wrong'),
+            alertMessage: BlocMessage.error(.invalidCredentials),
           ),
         ],
         verify: (_) {
@@ -194,7 +213,14 @@ void main() {
         'should finish with AuthStatus.unauthorized and alert message when response is Err',
         build: () {
           when(() => mockAuthLogoutUser.call()).thenAnswer(
-            (_) => Future(() => Err(StorageFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                StorageFailure(
+                  .storageFailure,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return authBloc;
         },
@@ -205,7 +231,7 @@ void main() {
           AuthState(
             status: .loaded,
             authStatus: .unauthorized,
-            alertMessage: BlocMessage.error('Something went wrong'),
+            alertMessage: BlocMessage.error(.storageFailure),
           ),
         ],
         verify: (_) {
@@ -348,7 +374,12 @@ void main() {
           await sessionExpiredHandled;
 
           resultLogoutCompleter.complete(
-            Err(StorageFailure('Something went wrong')),
+            Err(
+              StorageFailure(
+                .storageFailure,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
           );
         },
         expect: () => [

@@ -45,8 +45,14 @@ void main() {
 
       test('should return Err', () async {
         when(() => mockAuthRepository.login(any())).thenAnswer(
-          (_) =>
-              Future(() => Err(AuthorizationFailure('Something went wrong'))),
+          (_) => Future(
+            () => Err(
+              AuthorizationFailure(
+                .invalidCredentials,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          ),
         );
 
         Result<AuthTokens> actualResponse = await authLoginUser.call(

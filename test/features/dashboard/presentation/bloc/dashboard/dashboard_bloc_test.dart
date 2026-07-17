@@ -102,9 +102,14 @@ void main() {
       blocTest(
         'should finish with loaded status and error image',
         build: () {
-          when(
-            () => mockDashboardGetUserImage.call(),
-          ).thenAnswer((_) => Err(StorageFailure('Something went wrong')));
+          when(() => mockDashboardGetUserImage.call()).thenAnswer(
+            (_) => Err(
+              StorageFailure(
+                .storageFailure,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          );
           when(
             () => mockDashboardGetCryptocurrency.call(
               request: any(named: 'request'),
@@ -117,7 +122,7 @@ void main() {
           DashboardState(status: .loading),
           DashboardState(
             status: .loading,
-            alertMessage: BlocMessage.error('Something went wrong'),
+            alertMessage: BlocMessage.error(.storageFailure),
           ),
           DashboardState(
             status: .loaded,
@@ -140,8 +145,14 @@ void main() {
               request: any(named: 'request'),
             ),
           ).thenAnswer(
-            (_) =>
-                Future(() => Err(AuthorizationFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                AuthorizationFailure(
+                  .accessDenied,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return dashboardBloc;
         },
@@ -151,7 +162,7 @@ void main() {
           DashboardState(status: .loading, userImage: 'image'),
           DashboardState(
             status: .error,
-            errorMessage: 'Something went wrong',
+            errorCode: .accessDenied,
             userImage: 'image',
             currentPaginationStart: 1,
             currentPaginationLimit: 20,
@@ -210,8 +221,14 @@ void main() {
               request: any(named: 'request'),
             ),
           ).thenAnswer(
-            (_) =>
-                Future(() => Err(AuthorizationFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                AuthorizationFailure(
+                  .accessDenied,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
 
           return dashboardBloc;
@@ -230,7 +247,7 @@ void main() {
             listOfCrypto: [],
             currentPaginationStart: 21,
             currentPaginationLimit: 20,
-            alertMessage: BlocMessage.error('Something went wrong'),
+            alertMessage: BlocMessage.error(.accessDenied),
           ),
         ],
         verify: (_) {
@@ -307,8 +324,14 @@ void main() {
               request: any(named: 'request'),
             ),
           ).thenAnswer(
-            (_) =>
-                Future(() => Err(AuthorizationFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                AuthorizationFailure(
+                  .accessDenied,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return dashboardBloc;
         },
@@ -331,7 +354,7 @@ void main() {
           ),
           DashboardState(
             status: .loaded,
-            alertMessage: BlocMessage.error('Something went wrong'),
+            alertMessage: BlocMessage.error(.accessDenied),
             listOfCrypto: [],
             paginationLoading: false,
             hasNextPage: true,

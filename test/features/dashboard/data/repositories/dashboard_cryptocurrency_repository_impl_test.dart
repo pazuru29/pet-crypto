@@ -66,7 +66,12 @@ void main() {
       test('should return Err', () async {
         when(
           () => mockDashboardCryptocurrencyDatasource.fetchCryptoCurrency(),
-        ).thenThrow(AuthorizationException('Something went wrong'));
+        ).thenThrow(
+          AuthorizationException(
+            .accessDenied,
+            technicalMessage: 'Something went wrong',
+          ),
+        );
 
         Result<List<DashboardCryptocurrency>> actualResponse =
             await dashboardCryptocurrencyRepository.getCryptocurrency();

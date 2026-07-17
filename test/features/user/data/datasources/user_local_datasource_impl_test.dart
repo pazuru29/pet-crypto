@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
 import 'package:pet_crypto/core/util/app_storage_keys.dart';
@@ -55,7 +56,7 @@ void main() {
       test('should throw StorageException', () {
         when(
           () => mockPreferencesStorage.getString(AppStorageKeys.emailKey),
-        ).thenThrow(Exception('Some exception'));
+        ).thenThrow(StorageException(technicalMessage: 'Some exception'));
 
         UserDataModel Function() call = userLocalDatasource.fetchUserData;
 
@@ -87,7 +88,7 @@ void main() {
       test('should throw StorageException', () {
         when(
           () => mockPreferencesStorage.getString(AppStorageKeys.imageKey),
-        ).thenThrow(Exception('Some exception'));
+        ).thenThrow(StorageException(technicalMessage: 'Some exception'));
 
         String? Function() call = userLocalDatasource.fetchUserImage;
 
@@ -100,7 +101,7 @@ void main() {
       test('should save data', () async {
         when(
           () => mockPreferencesStorage.setString(any(), any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
         UserDataModel dataModel = UserDataModel(
           fullName: 'name',
@@ -117,11 +118,11 @@ void main() {
       test('should save data and remove email', () async {
         when(
           () => mockPreferencesStorage.setString(any(), any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
         when(
           () => mockPreferencesStorage.remove(any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
         UserDataModel dataModel = UserDataModel(
           fullName: 'name',
@@ -152,17 +153,10 @@ void main() {
         when(
           () =>
               mockPreferencesStorage.setString(AppStorageKeys.emailKey, any()),
-        ).thenAnswer((_) => Future(() => false));
+        ).thenThrow(StorageException(technicalMessage: 'Email save failed'));
         when(
-          () => mockPreferencesStorage.setString(
-            AppStorageKeys.fullNameKey,
-            any(),
-          ),
-        ).thenAnswer((_) => Future(() => true));
-        when(
-          () =>
-              mockPreferencesStorage.setString(AppStorageKeys.imageKey, any()),
-        ).thenAnswer((_) => Future(() => true));
+          () => mockPreferencesStorage.remove(any()),
+        ).thenAnswer((_) async {});
 
         UserDataModel dataModel = UserDataModel(
           fullName: 'name',
@@ -173,7 +167,7 @@ void main() {
         Future<void> Function(UserDataModel) call =
             userLocalDatasource.saveUserData;
 
-        expect(call(dataModel), throwsA(isA<StorageException>()));
+        await expectLater(call(dataModel), throwsA(isA<StorageException>()));
         verify(
           () =>
               mockPreferencesStorage.setString(AppStorageKeys.emailKey, any()),
@@ -188,7 +182,7 @@ void main() {
           () =>
               mockPreferencesStorage.setString(AppStorageKeys.imageKey, any()),
         );
-        verifyNever(() => mockPreferencesStorage.remove(any()));
+        verify(() => mockPreferencesStorage.remove(any())).called(3);
       });
     });
 
@@ -196,7 +190,7 @@ void main() {
       test('should remove data', () async {
         when(
           () => mockPreferencesStorage.remove(any()),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
         await userLocalDatasource.clearUserData();
 
@@ -211,10 +205,10 @@ void main() {
           ).thenThrow(Exception('Some Exception'));
           when(
             () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
-          ).thenAnswer((_) => Future(() => true));
+          ).thenAnswer((_) async {});
           when(
             () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
-          ).thenAnswer((_) => Future(() => true));
+          ).thenAnswer((_) async {});
 
           await expectLater(
             userLocalDatasource.clearUserData(),
@@ -228,24 +222,24 @@ void main() {
         },
       );
 
-      test('remove false should be treated as a storage error', () async {
+      test('storage remove error should be propagated', () async {
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.emailKey),
-        ).thenAnswer((_) => Future(() => false));
+        ).thenThrow(StorageException());
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
         await expectLater(
-          userLocalDatasource.clearUserData(),
+          userLocalDatasource.clearUserData,
           throwsA(
             isA<StorageException>().having(
-              (exception) => exception.message,
-              'message',
-              'Failed to clear user data',
+              (exception) => exception.code,
+              'app error code',
+              AppErrorCode.storageFailure,
             ),
           ),
         );
@@ -255,19 +249,21 @@ void main() {
       test('multiple remove errors should throw the first error', () async {
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.emailKey),
-        ).thenThrow(StorageException('Email delete failed'));
+        ).thenThrow(StorageException(technicalMessage: 'Email delete failed'));
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.fullNameKey),
-        ).thenThrow(StorageException('Full name delete failed'));
+        ).thenThrow(
+          StorageException(technicalMessage: 'Full name delete failed'),
+        );
         when(
           () => mockPreferencesStorage.remove(AppStorageKeys.imageKey),
-        ).thenAnswer((_) => Future(() => true));
+        ).thenAnswer((_) async {});
 
         await expectLater(
           userLocalDatasource.clearUserData(),
           throwsA(
             isA<StorageException>().having(
-              (exception) => exception.message,
+              (exception) => exception.technicalMessage,
               'message',
               'Email delete failed',
             ),

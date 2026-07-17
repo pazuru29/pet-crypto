@@ -63,8 +63,14 @@ void main() {
         when(
           () => mockDashboardCryptocurrencyRepository.getCryptocurrency(),
         ).thenAnswer(
-          (_) =>
-              Future(() => Err(AuthorizationFailure('Something went wrong'))),
+          (_) => Future(
+            () => Err(
+              AuthorizationFailure(
+                .accessDenied,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          ),
         );
 
         Result<List<DashboardCryptocurrency>> actualResponse =

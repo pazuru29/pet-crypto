@@ -67,17 +67,22 @@ void main() {
       );
 
       blocTest(
-        'should finish with status error and errorMessage',
+        'should finish with status error and errorCode',
         build: () {
-          when(
-            () => mockProfileGetData.call(),
-          ).thenAnswer((_) => Err(StorageFailure('Something went wrong')));
+          when(() => mockProfileGetData.call()).thenAnswer(
+            (_) => Err(
+              StorageFailure(
+                .storageFailure,
+                technicalMessage: 'Something went wrong',
+              ),
+            ),
+          );
           return profileBloc;
         },
         act: (bloc) => bloc.add(ProfileInitEvent()),
         expect: () => [
           ProfileState(status: .loading),
-          ProfileState(status: .error, errorMessage: 'Something went wrong'),
+          ProfileState(status: .error, errorCode: .storageFailure),
         ],
         verify: (_) {
           verify(() => mockProfileGetData.call()).called(1);
@@ -113,7 +118,14 @@ void main() {
         'should finish with alertMessage',
         build: () {
           when(() => mockProfileChangeThemeMode.call(any())).thenAnswer(
-            (_) => Future(() => Err(StorageFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                StorageFailure(
+                  .storageFailure,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return profileBloc;
         },
@@ -134,7 +146,7 @@ void main() {
               email: 'email',
               image: 'image',
             ),
-            alertMessage: BlocMessage.error('Something went wrong'),
+            alertMessage: BlocMessage.error(.storageFailure),
           ),
         ],
         verify: (_) {
@@ -171,7 +183,14 @@ void main() {
         'should finish with alertMessage',
         build: () {
           when(() => mockProfileChangeLocale.call(any())).thenAnswer(
-            (_) => Future(() => Err(StorageFailure('Something went wrong'))),
+            (_) => Future(
+              () => Err(
+                StorageFailure(
+                  .storageFailure,
+                  technicalMessage: 'Something went wrong',
+                ),
+              ),
+            ),
           );
           return profileBloc;
         },
@@ -192,7 +211,7 @@ void main() {
               email: 'email',
               image: 'image',
             ),
-            alertMessage: BlocMessage.error('Something went wrong'),
+            alertMessage: BlocMessage.error(.storageFailure),
           ),
         ],
         verify: (_) {

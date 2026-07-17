@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/network/helper/app_request_headers.dart';
 import 'package:pet_crypto/core/network/interceptors/auth_api_interceptor.dart';
@@ -114,7 +115,17 @@ void main() {
               isA<DioException>().having(
                 (response) => response.error,
                 'is AuthorizationException',
-                isA<AuthorizationException>(),
+                isA<AuthorizationException>()
+                    .having(
+                      (exception) => exception.code,
+                      'code',
+                      AppErrorCode.sessionExpired,
+                    )
+                    .having(
+                      (exception) => exception.technicalMessage,
+                      'technicalMessage',
+                      'Access token is missing',
+                    ),
               ),
             ),
           );
