@@ -30,12 +30,13 @@ class ProfileLocaleWidget extends StatelessWidget {
               textStyle: AppTextStyle.bodyBold,
               textColor: colorScheme.onPrimaryContainer,
             ),
-            AppDropdownMenu(
+            AppDropdownMenu<String>(
               initialSelection: localeProvider.locale.languageCode,
               onSelected: onLanguageChoose,
               entries: S.supportedLocales.keys.toList(),
-              labelBuilder: (localeCode) {
-                return localeCode.toUpperCase();
+              labelBuilder: (languageCode) {
+                return S.languageLabels[languageCode] ??
+                    languageCode.toUpperCase();
               },
             ),
           ],

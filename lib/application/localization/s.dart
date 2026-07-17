@@ -13,8 +13,11 @@ class S extends ChangeNotifier {
 
   static const Map<String, Locale> supportedLocales = {
     'en': Locale('en'),
+    'uk': Locale('uk'),
     'ru': Locale('ru'),
   };
+
+  static const languageLabels = {'en': 'EN', 'uk': 'UA', 'ru': 'RU'};
 
   static const localizationDelegates = <LocalizationsDelegate>[
     GlobalWidgetsLocalizations.delegate,
@@ -51,30 +54,37 @@ class S extends ChangeNotifier {
       _log.warning('Error during fetch platform locale', e, s);
     }
 
-    String? currentLang = storageLocale ?? platformLocale;
+    final currentLang = _normalizeLanguageCode(storageLocale ?? platformLocale);
 
-    if (currentLang != null && supportedLocales.containsKey(currentLang)) {
-      _locale = Locale(currentLang);
-    } else {
-      _locale = defaultLocale;
-    }
+    _locale = supportedLocales[currentLang] ?? defaultLocale;
 
     notifyListeners();
   }
 
   Future<bool> setLocale(String lang) async {
-    String lowerLeng = lang.toLowerCase();
-    Locale nextLocale = Locale(lowerLeng);
+    final languageCode = _normalizeLanguageCode(lang);
 
-    if (!supportedLocales.containsKey(lowerLeng) || nextLocale == _locale) {
+    if (languageCode == null ||
+        !supportedLocales.containsKey(languageCode) ||
+        languageCode == _locale.languageCode) {
       return false;
     }
 
-    await storage.setString(_localeKey, lowerLeng);
+    await storage.setString(_localeKey, languageCode);
 
-    _locale = nextLocale;
+    _locale = supportedLocales[languageCode]!;
     notifyListeners();
 
     return true;
+  }
+
+  static String? _normalizeLanguageCode(String? languageCode) {
+    final normalized = languageCode?.trim().toLowerCase();
+
+    if (normalized == null || normalized.isEmpty) {
+      return null;
+    }
+
+    return normalized;
   }
 }

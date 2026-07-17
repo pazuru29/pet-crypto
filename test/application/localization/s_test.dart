@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pet_crypto/application/localization/s.dart';
@@ -22,7 +23,7 @@ void main() {
 
   group('Class S', () {
     group('method init', () {
-      test('should set default initial locale', () {
+      test('should set default (en) initial locale', () {
         when(
           () => mockPreferencesStorage.getString(any()),
         ).thenAnswer((_) => 'ar');
@@ -33,7 +34,7 @@ void main() {
         verify(() => mockPreferencesStorage.getString(any())).called(1);
       });
 
-      test('should set initial locale', () {
+      test('should set ru initial locale', () {
         when(
           () => mockPreferencesStorage.getString(any()),
         ).thenAnswer((_) => 'ru');
@@ -42,6 +43,17 @@ void main() {
 
         expect(localeProvider.locale.languageCode, 'ru');
         verify(() => mockPreferencesStorage.getString(any())).called(1);
+      });
+
+      test('should set uk initial locale', () {
+        when(
+          () => mockPreferencesStorage.getString(any()),
+        ).thenAnswer((_) => 'uk');
+
+        localeProvider.init();
+
+        expect(localeProvider.locale, const Locale('uk'));
+        verify(() => mockPreferencesStorage.getString('locale')).called(1);
       });
     });
 
@@ -53,7 +65,7 @@ void main() {
         localeProvider.init();
       });
 
-      test('should return true', () async {
+      test('should save ru locale', () async {
         expect(localeProvider.locale.languageCode, 'en');
 
         when(
@@ -67,6 +79,20 @@ void main() {
         expect(localeProvider.locale.languageCode, 'ru');
         verify(
           () => mockPreferencesStorage.setString('locale', 'ru'),
+        ).called(1);
+      });
+
+      test('should save uk locale', () async {
+        when(
+          () => mockPreferencesStorage.setString(any(), any()),
+        ).thenAnswer((_) async {});
+
+        final actualResponse = await localeProvider.setLocale('uk');
+
+        expect(actualResponse, isTrue);
+        expect(localeProvider.locale, const Locale('uk'));
+        verify(
+          () => mockPreferencesStorage.setString('locale', 'uk'),
         ).called(1);
       });
 
