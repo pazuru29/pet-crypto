@@ -5,6 +5,7 @@ import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
+import 'package:pet_crypto/core/util/app_storage_keys.dart';
 
 class MockPreferencesStorage extends Mock implements PreferencesStorage {}
 
@@ -53,7 +54,9 @@ void main() {
         localeProvider.init();
 
         expect(localeProvider.locale, const Locale('uk'));
-        verify(() => mockPreferencesStorage.getString('locale')).called(1);
+        verify(
+          () => mockPreferencesStorage.getString(AppStorageKeys.locale),
+        ).called(1);
       });
     });
 
@@ -78,7 +81,7 @@ void main() {
         expect(actualResponse, isTrue);
         expect(localeProvider.locale.languageCode, 'ru');
         verify(
-          () => mockPreferencesStorage.setString('locale', 'ru'),
+          () => mockPreferencesStorage.setString(AppStorageKeys.locale, 'ru'),
         ).called(1);
       });
 
@@ -92,7 +95,7 @@ void main() {
         expect(actualResponse, isTrue);
         expect(localeProvider.locale, const Locale('uk'));
         verify(
-          () => mockPreferencesStorage.setString('locale', 'uk'),
+          () => mockPreferencesStorage.setString(AppStorageKeys.locale, 'uk'),
         ).called(1);
       });
 
@@ -134,7 +137,7 @@ void main() {
         );
         expect(localeProvider.locale.languageCode, 'en');
         verify(
-          () => mockPreferencesStorage.setString('locale', 'ru'),
+          () => mockPreferencesStorage.setString(AppStorageKeys.locale, 'ru'),
         ).called(1);
       });
     });

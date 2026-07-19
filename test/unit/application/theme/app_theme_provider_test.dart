@@ -4,6 +4,7 @@ import 'package:pet_crypto/application/theme/app_theme_provider.dart';
 import 'package:pet_crypto/core/errors/app_error_code.dart';
 import 'package:pet_crypto/core/errors/exception.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
+import 'package:pet_crypto/core/util/app_storage_keys.dart';
 
 class MockPreferencesStorage extends Mock implements PreferencesStorage {}
 
@@ -59,7 +60,9 @@ void main() {
         expect(actualResponse, isA<bool>());
         expect(actualResponse, isTrue);
         expect(themeProvider.mode.index, 1);
-        verify(() => mockPreferencesStorage.setInt('themeMode', 1)).called(1);
+        verify(
+          () => mockPreferencesStorage.setInt(AppStorageKeys.themeMode, 1),
+        ).called(1);
       });
 
       test('should return false', () async {
@@ -97,7 +100,9 @@ void main() {
           ),
         );
         expect(themeProvider.mode.index, 0);
-        verify(() => mockPreferencesStorage.setInt('themeMode', 1)).called(1);
+        verify(
+          () => mockPreferencesStorage.setInt(AppStorageKeys.themeMode, 1),
+        ).called(1);
       });
     });
   });

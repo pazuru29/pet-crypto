@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
+import 'package:pet_crypto/core/util/app_storage_keys.dart';
 
 class AppThemeProvider extends ChangeNotifier {
   final Logger _log = Logger('AppThemeProvider');
@@ -27,7 +28,7 @@ class AppThemeProvider extends ChangeNotifier {
     int? storageIndex;
 
     try {
-      storageIndex = storage.getInt('themeMode');
+      storageIndex = storage.getInt(AppStorageKeys.themeMode);
     } catch (e, s) {
       _log.warning('Error during read storage theme mode', e, s);
     }
@@ -50,7 +51,7 @@ class AppThemeProvider extends ChangeNotifier {
       return false;
     }
 
-    await storage.setInt('themeMode', modeIndex);
+    await storage.setInt(AppStorageKeys.themeMode, modeIndex);
 
     _mode = ThemeMode.values[modeIndex];
     notifyListeners();

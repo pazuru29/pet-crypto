@@ -4,4 +4,6 @@ class AppStorageKeys {
   static const String emailKey = 'user.email';
   static const String fullNameKey = 'user.fullName';
   static const String imageKey = 'user.image';
+  static const String themeMode = 'theme.mode';
+  static const String locale = 's.locale';
 }

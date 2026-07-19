@@ -5,11 +5,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logging/logging.dart';
 import 'package:pet_crypto/application/localization/l10n/app_localizations.dart';
 import 'package:pet_crypto/core/storage/preferences_storage.dart';
+import 'package:pet_crypto/core/util/app_storage_keys.dart';
 
 class S extends ChangeNotifier {
   final Logger _log = Logger('S');
-
-  final String _localeKey = 'locale';
 
   static const Map<String, Locale> supportedLocales = {
     'en': Locale('en'),
@@ -43,7 +42,7 @@ class S extends ChangeNotifier {
     String? storageLocale;
 
     try {
-      storageLocale = storage.getString(_localeKey);
+      storageLocale = storage.getString(AppStorageKeys.locale);
     } catch (e, s) {
       _log.warning('Error during read locale', e, s);
     }
@@ -70,7 +69,7 @@ class S extends ChangeNotifier {
       return false;
     }
 
-    await storage.setString(_localeKey, languageCode);
+    await storage.setString(AppStorageKeys.locale, languageCode);
 
     _locale = supportedLocales[languageCode]!;
     notifyListeners();
