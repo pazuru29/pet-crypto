@@ -11,6 +11,6 @@ class DashboardGetCryptocurrency {
   Future<Result<List<DashboardCryptocurrency>>> call({
     DashboardCryptocurrencyRequest? request,
   }) async {
-    return await repo.getCryptocurrency(request: request);
+    return repo.getCryptocurrency(request: request);
   }
 }

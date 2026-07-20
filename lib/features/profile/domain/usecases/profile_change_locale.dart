@@ -7,6 +7,6 @@ class ProfileChangeLocale {
   const ProfileChangeLocale({required this.repo});
 
   Future<Result<bool>> call(String languageCode) async {
-    return await repo.setLocale(languageCode);
+    return repo.setLocale(languageCode);
   }
 }

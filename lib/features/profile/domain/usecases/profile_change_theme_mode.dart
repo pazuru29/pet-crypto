@@ -7,6 +7,6 @@ class ProfileChangeThemeMode {
   const ProfileChangeThemeMode({required this.repo});
 
   Future<Result<bool>> call(int themeModeIndex) async {
-    return await repo.setThemeMode(themeModeIndex);
+    return repo.setThemeMode(themeModeIndex);
   }
 }

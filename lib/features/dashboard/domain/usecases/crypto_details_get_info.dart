@@ -29,6 +29,6 @@ class CryptoDetailsGetInfo {
       );
     }
 
-    return await repo.fetchCryptoInfo(id);
+    return repo.fetchCryptoInfo(id);
   }
 }
