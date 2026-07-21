@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pet_crypto/application/localization/s.dart';
 import 'package:pet_crypto/application/ui/alert_helper.dart';
-import 'package:pet_crypto/features/authorization/presentation/bloc/auth_bloc.dart';
 import 'package:pet_crypto/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_header_widget.dart';
-import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_locale_widget.dart';
-import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_theme_widget.dart';
-import 'package:pet_crypto/widgets/app_button.dart';
+import 'package:pet_crypto/features/profile/presentation/profile/widgets/profile_data_view.dart';
 import 'package:pet_crypto/widgets/app_title.dart';
 import 'package:pet_crypto/widgets/error_view.dart';
 import 'package:pet_crypto/widgets/loading_view.dart';
@@ -33,8 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -57,77 +51,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                   .loading || .initial => LoadingView(),
-                  .loaded => CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: ProfileHeaderWidget(
-                          initUserImage: widget.initUserImage,
-                          profileImage: state.profileData?.image,
-                          fullName: state.profileData?.fullName,
-                          needPlaceHolder:
-                              state.profileData?.image == null &&
-                              state.status == .loaded,
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: ProfileThemeWidget(
-                          onButtonPressed: (index) {
-                            _profileBloc.add(
-                              ProfileChangeThemeModeEvent(themeIndex: index),
-                            );
-                          },
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: ProfileLocaleWidget(
-                          onLanguageChoose: (languageCode) {
-                            _profileBloc.add(
-                              ProfileChangeLocaleEvent(
-                                languageCode: languageCode,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: .all(16),
-                          child: BlocBuilder<AuthBloc, AuthState>(
-                            buildWhen: (previous, current) =>
-                                previous.status != current.status ||
-                                previous.authStatus != current.authStatus,
-                            builder: (context, state) {
-                              final isLoggingOut =
-                                  state.status == .loading &&
-                                  state.authStatus == .authorized;
-
-                              return AppButton(
-                                text: S.of(context).profileLogout,
-                                suffixIcon: Icon(Icons.exit_to_app),
-                                prefixIcon: isLoggingOut
-                                    ? SizedBox(
-                                        height: 16,
-                                        width: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 1,
-                                        ),
-                                      )
-                                    : null,
-                                backgroundColor: colorScheme.error,
-                                foregroundColor: colorScheme.errorContainer,
-                                onPressed: isLoggingOut
-                                    ? null
-                                    : () {
-                                        context.read<AuthBloc>().add(
-                                          AuthLogoutEvent(),
-                                        );
-                                      },
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
+                  .loaded => ProfileDataView(
+                    initUserImage: widget.initUserImage,
+                    profileData: state.profileData,
+                    onChangeTheme: (index) {
+                      _profileBloc.add(
+                        ProfileChangeThemeModeEvent(themeIndex: index),
+                      );
+                    },
+                    onChangeLanguage: (languageCode) {
+                      _profileBloc.add(
+                        ProfileChangeLocaleEvent(languageCode: languageCode),
+                      );
+                    },
                   ),
                 },
               ),
